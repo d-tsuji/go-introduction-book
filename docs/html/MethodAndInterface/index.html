@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>メソッドとインターフェース &#8212; Go言語入門  ドキュメント</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="並行処理" href="../Parallel/index.html" />
+    <link rel="prev" title="関数" href="../Function/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>メソッドとインターフェース<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="section" id="id2">
+<h2>メソッド<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Goは型にメソッドを定義することができます。メソッドはレシーバを引数にとる関数となります。</p>
+<p>Absメソッドは Vertex 型のレシーバを持つことを意味しています。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Vertex</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">X</span><span class="p">,</span> <span class="nx">Y</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Vertex</span><span class="p">)</span> <span class="nx">Abs</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nx">Sqrt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">X</span><span class="o">*</span><span class="nx">v</span><span class="p">.</span><span class="nx">X</span> <span class="o">+</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Y</span><span class="o">*</span><span class="nx">v</span><span class="p">.</span><span class="nx">Y</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">v</span> <span class="o">:=</span> <span class="nx">Vertex</span><span class="p">{</span><span class="nx">X</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">Y</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">Abs</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="c1">// 5</span>
+</pre></div>
+</div>
+<p>メソッドはレシーバを伴う関数ですので、メソッドでない関数として記述することも可能です。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Vertex</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">X</span><span class="p">,</span> <span class="nx">Y</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">AbsFunc</span><span class="p">(</span><span class="nx">v</span> <span class="nx">Vertex</span><span class="p">)</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nx">Sqrt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">X</span><span class="o">*</span><span class="nx">v</span><span class="p">.</span><span class="nx">X</span> <span class="o">+</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Y</span><span class="o">*</span><span class="nx">v</span><span class="p">.</span><span class="nx">Y</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">v</span> <span class="o">:=</span> <span class="nx">Vertex</span><span class="p">{</span><span class="nx">X</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">Y</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">AbsFunc</span><span class="p">(</span><span class="nx">v</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="c1">// 5</span>
+</pre></div>
+</div>
+<p>ポイントレシーバでメソッドを宣言することができます。レシーバの変数を更新する必要がある場合はポイントレシーバにする必要があります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Vertex</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">X</span><span class="p">,</span> <span class="nx">Y</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Vertex</span><span class="p">)</span> <span class="nx">Abs</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nx">Sqrt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">X</span><span class="o">*</span><span class="nx">v</span><span class="p">.</span><span class="nx">X</span> <span class="o">+</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Y</span><span class="o">*</span><span class="nx">v</span><span class="p">.</span><span class="nx">Y</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="o">*</span><span class="nx">Vertex</span><span class="p">)</span> <span class="nx">Scale</span><span class="p">(</span><span class="nx">f</span> <span class="kt">float64</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">v</span><span class="p">.</span><span class="nx">X</span> <span class="p">=</span> <span class="nx">v</span><span class="p">.</span><span class="nx">X</span> <span class="o">*</span> <span class="nx">f</span>
+    <span class="nx">v</span><span class="p">.</span><span class="nx">Y</span> <span class="p">=</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Y</span> <span class="o">*</span> <span class="nx">f</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">v</span> <span class="o">:=</span> <span class="nx">Vertex</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">}</span>
+    <span class="nx">v</span><span class="p">.</span><span class="nx">Scale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">Abs</span><span class="p">())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>インターフェース<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>インターフェース型を定義できます。インターフェースはメソッドのシグネチャの集まりで定義します。構造体などの具象型が満たすべき仕様といえます。Javaでは implement が必要でしたが、Goでは具象型が明示的にインターフェースを実装することを示す必要がありません。</p>
+<p>以下は A Tour of Go の例です。T 型の関数 M がインターフェース型 I の関数 M を実装していることになります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">M</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">T</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">S</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="nx">T</span><span class="p">)</span> <span class="nx">M</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">S</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">i</span> <span class="nx">I</span> <span class="p">=</span> <span class="nx">T</span><span class="p">{</span><span class="s">&quot;hello&quot;</span><span class="p">}</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">M</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>インターフェースに定義されている関数をメソッドとして実装している型は自動的にそのインターフェースを実装していることになります。</p>
+<p>インターフェースにある具体的な値が nil の場合はメソッドは nil レシーバーとして呼び出されます。Go では nil をレシーバーとして呼び出されても適切に処理するメソッドを記述するのが一般的です。以下は A Tour of Go の例です。(なお以下の例で nil の処理をしない場合はパニックが発生します。)</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">M</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">T</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">S</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">T</span><span class="p">)</span> <span class="nx">M</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">t</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;&lt;nil&gt;&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">S</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">i</span> <span class="nx">I</span>
+
+    <span class="kd">var</span> <span class="nx">t</span> <span class="o">*</span><span class="nx">T</span>
+    <span class="nx">i</span> <span class="p">=</span> <span class="nx">t</span>
+    <span class="nx">describe</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">M</span><span class="p">()</span>
+
+    <span class="nx">i</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">T</span><span class="p">{</span><span class="s">&quot;hello&quot;</span><span class="p">}</span>
+    <span class="nx">describe</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">M</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">describe</span><span class="p">(</span><span class="nx">i</span> <span class="nx">I</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;(%v, %T)\n&quot;</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// (&lt;nil&gt;, *main.T)</span>
+<span class="c1">// &lt;nil&gt;</span>
+<span class="c1">// (&amp;{hello}, *main.T)</span>
+<span class="c1">// hello</span>
+</pre></div>
+</div>
+<p>nil インターフェースの値は nil です。以下は A Tour of Go の例です。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">M</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">i</span> <span class="nx">I</span>
+    <span class="nx">describe</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="nx">i</span><span class="p">.</span><span class="nx">M</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">describe</span><span class="p">(</span><span class="nx">i</span> <span class="nx">I</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;(%v, %T)\n&quot;</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// (&lt;nil&gt;, &lt;nil&gt;)</span>
+<span class="c1">// panic: runtime error: invalid memory address or nil pointer dereference</span>
+<span class="c1">// [signal 0xc0000005 code=0x0 addr=0x0 pc=0x48cd4d]</span>
+
+<span class="c1">// goroutine 1 [running]:</span>
+<span class="c1">// main.main()</span>
+<span class="c1">//  C:/Users/testUser/go/src/sample/sample.go:12 +0x3d</span>
+</pre></div>
+</div>
+<p>Javaでいうところのポリモフィズムのような実装も可能です。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Vehicle</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">run</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Car</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="nx">Car</span><span class="p">)</span> <span class="nx">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Booom&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Plane</span> <span class="kd">struct</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Plane</span><span class="p">)</span> <span class="nx">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Booooooooooom&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">vehicle</span> <span class="nx">Vehicle</span>
+    <span class="nx">vehicle</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Car</span><span class="p">{}</span>
+    <span class="nx">vehicle</span><span class="p">.</span><span class="nx">run</span><span class="p">()</span>
+    <span class="nx">vehicle</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Plane</span><span class="p">{}</span>
+    <span class="nx">vehicle</span><span class="p">.</span><span class="nx">run</span><span class="p">()</span>
+<span class="p">}</span>
+<span class="c1">// Booom!</span>
+<span class="c1">// Booooooooooom!</span>
+</pre></div>
+</div>
+<div class="section" id="id4">
+<h3>エラーインタフェース<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>エラー型を error 値で表現します。 error 型はGo言語に組み込まれているインターフェースです。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="kt">error</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">Error</span><span class="p">()</span> <span class="kt">string</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>error型を使うことでGo言語として一貫した例外処理を記述することができます。errorを実装した関数を記述した一例を紹介します。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">MyError</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">message</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">err</span> <span class="nx">MyError</span><span class="p">)</span> <span class="nx">Error</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">throwError</span><span class="p">()</span> <span class="p">(</span><span class="nx">val</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s">&quot;hoge&quot;</span><span class="p">,</span> <span class="nx">MyError</span><span class="p">{</span><span class="s">&quot;illegal statement&quot;</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">val</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">throwError</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Fprint</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="s">&quot;error occured! val: &quot;</span> <span class="o">+</span> <span class="nx">val</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// error occured! val: hoge</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">メソッドとインターフェース</a><ul>
+<li><a class="reference internal" href="#id2">メソッド</a></li>
+<li><a class="reference internal" href="#id3">インターフェース</a><ul>
+<li><a class="reference internal" href="#id4">エラーインタフェース</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../Function/index.html" title="前の章へ">関数</a></li>
+      <li>Next: <a href="../Parallel/index.html" title="次の章へ">並行処理</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/MethodAndInterface/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 149</li>
+            <li>非アスキー: 690</li>
+            <li>合計文字数: 839</li>
+            <li>半角換算: 1529</li>
+            <li>全角換算: 764.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, tsuji.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/MethodAndInterface/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
