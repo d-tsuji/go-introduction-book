@@ -1,242 +1,277 @@
-
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>Go言語入門 &#8212; Go言語入門  ドキュメント</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script type="text/javascript" src="_static/translations.js"></script>
-    <link rel="index" title="索引" href="genindex.html" />
-    <link rel="search" title="検索" href="search.html" />
-    <link rel="next" title="はじめに" href="Introduction/index.html" />
-   
+
+<head>
+  <meta charset="utf-8" />
+  <title>Go言語入門 &#8212; Go言語入門 ドキュメント</title>
+  <base href="{{site.github.url}}" charset="utf-8" />
+  <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <script type="text/javascript" id="documentation_options" data-url_root="./"
+    src="_static/documentation_options.js"></script>
+  <script type="text/javascript" src="_static/jquery.js"></script>
+  <script type="text/javascript" src="_static/underscore.js"></script>
+  <script type="text/javascript" src="_static/doctools.js"></script>
+  <script type="text/javascript" src="_static/language_data.js"></script>
+  <script type="text/javascript" src="_static/translations.js"></script>
+  <link rel="index" title="索引" href="genindex.html" />
+  <link rel="search" title="検索" href="search.html" />
+  <link rel="next" title="はじめに" href="Introduction/index.html" />
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+</head>
 
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
-
-          <div class="body" role="main">
-            
-  <div class="section" id="go">
-<h1>Go言語入門<a class="headerlink" href="#go" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">注釈</p>
-<p>本ドキュメントは、もともとJavaをメインに使用していた筆者がGo言語のキャッチアップのために作成されました。誤り、Typo等ありましたら、ご連絡いただけると助かります。</p>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Introduction/index.html">はじめに</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#go">Go言語とは</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id2">セットアップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id4">環境変数</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id5">コンパイル／実行</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id6">パッケージのインストール</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Syntax/index.html">文法</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Syntax/index.html#id2">基本型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Syntax/index.html#id3">変数宣言</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="OperatorsAndTypes/index.html">演算子とデータ型</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id2">演算子</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id4">データ型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id5">基本型と複合型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id6">型宣言</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id7">数値型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id8">文字列型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id9">真偽値型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id11">構造体型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id12">ポインタ型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id13">配列型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id14">スライス型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id15">マップ型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#nil">nil</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id17">型キャスト</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Control/index.html">制御文</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Control/index.html#id2">条件分岐</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Control/index.html#id3">繰り返し</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Control/index.html#goto">goto</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Control/index.html#id5">例外処理</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Function/index.html">関数</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Function/index.html#id2">関数定義</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Function/index.html#id3">関数型</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Function/index.html#id4">クロージャ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Function/index.html#defer">defer文</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Function/index.html#id6">パニック</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="MethodAndInterface/index.html">メソッドとインターフェース</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MethodAndInterface/index.html#id2">メソッド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MethodAndInterface/index.html#id3">インターフェース</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Parallel/index.html">並行処理</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#goroutine">goroutine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#channel">Channel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#select">Select</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#context">context</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Reference/index.html">参考</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Reference/index.html#id2">参考資料</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>gotoの説明を記載する</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="Control/index.html#id4"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\Control\index.rst の 126 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>セットアップの手順を記載する</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="Introduction/index.html#id3"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\Introduction\index.rst の 21 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>演算子の説明を記載する</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="OperatorsAndTypes/index.html#id3"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 8 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>省略した型の説明を記載する。</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="OperatorsAndTypes/index.html#id10"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 38 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<ul class="simple">
-<li><p>その他の型</p></li>
-<li><p>リテラル</p></li>
-</ul>
-<p>省略した基本型について記載する。</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="OperatorsAndTypes/index.html#id16"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 208 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>省略した型キャストについて記載する。</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="OperatorsAndTypes/index.html#id18"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 225 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>コンテキストに関しては別で詳細を確認します。</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="Parallel/index.html#id3"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\Parallel\index.rst の 236 行目です)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">課題</p>
-<p>Goでは型を省略することが多い？</p>
-</div>
-<p class="todo-source">(<a class="reference internal" href="Syntax/index.html#id4"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\Syntax\index.rst の 57 行目です)</p>
-</div>
-
-
+<body>
+  <div class="document">
+    <div class="documentwrapper">
+      <div class="bodywrapper">
+        <div class="body" role="main">
+          <div class="section" id="go">
+            <h1>Go言語入門<a class="headerlink" href="#go" title="このヘッドラインへのパーマリンク">¶</a></h1>
+            <div class="admonition note">
+              <p class="admonition-title">注釈</p>
+              <p>本ドキュメントは、もともとJavaをメインに使用していた筆者がGo言語のキャッチアップのために作成されました。誤り、Typo等ありましたら、ご連絡いただけると助かります。</p>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Introduction/index.html">はじめに</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#go">Go言語とは</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id2">セットアップ</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id4">環境変数</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id5">コンパイル／実行</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="Introduction/index.html#id6">パッケージのインストール</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Syntax/index.html">文法</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal" href="Syntax/index.html#id2">基本型</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Syntax/index.html#id3">変数宣言</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="OperatorsAndTypes/index.html">演算子とデータ型</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id2">演算子</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id4">データ型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id5">基本型と複合型</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id6">型宣言</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id7">数値型</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id8">文字列型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id9">真偽値型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id11">構造体型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id12">ポインタ型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id13">配列型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id14">スライス型</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id15">マップ型</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#nil">nil</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="OperatorsAndTypes/index.html#id17">型キャスト</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Control/index.html">制御文</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal" href="Control/index.html#id2">条件分岐</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Control/index.html#id3">繰り返し</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Control/index.html#goto">goto</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Control/index.html#id5">例外処理</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Function/index.html">関数</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id2">関数定義</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id3">関数型</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id4">クロージャ</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Function/index.html#defer">defer文</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id6">パニック</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal"
+                    href="MethodAndInterface/index.html">メソッドとインターフェース</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="MethodAndInterface/index.html#id2">メソッド</a></li>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="MethodAndInterface/index.html#id3">インターフェース</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Parallel/index.html">並行処理</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal"
+                        href="Parallel/index.html#goroutine">goroutine</a></li>
+                    <li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#channel">Channel</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#select">Select</a>
+                    </li>
+                    <li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#context">context</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="toctree-wrapper compound">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Reference/index.html">参考</a>
+                  <ul>
+                    <li class="toctree-l2"><a class="reference internal" href="Reference/index.html#id2">参考資料</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>gotoの説明を記載する</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal" href="Control/index.html#id4"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\Control\index.rst の 126 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>セットアップの手順を記載する</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal" href="Introduction/index.html#id3"><em>元のエントリ</em></a>
+              は、 D:\workspace\book\go-introduction\source\Introduction\index.rst の 21 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>演算子の説明を記載する</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal"
+                href="OperatorsAndTypes/index.html#id3"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 8 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>省略した型の説明を記載する。</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal"
+                href="OperatorsAndTypes/index.html#id10"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 38 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <ul class="simple">
+                <li>
+                  <p>その他の型</p>
+                </li>
+                <li>
+                  <p>リテラル</p>
+                </li>
+              </ul>
+              <p>省略した基本型について記載する。</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal"
+                href="OperatorsAndTypes/index.html#id16"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 208 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>省略した型キャストについて記載する。</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal"
+                href="OperatorsAndTypes/index.html#id18"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\OperatorsAndTypes\index.rst の 225 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>コンテキストに関しては別で詳細を確認します。</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal" href="Parallel/index.html#id3"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\Parallel\index.rst の 236 行目です)</p>
+            <div class="admonition-todo admonition">
+              <p class="admonition-title">課題</p>
+              <p>Goでは型を省略することが多い？</p>
+            </div>
+            <p class="todo-source">(<a class="reference internal" href="Syntax/index.html#id4"><em>元のエントリ</em></a> は、
+              D:\workspace\book\go-introduction\source\Syntax\index.rst の 57 行目です)</p>
           </div>
-          
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="Introduction/index.html" title="次の章へ">はじめに</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div><div>
-    <h4>Page Info</h4>
-    <p>
-        <ul>
-            <li>英数記号: 12</li>
-            <li>非アスキー: 79</li>
-            <li>合計文字数: 91</li>
-            <li>半角換算: 170</li>
-            <li>全角換算: 85.0</li>
-        </ul>
-    </p>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="検索" />
-    </form>
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebarwrapper">
+        <div class="relations">
+          <h3>Related Topics</h3>
+          <ul>
+            <li><a href="#">Documentation overview</a>
+              <ul>
+                <li>Next: <a href="Introduction/index.html" title="次の章へ">はじめに</a></li>
+              </ul>
+            </li>
+          </ul>
         </div>
+        <div role="note" aria-label="source link">
+          <h3>このページ</h3>
+          <ul class="this-page-menu">
+            <li><a href="_sources/index.rst.txt" rel="nofollow">ソースコードを表示</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Page Info</h4>
+          <p>
+            <ul>
+              <li>英数記号: 12</li>
+              <li>非アスキー: 79</li>
+              <li>合計文字数: 91</li>
+              <li>半角換算: 170</li>
+              <li>全角換算: 85.0</li>
+            </ul>
+          </p>
+        </div>
+        <div id="searchbox" style="display: none" role="search">
+          <h3 id="searchlabel">クイック検索</h3>
+          <div class="searchformwrapper">
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" aria-labelledby="searchlabel" />
+              <input type="submit" value="検索" />
+            </form>
+          </div>
+        </div>
+        <script type="text/javascript">$('#searchbox').show(0);</script>
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2019, tsuji.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+    <div class="clearer"></div>
+  </div>
+  <div class="footer"> &copy;2019, tsuji. | Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a> &amp; <a
+      href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a> | <a href="_sources/index.rst.txt"
+      rel="nofollow">Page source</a>
+  </div>
+</body>
 
-    
-
-    
-  </body>
 </html>
