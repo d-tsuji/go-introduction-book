@@ -13,6 +13,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="検索" href="search.html" />
     <link rel="next" title="はじめに" href="Introduction/index.html" />
@@ -39,6 +40,7 @@
 <p>本ドキュメントは、もともとJavaをメインに使用していた筆者がGo言語のキャッチアップのために作成されました。誤り、Typo等ありましたら、ご連絡いただけると助かります。基本事項をざっと確認するために作成しましたので詳細には立ち入りません。</p>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">初級編</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Introduction/index.html">はじめに</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#go">Go言語とは</a></li>
@@ -48,19 +50,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Introduction/index.html#id6">パッケージのインストール</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="Syntax/index.html">文法</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Syntax/index.html#id2">基本型</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Syntax/index.html#id3">変数宣言</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="OperatorsAndTypes/index.html">演算子とデータ型</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id2">演算子</a></li>
 <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id4">データ型</a></li>
@@ -78,10 +72,6 @@
 <li class="toctree-l2"><a class="reference internal" href="OperatorsAndTypes/index.html#id17">型キャスト</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="Control/index.html">制御文</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Control/index.html#id2">条件分岐</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Control/index.html#id3">繰り返し</a></li>
@@ -89,10 +79,6 @@
 <li class="toctree-l2"><a class="reference internal" href="Control/index.html#id5">例外処理</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="Function/index.html">関数</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id2">関数定義</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id3">関数型</a></li>
@@ -101,19 +87,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Function/index.html#id6">パニック</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="MethodAndInterface/index.html">メソッドとインターフェース</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="MethodAndInterface/index.html#id2">メソッド</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MethodAndInterface/index.html#id3">インターフェース</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="Parallel/index.html">並行処理</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#goroutine">goroutine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Parallel/index.html#channel">Channel</a></li>
@@ -125,13 +103,17 @@
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Tips/differenceJava.html">Tips</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Tips/differenceJava.html#javago">JavaとGoの違い</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="abs.html">ABS(AtCoder Beginners Selection)</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">中級編</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="differenceJavaAndGo.html">JavaとGoの違い</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">その他</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Reference/index.html">参考</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Reference/index.html#id2">参考資料</a></li>
@@ -182,7 +164,7 @@
 <p class="admonition-title">課題</p>
 <p>JavaとGoの違いを書く</p>
 </div>
-<p class="todo-source">(<a class="reference internal" href="Tips/differenceJava.html#id1"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\Tips\differenceJava.rst の 8 行目です)</p>
+<p class="todo-source">(<a class="reference internal" href="differenceJavaAndGo.html#id1"><em>元のエントリ</em></a> は、 D:\workspace\book\go-introduction\source\differenceJavaAndGo.rst の 4 行目です)</p>
 </div>
 
 
