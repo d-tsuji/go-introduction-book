@@ -1,8 +1,5 @@
-参考
-========================
-
 参考資料
-------------------------
+========================
 
 - https://go-tour-jp.appspot.com/list/
 - https://blog.golang.org/defer-panic-and-recover

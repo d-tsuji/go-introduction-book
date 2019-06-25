@@ -92,9 +92,16 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
 <div class="section" id="id3">
-<h2>インターフェース<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h3>可視性<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">課題</p>
+<p>メソッドの可視性について記載する</p>
+</div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>インターフェース<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>インターフェース型を定義できます。インターフェースはメソッドのシグネチャの集まりで定義します。構造体などの具象型が満たすべき仕様といえます。Javaでは implement が必要でしたが、Goでは具象型が明示的にインターフェースを実装することを示す必要がありません。</p>
 <p>以下は A Tour of Go の例です。T 型の関数 M がインターフェース型 I の関数 M を実装していることになります。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span>
@@ -209,8 +216,6 @@
 <span class="c1">// Booooooooooom!</span>
 </pre></div>
 </div>
-<div class="section" id="id4">
-<h3>エラーインタフェース<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>エラー型を error 値で表現します。 error 型はGo言語に組み込まれているインターフェースです。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="kt">error</span> <span class="kd">interface</span> <span class="p">{</span>
     <span class="nx">Error</span><span class="p">()</span> <span class="kt">string</span>
@@ -241,7 +246,6 @@
 </div>
 </div>
 </div>
-</div>
 
 
           </div>
@@ -253,11 +257,11 @@
   <h3><a href="../index.html">目次</a></h3>
   <ul>
 <li><a class="reference internal" href="#">メソッドとインターフェース</a><ul>
-<li><a class="reference internal" href="#id2">メソッド</a></li>
-<li><a class="reference internal" href="#id3">インターフェース</a><ul>
-<li><a class="reference internal" href="#id4">エラーインタフェース</a></li>
+<li><a class="reference internal" href="#id2">メソッド</a><ul>
+<li><a class="reference internal" href="#id3">可視性</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id5">インターフェース</a></li>
 </ul>
 </li>
 </ul>
@@ -281,10 +285,10 @@
     <p>
         <ul>
             <li>英数記号: 149</li>
-            <li>非アスキー: 690</li>
-            <li>合計文字数: 839</li>
-            <li>半角換算: 1529</li>
-            <li>全角換算: 764.5</li>
+            <li>非アスキー: 701</li>
+            <li>合計文字数: 850</li>
+            <li>半角換算: 1551</li>
+            <li>全角換算: 775.5</li>
         </ul>
     </p>
 </div>
