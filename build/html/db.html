@@ -36,7 +36,7 @@
             
   <div class="section" id="db">
 <h1>DBを扱う<a class="headerlink" href="#db" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p><a class="reference external" href="https://golang.org/pkg/database/sql/#DB">公式ドキュメント</a> を参考にDBを扱う準備をします。今回はDriverとして <a class="reference external" href="https://github.com/lib/pq">Postgres (pure Go)</a> を用いることにします。</p>
+<p>公式ドキュメント <a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a> <a class="footnote-reference brackets" href="#id8" id="id1">1</a> を参考にDBを扱う準備をします。今回はDriverとして Postgres (pure Go) <a class="footnote-reference brackets" href="#id9" id="id2">2</a> を用いることにします。</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ go get &quot;github.com/lib/pq&quot;
 </pre></div>
 </div>
@@ -82,29 +82,29 @@
 </div>
 <div class="section" id="insert">
 <h2>レコードのINSERT<a class="headerlink" href="#insert" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
-    <span class="s2">&quot;database/sql&quot;</span>
-    <span class="s2">&quot;log&quot;</span>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;database/sql&quot;</span>
+    <span class="s">&quot;log&quot;</span>
 
-    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+    <span class="nx">_</span> <span class="s">&quot;github.com/lib/pq&quot;</span>
 <span class="p">)</span>
 
-<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
-    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">connStr</span> <span class="o">:=</span> <span class="s">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="nx">db</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sql</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="s">&quot;postgres&quot;</span><span class="p">,</span> <span class="nx">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="n">statement</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;INSERT INTO item (invoiceid, item, productid, quantity, cost) VALUES ($1, $2, $3, $4, $5)&quot;</span>
-    <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="nx">statement</span> <span class="o">:=</span> <span class="s">&quot;INSERT INTO item (invoiceid, item, productid, quantity, cost) VALUES ($1, $2, $3, $4, $5)&quot;</span>
+    <span class="nx">stmt</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">Prepare</span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="n">defer</span> <span class="n">res</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mf">10.8</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">Exec</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mf">10.8</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -113,29 +113,29 @@
 <div class="section" id="update">
 <h2>レコードのUPDATE<a class="headerlink" href="#update" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>レコードのUPDATEはINSERTとほぼ同じです。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
-    <span class="s2">&quot;database/sql&quot;</span>
-    <span class="s2">&quot;log&quot;</span>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;database/sql&quot;</span>
+    <span class="s">&quot;log&quot;</span>
 
-    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+    <span class="nx">_</span> <span class="s">&quot;github.com/lib/pq&quot;</span>
 <span class="p">)</span>
 
-<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
-    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">connStr</span> <span class="o">:=</span> <span class="s">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="nx">db</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sql</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="s">&quot;postgres&quot;</span><span class="p">,</span> <span class="nx">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="n">statement</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;UPDATE item SET cost = $1 WHERE invoiceid = $2 AND ITEM = $3&quot;</span>
-    <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="nx">statement</span> <span class="o">:=</span> <span class="s">&quot;UPDATE item SET cost = $1 WHERE invoiceid = $2 AND ITEM = $3&quot;</span>
+    <span class="nx">stmt</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">Prepare</span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="n">defer</span> <span class="n">res</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">Exec</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -144,39 +144,95 @@
 <div class="section" id="delete">
 <h2>レコードのDELETE<a class="headerlink" href="#delete" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>DELETEもINSERT(, UPDATE)とほぼ同様です。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
-    <span class="s2">&quot;database/sql&quot;</span>
-    <span class="s2">&quot;log&quot;</span>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;database/sql&quot;</span>
+    <span class="s">&quot;log&quot;</span>
 
-    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+    <span class="nx">_</span> <span class="s">&quot;github.com/lib/pq&quot;</span>
 <span class="p">)</span>
 
-<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
-    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">connStr</span> <span class="o">:=</span> <span class="s">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="nx">db</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sql</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="s">&quot;postgres&quot;</span><span class="p">,</span> <span class="nx">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="n">statement</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;DELETE FROM item WHERE invoiceid = $1 AND ITEM = $2&quot;</span>
-    <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="nx">statement</span> <span class="o">:=</span> <span class="s">&quot;DELETE FROM item WHERE invoiceid = $1 AND ITEM = $2&quot;</span>
+    <span class="nx">stmt</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">Prepare</span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="n">defer</span> <span class="n">res</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">Exec</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>参考<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id3">
+<h2>トランザクション管理<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>上の例ではINSERT/UPDATE/DELETEを処理する際に、<a href="#id4"><span class="problematic" id="id5">*</span></a>sql.Stmt を用いていました。今回はトランザクション管理をするために</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>func (db *DB) Begin() (*Tx, error)
+</pre></div>
+</div>
+<p>を用いることにします。実装例としては <a class="footnote-reference brackets" href="#id10" id="id6">3</a> が参考になります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;database/sql&quot;</span>
+    <span class="s">&quot;log&quot;</span>
+
+    <span class="nx">_</span> <span class="s">&quot;github.com/lib/pq&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">connStr</span> <span class="o">:=</span> <span class="s">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="nx">db</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sql</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="s">&quot;postgres&quot;</span><span class="p">,</span> <span class="nx">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nx">tx</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">Begin</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">Rollback</span><span class="p">()</span>
+
+    <span class="nx">statement</span> <span class="o">:=</span> <span class="s">&quot;INSERT INTO item (invoiceid, item, productid, quantity, cost) VALUES (49, 17, 24, 18, 10.8)&quot;</span>
+
+    <span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">tx</span><span class="p">.</span><span class="nx">Rollback</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        <span class="nx">err</span> <span class="p">=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">Commit</span><span class="p">()</span>
+    <span class="p">}()</span>
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">tx</span><span class="p">.</span><span class="nx">Exec</span><span class="p">(</span><span class="nx">statement</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>参考<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a></p>
+</dd>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p><a class="reference external" href="https://godoc.org/github.com/lib/pq">https://godoc.org/github.com/lib/pq</a></p>
+</dd>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id6">3</a></span></dt>
+<dd><p><a class="reference external" href="https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback">https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback</a></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id11">
+<h2>あとで読みたい<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a></p></li>
-<li><p><a class="reference external" href="https://godoc.org/github.com/lib/pq">https://godoc.org/github.com/lib/pq</a></p></li>
+<li><p><a class="reference external" href="http://go-database-sql.org/index.html">http://go-database-sql.org/index.html</a></p></li>
 </ul>
 </div>
 </div>
@@ -195,7 +251,9 @@
 <li><a class="reference internal" href="#insert">レコードのINSERT</a></li>
 <li><a class="reference internal" href="#update">レコードのUPDATE</a></li>
 <li><a class="reference internal" href="#delete">レコードのDELETE</a></li>
-<li><a class="reference internal" href="#id2">参考</a></li>
+<li><a class="reference internal" href="#id3">トランザクション管理</a></li>
+<li><a class="reference internal" href="#id7">参考</a></li>
+<li><a class="reference internal" href="#id11">あとで読みたい</a></li>
 </ul>
 </li>
 </ul>
@@ -218,11 +276,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 193</li>
-            <li>非アスキー: 140</li>
-            <li>合計文字数: 333</li>
-            <li>半角換算: 473</li>
-            <li>全角換算: 236.5</li>
+            <li>英数記号: 399</li>
+            <li>非アスキー: 225</li>
+            <li>合計文字数: 624</li>
+            <li>半角換算: 849</li>
+            <li>全角換算: 424.5</li>
         </ul>
     </p>
 </div>

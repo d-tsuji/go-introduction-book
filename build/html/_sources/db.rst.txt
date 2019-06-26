@@ -1,7 +1,7 @@
 DBを扱う
 ============================================
 
-`公式ドキュメント <https://golang.org/pkg/database/sql/#DB>`_ を参考にDBを扱う準備をします。今回はDriverとして `Postgres (pure Go) <https://github.com/lib/pq>`_ を用いることにします。
+公式ドキュメント https://golang.org/pkg/database/sql/#DB [#]_ を参考にDBを扱う準備をします。今回はDriverとして Postgres (pure Go) [#]_ を用いることにします。
 
 .. code-block:: none
 
@@ -59,7 +59,7 @@ init関数を呼び出してimportします。
 レコードのINSERT
 --------------------------------------------
 
-.. code-block::
+.. code-block:: go
 
     import (
         "database/sql"
@@ -76,13 +76,13 @@ init関数を呼び出してimportします。
         }
 
         statement := "INSERT INTO item (invoiceid, item, productid, quantity, cost) VALUES ($1, $2, $3, $4, $5)"
-        res, err := db.Prepare(statement)
+        stmt, err := db.Prepare(statement)
         if err != nil {
             log.Fatal(err)
         }
 
-        defer res.Close()
-        if _, err := res.Exec(49, 17, 24, 18, 10.8); err != nil {
+        defer stmt.Close()
+        if _, err := stmt.Exec(49, 17, 24, 18, 10.8); err != nil {
             log.Fatal(err)
         }
     }
@@ -93,7 +93,7 @@ init関数を呼び出してimportします。
 
 レコードのUPDATEはINSERTとほぼ同じです。
 
-.. code-block::
+.. code-block:: go
 
     import (
         "database/sql"
@@ -110,13 +110,13 @@ init関数を呼び出してimportします。
         }
 
         statement := "UPDATE item SET cost = $1 WHERE invoiceid = $2 AND ITEM = $3"
-        res, err := db.Prepare(statement)
+        stmt, err := db.Prepare(statement)
         if err != nil {
             log.Fatal(err)
         }
 
-        defer res.Close()
-        if _, err := res.Exec(0.1, 49, 17); err != nil {
+        defer stmt.Close()
+        if _, err := stmt.Exec(0.1, 49, 17); err != nil {
             log.Fatal(err)
         }
     }
@@ -127,7 +127,7 @@ init関数を呼び出してimportします。
 
 DELETEもINSERT(, UPDATE)とほぼ同様です。
 
-.. code-block::
+.. code-block:: go
 
     import (
         "database/sql"
@@ -144,21 +144,75 @@ DELETEもINSERT(, UPDATE)とほぼ同様です。
         }
 
         statement := "DELETE FROM item WHERE invoiceid = $1 AND ITEM = $2"
-        res, err := db.Prepare(statement)
+        stmt, err := db.Prepare(statement)
         if err != nil {
             log.Fatal(err)
         }
 
-        defer res.Close()
-        if _, err := res.Exec(49, 17); err != nil {
+        defer stmt.Close()
+        if _, err := stmt.Exec(49, 17); err != nil {
             log.Fatal(err)
         }
     }
 
+--------------------------------------------
+トランザクション管理
+--------------------------------------------
+
+上の例ではINSERT/UPDATE/DELETEを処理する際に、*sql.Stmt を用いていました。今回はトランザクション管理をするために
+
+.. code-block:: none
+
+    func (db *DB) Begin() (*Tx, error)
+
+を用いることにします。実装例としては [#]_ が参考になります。
+
+.. code-block:: go
+
+    import (
+        "database/sql"
+        "log"
+
+        _ "github.com/lib/pq"
+    )
+
+    func main() {
+        connStr := "postgres://dev:dev@localhost/dev?sslmode=disable"
+        db, err := sql.Open("postgres", connStr)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        tx, err := db.Begin()
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer tx.Rollback()
+
+        statement := "INSERT INTO item (invoiceid, item, productid, quantity, cost) VALUES (49, 17, 24, 18, 10.8)"
+
+        defer func() {
+            if err != nil {
+                tx.Rollback()
+                return
+            }
+            err = tx.Commit()
+        }()
+        if _, err := tx.Exec(statement); err != nil {
+            log.Fatal(err)
+        }
+    }
 
 --------------------------------------------
 参考
 --------------------------------------------
 
-- https://golang.org/pkg/database/sql/#DB
-- https://godoc.org/github.com/lib/pq
+.. [#] https://golang.org/pkg/database/sql/#DB
+.. [#] https://godoc.org/github.com/lib/pq
+.. [#] https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback
+
+--------------------------------------------
+あとで読みたい
+--------------------------------------------
+
+- http://go-database-sql.org/index.html
