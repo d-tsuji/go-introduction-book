@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>DBを扱う &#8212; Go言語入門  ドキュメント</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="参考資料" href="Reference/index.html" />
+    <link rel="prev" title="JSONを扱う" href="json.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="db">
+<h1>DBを扱う<a class="headerlink" href="#db" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><a class="reference external" href="https://golang.org/pkg/database/sql/#DB">公式ドキュメント</a> を参考にDBを扱う準備をします。今回はDriverとして <a class="reference external" href="https://github.com/lib/pq">Postgres (pure Go)</a> を用いることにします。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ go get &quot;github.com/lib/pq&quot;
+</pre></div>
+</div>
+<p>init関数を呼び出してimportします。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">_</span> <span class="s">&quot;github.com/lib/pq&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="select">
+<h2>レコードのSELECT<a class="headerlink" href="#select" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>まずはDB(PostgreSQL)のテーブルをselectしてみます。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;database/sql&quot;</span>
+    <span class="s2">&quot;fmt&quot;</span>
+    <span class="s2">&quot;log&quot;</span>
+
+    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">relname</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;pg_user&quot;</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Query</span><span class="p">(</span><span class="s2">&quot;SELECT relname, relnamespace FROM pg_class WHERE relname = $1&quot;</span><span class="p">,</span> <span class="n">relname</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">rows</span><span class="o">.</span><span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">rel</span> <span class="n">string</span>
+        <span class="n">var</span> <span class="n">relnamespace</span> <span class="nb">int</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rel</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">relnamespace</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">rel</span><span class="p">,</span> <span class="n">relnamespace</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">defer</span> <span class="n">rows</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+<span class="p">}</span>
+<span class="o">//</span> <span class="n">pg_user</span> <span class="mi">11</span>
+</pre></div>
+</div>
+<p>想定通りレコードが取得できていることがわかりました。</p>
+</div>
+<div class="section" id="insert">
+<h2>レコードのINSERT<a class="headerlink" href="#insert" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;database/sql&quot;</span>
+    <span class="s2">&quot;log&quot;</span>
+
+    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">statement</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;INSERT INTO item (invoiceid, item, productid, quantity, cost) VALUES ($1, $2, $3, $4, $5)&quot;</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">defer</span> <span class="n">res</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mf">10.8</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="update">
+<h2>レコードのUPDATE<a class="headerlink" href="#update" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>レコードのUPDATEはINSERTとほぼ同じです。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;database/sql&quot;</span>
+    <span class="s2">&quot;log&quot;</span>
+
+    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">statement</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;UPDATE item SET cost = $1 WHERE invoiceid = $2 AND ITEM = $3&quot;</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">defer</span> <span class="n">res</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="delete">
+<h2>レコードのDELETE<a class="headerlink" href="#delete" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>DELETEもINSERT(, UPDATE)とほぼ同様です。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;database/sql&quot;</span>
+    <span class="s2">&quot;log&quot;</span>
+
+    <span class="n">_</span> <span class="s2">&quot;github.com/lib/pq&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">connStr</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;postgres://dev:dev@localhost/dev?sslmode=disable&quot;</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">connStr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">statement</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;DELETE FROM item WHERE invoiceid = $1 AND ITEM = $2&quot;</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">defer</span> <span class="n">res</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:</span><span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>参考<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a></p></li>
+<li><p><a class="reference external" href="https://godoc.org/github.com/lib/pq">https://godoc.org/github.com/lib/pq</a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DBを扱う</a><ul>
+<li><a class="reference internal" href="#select">レコードのSELECT</a></li>
+<li><a class="reference internal" href="#insert">レコードのINSERT</a></li>
+<li><a class="reference internal" href="#update">レコードのUPDATE</a></li>
+<li><a class="reference internal" href="#delete">レコードのDELETE</a></li>
+<li><a class="reference internal" href="#id2">参考</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="json.html" title="前の章へ">JSONを扱う</a></li>
+      <li>Next: <a href="Reference/index.html" title="次の章へ">参考資料</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/db.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 193</li>
+            <li>非アスキー: 140</li>
+            <li>合計文字数: 333</li>
+            <li>半角換算: 473</li>
+            <li>全角換算: 236.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, tsuji.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/db.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

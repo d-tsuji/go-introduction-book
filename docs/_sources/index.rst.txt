@@ -1,4 +1,4 @@
-Go言語入門
+Go Note
 ============
 
 .. note::
@@ -32,12 +32,15 @@ Go言語入門
 
     abs
     differenceJavaAndGo
+    package
+    json
+    db
 
 ----
 
 .. toctree::
     :caption: 参考
-    :maxdepth: 
+    :maxdepth: 1
 
     Reference/index
 
