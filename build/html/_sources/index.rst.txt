@@ -16,6 +16,7 @@ Go Note
     :maxdepth: 1
 
     OperatorsAndTypes/index
+    OperatorsAndTypes/types
 
 .. toctree::
     :maxdepth: 2
@@ -33,8 +34,15 @@ Go Note
     abs
     differenceJavaAndGo
     package
+    test
+
+.. toctree::
+    :caption: 標準パッケージなど
+    :maxdepth: 1
+
     json
     db
+    http
 
 ----
 

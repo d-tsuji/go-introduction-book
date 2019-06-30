@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
   <head>
     <meta charset="utf-8" />
-    <title>DBを扱う &#8212; Go言語入門  ドキュメント</title>
+    <title>database/sql &#8212; Go言語入門  ドキュメント</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="検索" href="search.html" />
-    <link rel="next" title="参考資料" href="Reference/index.html" />
-    <link rel="prev" title="JSONを扱う" href="json.html" />
+    <link rel="next" title="net/http" href="http.html" />
+    <link rel="prev" title="json" href="json.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -34,9 +34,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="db">
-<h1>DBを扱う<a class="headerlink" href="#db" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>公式ドキュメント <a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a> <a class="footnote-reference brackets" href="#id8" id="id1">1</a> を参考にDBを扱う準備をします。今回はDriverとして Postgres (pure Go) <a class="footnote-reference brackets" href="#id9" id="id2">2</a> を用いることにします。</p>
+  <div class="section" id="database-sql">
+<h1>database/sql<a class="headerlink" href="#database-sql" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>公式ドキュメント <a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a> <a class="footnote-reference brackets" href="#id6" id="id1">1</a> を参考にDBを扱う準備をします。今回はDriverとして Postgres (pure Go) <a class="footnote-reference brackets" href="#id7" id="id2">2</a> を用いることにします。</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ go get &quot;github.com/lib/pq&quot;
 </pre></div>
 </div>
@@ -174,11 +174,11 @@
 </div>
 <div class="section" id="id3">
 <h2>トランザクション管理<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>上の例ではINSERT/UPDATE/DELETEを処理する際に、<a href="#id4"><span class="problematic" id="id5">*</span></a>sql.Stmt を用いていました。今回はトランザクション管理をするために</p>
+<p>上の例ではINSERT/UPDATE/DELETEを処理する際に、 *sql.Stmt を用いていました。今回はトランザクション管理をするために</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>func (db *DB) Begin() (*Tx, error)
 </pre></div>
 </div>
-<p>を用いることにします。実装例としては <a class="footnote-reference brackets" href="#id10" id="id6">3</a> が参考になります。</p>
+<p>を用いることにします。実装例としては <a class="footnote-reference brackets" href="#id8" id="id4">3</a> が参考になります。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="p">(</span>
     <span class="s">&quot;database/sql&quot;</span>
     <span class="s">&quot;log&quot;</span>
@@ -215,22 +215,22 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id7">
-<h2>参考<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id5">
+<h2>参考<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="footnote brackets">
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p><a class="reference external" href="https://golang.org/pkg/database/sql/#DB">https://golang.org/pkg/database/sql/#DB</a></p>
 </dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p><a class="reference external" href="https://godoc.org/github.com/lib/pq">https://godoc.org/github.com/lib/pq</a></p>
 </dd>
-<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id6">3</a></span></dt>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id4">3</a></span></dt>
 <dd><p><a class="reference external" href="https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback">https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback</a></p>
 </dd>
 </dl>
 </div>
-<div class="section" id="id11">
-<h2>あとで読みたい<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id9">
+<h2>あとで読みたい<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="http://go-database-sql.org/index.html">http://go-database-sql.org/index.html</a></p></li>
 </ul>
@@ -246,14 +246,14 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">目次</a></h3>
   <ul>
-<li><a class="reference internal" href="#">DBを扱う</a><ul>
+<li><a class="reference internal" href="#">database/sql</a><ul>
 <li><a class="reference internal" href="#select">レコードのSELECT</a></li>
 <li><a class="reference internal" href="#insert">レコードのINSERT</a></li>
 <li><a class="reference internal" href="#update">レコードのUPDATE</a></li>
 <li><a class="reference internal" href="#delete">レコードのDELETE</a></li>
 <li><a class="reference internal" href="#id3">トランザクション管理</a></li>
-<li><a class="reference internal" href="#id7">参考</a></li>
-<li><a class="reference internal" href="#id11">あとで読みたい</a></li>
+<li><a class="reference internal" href="#id5">参考</a></li>
+<li><a class="reference internal" href="#id9">あとで読みたい</a></li>
 </ul>
 </li>
 </ul>
@@ -261,8 +261,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="json.html" title="前の章へ">JSONを扱う</a></li>
-      <li>Next: <a href="Reference/index.html" title="次の章へ">参考資料</a></li>
+      <li>Previous: <a href="json.html" title="前の章へ">json</a></li>
+      <li>Next: <a href="http.html" title="次の章へ">net/http</a></li>
   </ul></li>
 </ul>
 </div>
@@ -276,11 +276,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 399</li>
-            <li>非アスキー: 225</li>
-            <li>合計文字数: 624</li>
-            <li>半角換算: 849</li>
-            <li>全角換算: 424.5</li>
+            <li>英数記号: 410</li>
+            <li>非アスキー: 222</li>
+            <li>合計文字数: 632</li>
+            <li>半角換算: 854</li>
+            <li>全角換算: 427.0</li>
         </ul>
     </p>
 </div>

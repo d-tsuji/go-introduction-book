@@ -1,4 +1,4 @@
-DBを扱う
+database/sql
 ============================================
 
 公式ドキュメント https://golang.org/pkg/database/sql/#DB [#]_ を参考にDBを扱う準備をします。今回はDriverとして Postgres (pure Go) [#]_ を用いることにします。
@@ -159,7 +159,7 @@ DELETEもINSERT(, UPDATE)とほぼ同様です。
 トランザクション管理
 --------------------------------------------
 
-上の例ではINSERT/UPDATE/DELETEを処理する際に、*sql.Stmt を用いていました。今回はトランザクション管理をするために
+上の例ではINSERT/UPDATE/DELETEを処理する際に、 \*sql.Stmt を用いていました。今回はトランザクション管理をするために
 
 .. code-block:: none
 

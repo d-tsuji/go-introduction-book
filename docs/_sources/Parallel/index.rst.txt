@@ -154,6 +154,47 @@ Goならわかるシステムプログラミング [#]_ のよると、チャネ
     }
     // Ping Pong Ping Pong Ping func() finished.
 
+バッファチャネルを使った別の例を見てます。次の例は同時実行数を制限するようなチャネルの使い方です。いわゆるセマフォです。
+
+.. code-block:: go
+
+    const concurrency = 3
+    const total = 10
+
+    func main() {
+
+        semaphore := make(chan int, concurrency)
+
+        go consume(semaphore)
+
+        for i := 0; i < total; i++ {
+            semaphore <- i
+            fmt.Printf("[%v] Add Semaphore: num -> %d\n", time.Now(), i)
+        }
+    }
+
+    func consume(semaphore chan int) {
+        time.Sleep(3 * time.Second)
+        for i := 0; i < total; i++ {
+            _ = <-semaphore
+            time.Sleep(500 * time.Millisecond)
+        }
+    }
+
+結果は以下のように最初にチャネルのバッファ上限である3つまで追加され、その後は0.5秒ごとに処理するゴルーチンの結果を待って逐次処理されます。ゴルーチンは最大3並列で処理されていることがわかります。
+
+.. code-block:: none
+
+    [2019-06-30 22:56:24.1686604 +0900 JST m=+0.002497701] Add Semaphore: num -> 0
+    [2019-06-30 22:56:24.2056768 +0900 JST m=+0.039514101] Add Semaphore: num -> 1
+    [2019-06-30 22:56:24.2056768 +0900 JST m=+0.039514101] Add Semaphore: num -> 2
+    [2019-06-30 22:56:27.1689285 +0900 JST m=+3.002765801] Add Semaphore: num -> 3
+    [2019-06-30 22:56:27.6691217 +0900 JST m=+3.502959001] Add Semaphore: num -> 4
+    [2019-06-30 22:56:28.1695923 +0900 JST m=+4.003429601] Add Semaphore: num -> 5
+    [2019-06-30 22:56:28.6700202 +0900 JST m=+4.503857501] Add Semaphore: num -> 6
+    [2019-06-30 22:56:29.1704991 +0900 JST m=+5.004336401] Add Semaphore: num -> 7
+    [2019-06-30 22:56:29.6706213 +0900 JST m=+5.504458601] Add Semaphore: num -> 8
+    [2019-06-30 22:56:30.1715697 +0900 JST m=+6.005407001] Add Semaphore: num -> 9
 
 -----------------
 Select
