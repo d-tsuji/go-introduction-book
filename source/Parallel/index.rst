@@ -42,6 +42,41 @@ go 関数 で goroutine として動作します。
         go f()
     }
 
+ゴルーチンからゴルーチンを呼び出すことも可能です。
+
+.. code-block::
+
+    func main() {
+
+        fmt.Printf("[%v] main() start.\n", time.Now())
+
+        go Do2()
+        time.Sleep(5 * time.Second)
+
+        fmt.Printf("[%v] main() stopped.\n", time.Now())
+
+    }
+
+    func Do2() {
+        fmt.Printf("[%v] Do2() start.\n", time.Now())
+        func() {
+            go heavyProcess()
+        }()
+        fmt.Printf("[%v] Do2() completed.\n", time.Now())
+    }
+
+    func heavyProcess() {
+        fmt.Printf("[%v] heavyProcess() start.\n", time.Now())
+        time.Sleep(3 * time.Second)
+        fmt.Printf("[%v] heavyProcess() completed.\n", time.Now())
+    }
+    // [2019-07-01 07:53:19.1271209 +0900 JST m=+0.002000001] main() start.
+    // [2019-07-01 07:53:19.1631137 +0900 JST m=+0.037992801] Do2() start.
+    // [2019-07-01 07:53:19.1631137 +0900 JST m=+0.037992801] Do2() completed.
+    // [2019-07-01 07:53:19.1631137 +0900 JST m=+0.037992801] heavyProcess() start.
+    // [2019-07-01 07:53:22.1634087 +0900 JST m=+3.038287801] heavyProcess() completed.
+    // [2019-07-01 07:53:24.1636904 +0900 JST m=+5.038569501] main() stopped.
+
 -----------------
 Channel
 -----------------

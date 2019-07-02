@@ -1,12 +1,14 @@
 
-<!DOCTYPE html>
+
+<!doctype html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
   <head>
     <meta charset="utf-8" />
     <title>データ型 &#8212; Go言語入門  ドキュメント</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
@@ -14,33 +16,274 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/translations.js"></script>
     <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="next" title="制御文" href="../Control/index.html" />
-    <link rel="prev" title="演算子とデータ型" href="index.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="演算子" href="operator.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../Control/index.html" title="制御文"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="operator.html" title="演算子"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">データ型</a><ul>
+<li><a class="reference internal" href="#id2">基本型</a><ul>
+<li><a class="reference internal" href="#id3">数値型</a><ul>
+<li><a class="reference internal" href="#id4">整数値型</a></li>
+<li><a class="reference internal" href="#id5">浮動小数点型</a></li>
+<li><a class="reference internal" href="#id6">複素数型</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">文字列型</a></li>
+<li><a class="reference internal" href="#id8">真偽値型</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">配列型</a><ul>
+<li><a class="reference internal" href="#id10">構造体型</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">ポインタ型</a></li>
+<li><a class="reference internal" href="#id12">インターフェース型</a><ul>
+<li><a class="reference internal" href="#id13">型アサーション</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id14">参照型</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="operator.html"
+                        title="前の章へ">演算子</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="../Control/index.html"
+                        title="次の章へ">制御文</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/OperatorsAndTypes/types.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 441</li>
+            <li>非アスキー: 1683</li>
+            <li>合計文字数: 2124</li>
+            <li>半角換算: 3807</li>
+            <li>全角換算: 1903.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <div class="section" id="id1">
 <h1>データ型<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <div class="section" id="id2">
-<h2>値型<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
-</div>
+<h2>基本型<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="section" id="id3">
-<h2>参照型<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h3>数値型<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id4">
+<h4>整数値型<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h4>
+</div>
+<div class="section" id="id5">
+<h4>浮動小数点型<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h4>
+</div>
+<div class="section" id="id6">
+<h4>複素数型<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h4>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>文字列型<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+<div class="section" id="id8">
+<h3>真偽値型<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>bool型は論理値を表す型です。true または false の値を取ります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">b</span> <span class="o">:=</span> <span class="kc">true</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id9">
+<h2>配列型<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>[n]T として T 型の n 個の配列を宣言することができます。配列の長さは型の一部分なので配列のサイズを変えることはできません。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">strs</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="kt">string</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">strs</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nx">Itoa</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">strs</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// 0123456789</span>
+</pre></div>
+</div>
+<div class="section" id="id10">
+<h3>構造体型<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>struct はフィールドの集まりです。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Vertex</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">Vertex</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">})</span>
+<span class="p">}</span>
+<span class="c1">// {1 2}</span>
+</pre></div>
+</div>
+<p>フィールド値を指定して初期化することができます。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Vertex</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">Vertex</span><span class="p">{</span><span class="nx">y</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">x</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="p">}</span>
+<span class="c1">// {1 2}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>ポインタ型<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Goはポイントを扱います。ポインタの値はメモリアドレスを示します。</p>
+<p>変数 T 型のポイントは &amp;T 型で、ゼロ値は nil です。</p>
+<ul class="simple">
+<li><p>オペレータはポインタの指し示す変数を示します。</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span>
+    <span class="nx">p</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">i</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">p</span><span class="p">)</span>
+
+    <span class="kd">var</span> <span class="nx">q</span> <span class="o">*</span><span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">q</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// 0xc0420080b8</span>
+<span class="c1">// 1</span>
+<span class="c1">// &lt;nil&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>インターフェース型<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Goには interface{} 型があります。Javaでいうところの Object 型に近い概念です。interface{} 型は任意の値の代入が可能です。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">x</span> <span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">x</span> <span class="p">=</span> <span class="s">&quot;hello world&quot;</span>
+    <span class="nx">x</span> <span class="p">=</span> <span class="mi">111</span>
+    <span class="nx">x</span> <span class="p">=</span> <span class="mf">3.14</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%T&quot;</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// 3.14</span>
+<span class="c1">// float64</span>
+</pre></div>
+</div>
+<p>interface{}型は元の型で定義されている演算は定義されません。以下のコードはコンパイルエラーになります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span><span class="p">)</span> <span class="c1">// コンパイルエラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>初期値は nil です。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">x</span> <span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%T\n&quot;</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// &lt;nil&gt;</span>
+<span class="c1">// &lt;nil&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="id13">
+<h3>型アサーション<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>型アサーション は、インターフェースの値の基になる具体的な値を利用する手段を提供します。</p>
+<p>以下は interface{} 型の x が T 型を保持していることをチェックします。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">x</span><span class="p">.(</span><span class="nx">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>interface{} 型から int 型に代入することで演算が可能になります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="o">:=</span> <span class="nx">x</span><span class="p">.(</span><span class="kt">int</span><span class="p">),</span> <span class="nx">y</span><span class="p">.(</span><span class="kt">int</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型アサーションができない場合は panic が起こります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="o">:=</span> <span class="nx">x</span><span class="p">.(</span><span class="kt">float64</span><span class="p">),</span> <span class="nx">y</span><span class="p">.(</span><span class="kt">float64</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// panic: interface conversion: interface {} is int, not float64 [recovered]</span>
+<span class="c1">//     panic: interface conversion: interface {} is int, not float64</span>
+<span class="c1">//</span>
+<span class="c1">// goroutine 19 [running]:</span>
+<span class="c1">// testing.tRunner.func1(0xc0000ba100)</span>
+<span class="c1">//     C:/Go/src/testing/testing.go:830 +0x399</span>
+<span class="c1">// panic(0x5237a0, 0xc000066540)</span>
+<span class="c1">//     C:/Go/src/runtime/panic.go:522 +0x1c3</span>
+<span class="c1">// github.com/d-tsuji/goSample/types.Do()</span>
+<span class="c1">//     C:/Users/Dai/go/src/github.com/d-tsuji/goSample/types/interface.go:8 +0x4c</span>
+<span class="c1">// github.com/d-tsuji/goSample/types.TestDo(0xc0000ba100)</span>
+<span class="c1">//     C:/Users/Dai/go/src/github.com/d-tsuji/goSample/types/interface_test.go:6 +0x27</span>
+<span class="c1">// testing.tRunner(0xc0000ba100, 0x554ab0)</span>
+<span class="c1">//     C:/Go/src/testing/testing.go:865 +0xc7</span>
+<span class="c1">// created by testing.(*T).Run</span>
+<span class="c1">//     C:/Go/src/testing/testing.go:916 +0x361</span>
+<span class="c1">//</span>
+<span class="c1">// Process finished with exit code 1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id14">
+<h2>参照型<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>Goには参照型というデータ型があります。</p>
 <ul class="simple">
 <li><p>slice(スライス)</p></li>
@@ -88,8 +331,6 @@
 </tr>
 </tbody>
 </table>
-<div class="section" id="id4">
-<h3>スライス型<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>配列型では長さは固定長でしたが、スライスを用いると可変長の長さを扱うことができます。</p>
 <p>[]T は T 型のスライスです。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
@@ -103,8 +344,8 @@
 </pre></div>
 </div>
 <p>要素の操作について、値型と参照型の違いを確認してみます。</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">NG例：値型である配列の値を操作</span><a class="headerlink" href="#id9" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">NG例：値型である配列の値を操作</span><a class="headerlink" href="#id17" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">a</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
     <span class="nx">pow</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
@@ -121,8 +362,8 @@
 </div>
 </div>
 <p>pow(a) として関数に配列を渡したものの、関数としては引数の配列の値が <strong>コピー</strong> されて操作されているので、main から渡した引数には影響を及ぼしていません。配列型の要素に対して正しく操作するには以下のように記述する必要があります。</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">OK例：値型である配列の値をポインタで渡して操作</span><a class="headerlink" href="#id10" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">OK例：値型である配列の値をポインタで渡して操作</span><a class="headerlink" href="#id18" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">a</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
     <span class="nx">pow</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
@@ -140,8 +381,8 @@
 </div>
 </div>
 <p>同じようでもスライス型の場合は参照型なので、関数の引数として渡した時に参照に対して関数が操作します。そのため、想定どおりスライスの値が変更されることがわかります。</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">OK例：スライスを操作</span><a class="headerlink" href="#id11" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">OK例：スライスを操作</span><a class="headerlink" href="#id19" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">a</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
     <span class="nx">pow</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
@@ -157,9 +398,6 @@
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="id5">
-<h3>マップ型<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>map[T]S で T型とS型のキーバリューを関連付けるmapを生成することができます。</p>
 <p>make 関数は指定された型の、初期化され使用できるようにしたマップを返します。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
@@ -210,11 +448,8 @@
 <span class="c1">// The value: 0 Present? false</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="id6">
-<h3>チャネル型<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>チャネル( Channel )型は、チャネルオペレータの &lt;- を用いて値の送受信ができる通り道です。同一プロセスのゴルーチン間での、通信・同期・値の共用、に使用します。GoのチャネルはFIFOキューに並行処理をしても正しく処理できることを保証する機能を組み合わせたものです。</p>
-<p>Goならわかるシステムプログラミング <a class="footnote-reference brackets" href="#id8" id="id7">1</a> のよると、チャネルには以下の3つの性質があります。</p>
+<p>Goならわかるシステムプログラミング <a class="footnote-reference brackets" href="#id16" id="id15">1</a> のよると、チャネルには以下の3つの性質があります。</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">チャネルは、データを順序よく受け渡すためのデータ構造である</div>
@@ -306,89 +541,37 @@
 </pre></div>
 </div>
 <dl class="footnote brackets">
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id7">1</a></span></dt>
+<dt class="label" id="id16"><span class="brackets"><a class="fn-backref" href="#id15">1</a></span></dt>
 <dd><p><a class="reference external" href="https://www.lambdanote.com/products/go">https://www.lambdanote.com/products/go</a></p>
 </dd>
 </dl>
 </div>
 </div>
-</div>
 
 
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">データ型</a><ul>
-<li><a class="reference internal" href="#id2">値型</a></li>
-<li><a class="reference internal" href="#id3">参照型</a><ul>
-<li><a class="reference internal" href="#id4">スライス型</a></li>
-<li><a class="reference internal" href="#id5">マップ型</a></li>
-<li><a class="reference internal" href="#id6">チャネル型</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="前の章へ">演算子とデータ型</a></li>
-      <li>Next: <a href="../Control/index.html" title="次の章へ">制御文</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/OperatorsAndTypes/types.rst.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div><div>
-    <h4>Page Info</h4>
-    <p>
-        <ul>
-            <li>英数記号: 294</li>
-            <li>非アスキー: 1250</li>
-            <li>合計文字数: 1544</li>
-            <li>半角換算: 2794</li>
-            <li>全角換算: 1397.0</li>
-        </ul>
-    </p>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2019, tsuji.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/OperatorsAndTypes/types.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../Control/index.html" title="制御文"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="operator.html" title="演算子"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2 で生成しました。
+    </div>
   </body>
 </html>

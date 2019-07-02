@@ -1,45 +1,54 @@
-演算子とデータ型
+データ型
 =========================
 
 -------------------------
-演算子
+基本型
 -------------------------
 
-.. todo::
-
-    演算子の説明を記載する
-
--------------------------
-データ型
--------------------------
-
-以下の基本的な型については省略。
-
--------------------------
-基本型と複合型
--------------------------
-
--------------------------
-型宣言
--------------------------
-
--------------------------
 数値型
 -------------------------
 
--------------------------
+整数値型
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+浮動小数点型
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+複素数型
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
 文字列型　
 -------------------------
 
--------------------------
 真偽値型
 -------------------------
 
-.. todo::
+bool型は論理値を表す型です。true または false の値を取ります。
 
-    省略した型の説明を記載する。
+.. code-block:: go
+
+    b := true
 
 -------------------------
+配列型
+-------------------------
+
+[n]T として T 型の n 個の配列を宣言することができます。配列の長さは型の一部分なので配列のサイズを変えることはできません。
+
+.. code-block:: go
+
+    func main() {
+        var strs [10]string
+        for i := 0; i < 10; i++ {
+            strs[i] = strconv.Itoa(i)
+        }
+        
+        for _, v := range strs {
+            fmt.Print(v)
+        }
+    }
+    // 0123456789
+
 構造体型
 -------------------------
 
@@ -95,133 +104,93 @@ Goはポイントを扱います。ポインタの値はメモリアドレスを
     // <nil>
 
 -------------------------
-配列型
+インターフェース型
 -------------------------
 
-[n]T として T 型の n 個の配列を宣言することができます。配列の長さは型の一部分なので配列のサイズを変えることはできません。
+Goには interface{} 型があります。Javaでいうところの Object 型に近い概念です。interface{} 型は任意の値の代入が可能です。
 
 .. code-block:: go
 
     func main() {
-        var strs [10]string
-        for i := 0; i < 10; i++ {
-            strs[i] = strconv.Itoa(i)
-        }
-        
-        for _, v := range strs {
-            fmt.Print(v)
-        }
+        var x interface{}
+        x = "hello world"
+        x = 111
+        x = 3.14
+        fmt.Println(x)
+       	fmt.Printf("%T", x)
     }
-    // 0123456789
+    // 3.14
+    // float64
 
--------------------------
-スライス型
--------------------------
-
-配列型では長さは固定長でしたが、スライスを用いると可変長の長さを扱うことができます。
-
-[]T は T 型のスライスです。
+interface{}型は元の型で定義されている演算は定義されません。以下のコードはコンパイルエラーになります。
 
 .. code-block:: go
 
     func main() {
-        var strs []string
-        for i := 0; i < 10; i++ {
-            strs = append(strs, strconv.Itoa(i))
-        }
-        fmt.Println(strs)
+        var x, y interface{}
+        x, y = 1, 2
+        fmt.Println(x + y) // コンパイルエラー
     }
-    // [0 1 2 3 4 5 6 7 8 9]
 
--------------------------
-マップ型
--------------------------
-
-map[T]S で T型とS型のキーバリューを関連付けるmapを生成することができます。
-
-make 関数は指定された型の、初期化され使用できるようにしたマップを返します。
+初期値は nil です。
 
 .. code-block:: go
 
     func main() {
-        var m = make(map[string]int)
-        m["hoge"] = 1
-        m["fuga"] = 2
-        fmt.Println(m["hoge"])
+        var x interface{}
+        fmt.Println(x)
+        fmt.Printf("%T\n", x)
     }
-    // 1
+    // <nil>
+    // <nil>
 
-マップ(m)に対して以下の操作ができます。
+型アサーション
+-------------------------
 
-要素の挿入や更新
+型アサーション は、インターフェースの値の基になる具体的な値を利用する手段を提供します。
 
-.. code-block:: go
-
-    m[key] = value
-
-要素の取得
+以下は interface{} 型の x が T 型を保持していることをチェックします。
 
 .. code-block:: go
 
-    value = m[key]
+    x.(T)
 
-要素の削除
-
-.. code-block:: go
-    
-    delete(m, key)
-
-キーの存在チェック<br>
-要素を取得したときの第2引数にboolの要素でreturnされます。
-
-.. code-block:: go
-    
-    value, ok = m[key]
+interface{} 型から int 型に代入することで演算が可能になります。
 
 .. code-block:: go
 
     func main() {
-        m := make(map[string]int)
-
-        m["Answer"] = 42
-        fmt.Println("The value:", m["Answer"])
-
-        m["Answer"] = 48
-        fmt.Println("The value:", m["Answer"])
-
-        delete(m, "Answer")
-        fmt.Println("The value:", m["Answer"])
-
-        v, ok := m["Answer"]
-        fmt.Println("The value:", v, "Present?", ok)
+        var x, y interface{}
+        x, y = 1, 2
+        a, b := x.(int), y.(int)
+        fmt.Println(a + b)
     }
-    // The value: 42
-    // The value: 48
-    // The value: 0
-    // The value: 0 Present? false
 
-以下は省略
+型アサーションができない場合は panic が起こります。
 
-- その他の型
-- リテラル
+.. code-block:: go
 
-.. todo::
-
-    - その他の型
-    - リテラル
-
-    省略した基本型について記載する。 
-
--------------------------
-nil
--------------------------
-
-nil は値がないことを示す特殊な値です。Javaでいうところの null と同じと考えて良いでしょう。nil は比較演算子 !=, == を用いて比較することができます。
-
--------------------------
-型キャスト
--------------------------
-
-.. todo::
-
-    省略した型キャストについて記載する。 
+    func main() {
+        var x, y interface{}
+        x, y = 1, 2
+        a, b := x.(float64), y.(float64)
+        fmt.Println(a + b)
+    }
+    // panic: interface conversion: interface {} is int, not float64 [recovered]
+    //     panic: interface conversion: interface {} is int, not float64
+    //
+    // goroutine 19 [running]:
+    // testing.tRunner.func1(0xc0000ba100)
+    //     C:/Go/src/testing/testing.go:830 +0x399
+    // panic(0x5237a0, 0xc000066540)
+    //     C:/Go/src/runtime/panic.go:522 +0x1c3
+    // github.com/d-tsuji/goSample/types.Do()
+    //     C:/Users/Dai/go/src/github.com/d-tsuji/goSample/types/interface.go:8 +0x4c
+    // github.com/d-tsuji/goSample/types.TestDo(0xc0000ba100)
+    //     C:/Users/Dai/go/src/github.com/d-tsuji/goSample/types/interface_test.go:6 +0x27
+    // testing.tRunner(0xc0000ba100, 0x554ab0)
+    //     C:/Go/src/testing/testing.go:865 +0xc7
+    // created by testing.(*T).Run
+    //     C:/Go/src/testing/testing.go:916 +0x361
+    //
+    // Process finished with exit code 1

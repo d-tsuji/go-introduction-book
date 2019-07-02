@@ -1,12 +1,14 @@
 
-<!DOCTYPE html>
+
+<!doctype html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
   <head>
     <meta charset="utf-8" />
     <title>制御文 &#8212; Go言語入門  ドキュメント</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
@@ -14,24 +16,84 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/translations.js"></script>
     <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="next" title="関数" href="../Function/index.html" />
     <link rel="prev" title="データ型" href="../OperatorsAndTypes/types.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../Function/index.html" title="関数"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="../OperatorsAndTypes/types.html" title="データ型"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">制御文</a><ul>
+<li><a class="reference internal" href="#id2">条件分岐</a></li>
+<li><a class="reference internal" href="#id3">繰り返し</a></li>
+<li><a class="reference internal" href="#goto">goto</a></li>
+<li><a class="reference internal" href="#id4">例外処理</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../OperatorsAndTypes/types.html"
+                        title="前の章へ">データ型</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="../Function/index.html"
+                        title="次の章へ">関数</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Control/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 93</li>
+            <li>非アスキー: 371</li>
+            <li>合計文字数: 464</li>
+            <li>半角換算: 835</li>
+            <li>全角換算: 417.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <div class="section" id="id1">
@@ -138,13 +200,22 @@
 </div>
 <div class="section" id="goto">
 <h2>goto<a class="headerlink" href="#goto" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="admonition-todo admonition" id="id4">
-<p class="admonition-title">課題</p>
-<p>gotoの説明を記載する</p>
+<p>任意の位置に移動する goto 文が Go には定義されています。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">)</span>
+    <span class="k">goto</span> <span class="nx">Jump</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">)</span>
+<span class="nx">Jump</span><span class="p">:</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// A</span>
+<span class="c1">// C</span>
+</pre></div>
 </div>
+<p>B が出力されておらず、スキップされていることがわかります。</p>
 </div>
-<div class="section" id="id5">
-<h2>例外処理<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id4">
+<h2>例外処理<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>Goのプログラムは、エラーの状態を error 値で表現します。以下の組み込みのインターフェースがあります。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="kt">error</span> <span class="kd">interface</span> <span class="p">{</span>
     <span class="nx">Error</span><span class="p">()</span> <span class="kt">string</span>
@@ -169,76 +240,28 @@
 
 
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">目次</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">制御文</a><ul>
-<li><a class="reference internal" href="#id2">条件分岐</a></li>
-<li><a class="reference internal" href="#id3">繰り返し</a></li>
-<li><a class="reference internal" href="#goto">goto</a></li>
-<li><a class="reference internal" href="#id5">例外処理</a></li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../OperatorsAndTypes/types.html" title="前の章へ">データ型</a></li>
-      <li>Next: <a href="../Function/index.html" title="次の章へ">関数</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>このページ</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Control/index.rst.txt"
-            rel="nofollow">ソースコードを表示</a></li>
-    </ul>
-   </div><div>
-    <h4>Page Info</h4>
-    <p>
-        <ul>
-            <li>英数記号: 85</li>
-            <li>非アスキー: 330</li>
-            <li>合計文字数: 415</li>
-            <li>半角換算: 745</li>
-            <li>全角換算: 372.5</li>
-        </ul>
-    </p>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">クイック検索</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="検索" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2019, tsuji.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/Control/index.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../Function/index.html" title="関数"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="../OperatorsAndTypes/types.html" title="データ型"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2 で生成しました。
+    </div>
   </body>
 </html>

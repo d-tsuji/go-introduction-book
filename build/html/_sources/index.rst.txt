@@ -10,12 +10,11 @@ Go Note
     :maxdepth: 2
 
     Introduction/index
-    Syntax/index
 
 .. toctree::
     :maxdepth: 1
 
-    OperatorsAndTypes/index
+    OperatorsAndTypes/operator
     OperatorsAndTypes/types
 
 .. toctree::

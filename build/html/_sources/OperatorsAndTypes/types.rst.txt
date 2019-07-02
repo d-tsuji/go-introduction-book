@@ -1,11 +1,199 @@
 データ型
 ===========================================
 
--------------------------------------------
-値型
--------------------------------------------
+-------------------------
+基本型
+-------------------------
 
+数値型
+-------------------------
 
+整数値型
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+浮動小数点型
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+複素数型
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+文字列型　
+-------------------------
+
+真偽値型
+-------------------------
+
+bool型は論理値を表す型です。true または false の値を取ります。
+
+.. code-block:: go
+
+    b := true
+
+-------------------------
+配列型
+-------------------------
+
+[n]T として T 型の n 個の配列を宣言することができます。配列の長さは型の一部分なので配列のサイズを変えることはできません。
+
+.. code-block:: go
+
+    func main() {
+        var strs [10]string
+        for i := 0; i < 10; i++ {
+            strs[i] = strconv.Itoa(i)
+        }
+        
+        for _, v := range strs {
+            fmt.Print(v)
+        }
+    }
+    // 0123456789
+
+構造体型
+-------------------------
+
+struct はフィールドの集まりです。
+
+.. code-block:: go
+
+    type Vertex struct {
+        x, y int
+    }
+
+    func main() {
+        fmt.Println(Vertex{1, 2})
+    }
+    // {1 2}
+
+フィールド値を指定して初期化することができます。
+
+.. code-block:: go
+
+    type Vertex struct {
+        x, y int
+    }
+
+    func main() {
+        fmt.Println(Vertex{y: 2, x: 1})
+    }
+    // {1 2}
+
+-------------------------
+ポインタ型
+-------------------------
+
+Goはポイントを扱います。ポインタの値はメモリアドレスを示します。
+
+変数 T 型のポイントは &T 型で、ゼロ値は nil です。
+
+* オペレータはポインタの指し示す変数を示します。
+
+.. code-block:: go
+
+    func main() {
+        i := 1
+        p := &i
+        fmt.Println(p)
+        fmt.Println(*p)
+        
+        var q *int
+        fmt.Println(q)
+    }
+    // 0xc0420080b8
+    // 1
+    // <nil>
+
+-------------------------
+インターフェース型
+-------------------------
+
+Goには interface{} 型があります。Javaでいうところの Object 型に近い概念です。interface{} 型は任意の値の代入が可能です。
+
+.. code-block:: go
+
+    func main() {
+        var x interface{}
+        x = "hello world"
+        x = 111
+        x = 3.14
+        fmt.Println(x)
+       	fmt.Printf("%T", x)
+    }
+    // 3.14
+    // float64
+
+interface{}型は元の型で定義されている演算は定義されません。以下のコードはコンパイルエラーになります。
+
+.. code-block:: go
+
+    func main() {
+        var x, y interface{}
+        x, y = 1, 2
+        fmt.Println(x + y) // コンパイルエラー
+    }
+
+初期値は nil です。
+
+.. code-block:: go
+
+    func main() {
+        var x interface{}
+        fmt.Println(x)
+        fmt.Printf("%T\n", x)
+    }
+    // <nil>
+    // <nil>
+
+型アサーション
+-------------------------
+
+型アサーション は、インターフェースの値の基になる具体的な値を利用する手段を提供します。
+
+以下は interface{} 型の x が T 型を保持していることをチェックします。
+
+.. code-block:: go
+
+    x.(T)
+
+interface{} 型から int 型に代入することで演算が可能になります。
+
+.. code-block:: go
+
+    func main() {
+        var x, y interface{}
+        x, y = 1, 2
+        a, b := x.(int), y.(int)
+        fmt.Println(a + b)
+    }
+
+型アサーションができない場合は panic が起こります。
+
+.. code-block:: go
+
+    func main() {
+        var x, y interface{}
+        x, y = 1, 2
+        a, b := x.(float64), y.(float64)
+        fmt.Println(a + b)
+    }
+    // panic: interface conversion: interface {} is int, not float64 [recovered]
+    //     panic: interface conversion: interface {} is int, not float64
+    //
+    // goroutine 19 [running]:
+    // testing.tRunner.func1(0xc0000ba100)
+    //     C:/Go/src/testing/testing.go:830 +0x399
+    // panic(0x5237a0, 0xc000066540)
+    //     C:/Go/src/runtime/panic.go:522 +0x1c3
+    // github.com/d-tsuji/goSample/types.Do()
+    //     C:/Users/Dai/go/src/github.com/d-tsuji/goSample/types/interface.go:8 +0x4c
+    // github.com/d-tsuji/goSample/types.TestDo(0xc0000ba100)
+    //     C:/Users/Dai/go/src/github.com/d-tsuji/goSample/types/interface_test.go:6 +0x27
+    // testing.tRunner(0xc0000ba100, 0x554ab0)
+    //     C:/Go/src/testing/testing.go:865 +0xc7
+    // created by testing.(*T).Run
+    //     C:/Go/src/testing/testing.go:916 +0x361
+    //
+    // Process finished with exit code 1
 
 -------------------------------------------
 参照型

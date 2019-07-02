@@ -123,9 +123,21 @@ for文でループする際に range を用いることができます。スラ�
 goto
 -----------------------
 
-.. todo::
+任意の位置に移動する goto 文が Go には定義されています。
 
-    gotoの説明を記載する
+.. code-block:: go
+
+    func main() {
+        fmt.Println("A")
+        goto Jump
+        fmt.Println("B")
+    Jump:
+        fmt.Println("C")
+    }
+    // A
+    // C
+
+B が出力されておらず、スキップされていることがわかります。
 
 -----------------------
 例外処理
