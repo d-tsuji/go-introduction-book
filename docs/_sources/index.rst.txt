@@ -36,12 +36,17 @@ Go Note
     test
 
 .. toctree::
-    :caption: 標準パッケージなど
+    :caption: 標準パッケージ
     :maxdepth: 1
 
     json
     db
     http
+    flag
+
+.. toctree::
+    :caption: 外部パッケージ
+    :maxdepth: 1
 
 ----
 
