@@ -48,6 +48,9 @@ Go Note
     :caption: 外部パッケージ
     :maxdepth: 1
 
+    dque
+    yaml
+
 ----
 
 .. toctree::

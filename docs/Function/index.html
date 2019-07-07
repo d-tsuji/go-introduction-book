@@ -71,11 +71,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 230</li>
-            <li>非アスキー: 478</li>
-            <li>合計文字数: 708</li>
-            <li>半角換算: 1186</li>
-            <li>全角換算: 593.0</li>
+            <li>英数記号: 308</li>
+            <li>非アスキー: 647</li>
+            <li>合計文字数: 955</li>
+            <li>半角換算: 1602</li>
+            <li>全角換算: 801.0</li>
         </ul>
     </p>
 </div>
@@ -202,6 +202,21 @@
 <span class="c1">// 987654321</span>
 </pre></div>
 </div>
+<p>注意しないといけない点として、 <code class="docutils literal notranslate"><span class="pre">os.Exit(1)</span></code> とようにプロセスが終了した場合には <code class="docutils literal notranslate"><span class="pre">defer</span></code> の結果を返さずに終了することになります。以下が <code class="docutils literal notranslate"><span class="pre">defer</span></code> の結果が得られず終了する例です。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="s">&quot;Error occured.&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>結果</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// 2019/07/06 17:08:09 Error occured.
+</pre></div>
+</div>
+<p>上記のように <code class="docutils literal notranslate"><span class="pre">defer</span> <span class="pre">fmt.Print(i)</span></code> の結果がreturnされることはありません。</p>
+<p>エラー発生時などは <code class="docutils literal notranslate"><span class="pre">defer</span></code> による処理がなされずに終了するので、 <code class="docutils literal notranslate"><span class="pre">main</span></code> 関数以外では <code class="docutils literal notranslate"><span class="pre">error</span></code> を上位の関数に戻して、一番最後に <code class="docutils literal notranslate"><span class="pre">main</span></code> 関数の中で終了することが多いのではないでしょうか。</p>
 </div>
 <div class="section" id="id6">
 <h2>パニック<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
