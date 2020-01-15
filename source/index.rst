@@ -12,7 +12,7 @@ Go Note
     Introduction/index
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     OperatorsAndTypes/operator
     OperatorsAndTypes/types
@@ -24,6 +24,7 @@ Go Note
     Function/index
     MethodAndInterface/index
     Parallel/index
+    Test/index
 
 ----
 
@@ -43,6 +44,7 @@ Go Note
     db
     http
     flag
+    time
 
 .. toctree::
     :caption: 外部パッケージ
@@ -50,6 +52,12 @@ Go Note
 
     dque
     yaml
+
+.. toctree::
+    :caption: ソースコードリーディング
+    :maxdepth: 1
+
+    CodeReading/io
 
 ----
 
