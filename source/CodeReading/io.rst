@@ -14,6 +14,9 @@ io パッケージの役割は以下の2つ
 io.Reader
 ============================================
 
+シグネチャ
+--------------------------------------------
+
 io.Readerは以下のシグネチャを持つReadメソッドを定義しているインターフェースです。``p byte[]`` は引数の読み取りした内容を一時的に格納しておくバッファです。
 
 .. code-block:: go
@@ -23,9 +26,14 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         Read(p []byte) (n int, err error)
     }
 
+Readは非常にプリミティブなメソッドなので、通常直接このメソッドを扱うことは少なく、ラッパーの高級関数 (``ioutil.ReadAll, ioutil.ReadFile, bufio.Scanner``) を使うことが多いのではないでしょうか。
+
+仕様
+--------------------------------------------
+
 `GoDoc <https://godoc.org/io#Reader>`_ のパッケージコメントから特徴(想定している仕様)を見てみます。
 
-* 最大 len(p) バイトを読み取り、読み取ったバイト数nとエラーの有無を返却
+* 最大 ``len(p)`` バイトを読み取り、読み取ったバイト数 n とエラーの有無を返却
 * ``n < len(p)`` だったとしてもバッファ p はすべて使っている場合がある
 * 最後まで読み込んだ場合、(err == EOF) または (err == 0) を返却することがある
 * ``(0, nil)`` を返却することは非推奨。``(0, EOF)`` を返却する
@@ -37,16 +45,14 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 .. code-block:: go
     :caption: file.go
 
-    // File represents an open file descriptor.
     type File struct {
         *file // os specific
     }
 
     // ...
 
-    // Read reads up to len(b) bytes from the File.
-    // It returns the number of bytes read and any error encountered.
-    // At end of file, Read returns 0, io.EOF.
+    // Readメソッドを実装しているので、io.Readerインターフェースを満たしている
+    // ファイルディスクリプタに紐づくファイルから len(b) バイトを読み出す
     func (f *File) Read(b []byte) (n int, err error) {
         if err := f.checkValid("read"); err != nil {
             return 0, err
@@ -58,8 +64,6 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 .. code-block:: go
     :caption: buffer.go
 
-    // A Buffer is a variable-sized buffer of bytes with Read and Write methods.
-    // The zero value for Buffer is an empty buffer ready to use.
     type Buffer struct {
         buf      []byte // contents are the bytes buf[off : len(buf)]
         off      int    // read at &buf[off], write at &buf[len(buf)]
@@ -68,10 +72,8 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
     // ...
 
-    // Read reads the next len(p) bytes from the buffer or until the buffer
-    // is drained. The return value n is the number of bytes read. If the
-    // buffer has no data to return, err is io.EOF (unless len(p) is zero);
-    // otherwise it is nil.
+    // Readメソッドを実装しているので、io.Readerインターフェースを満たしている
+    // バッファから len(p) バイト読み出すか、バッファが空になるまで読む
     func (b *Buffer) Read(p []byte) (n int, err error) {
         b.lastRead = opInvalid
         if b.empty() {
@@ -90,32 +92,28 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         return n, nil
     }
 
-実際どんな感じで ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。 ``ioutil.ReadFile`` はファイルからデータを読み取るときに使います。
+
+実装
+--------------------------------------------
+
+実際どんな感じで ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。 ``ioutil.ReadFile`` はファイルからデータを読み取るときに使います(よね)。
 
 .. code-block:: go
     :caption: ioutil/ioutil.go
 
-    // ReadFile reads the file named by filename and returns the contents.
-    // A successful call returns err == nil, not err == EOF. Because ReadFile
-    // reads the whole file, it does not treat an EOF from Read as an error
-    // to be reported.
+    // ファイルからデータを読み出す
+    // すべて読んだ場合は EOF error は返さず nil を返す
     func ReadFile(filename string) ([]byte, error) {
         f, err := os.Open(filename)
         if err != nil {
             return nil, err
         }
         defer f.Close()
-        // It's a good but not certain bet that FileInfo will tell us exactly how much to
-        // read, so let's try it but be prepared for the answer to be wrong.
+        // ファイルからファイルサイズを取得するが正確でないことがある為
+        // 512 バイトを余分に確保しておく。最低 512 バイト確保される
         var n int64 = bytes.MinRead
 
         if fi, err := f.Stat(); err == nil {
-            // As initial capacity for readAll, use Size + a little extra in case Size
-            // is zero, and to avoid another allocation after Read has filled the
-            // buffer. The readAll call will read into its allocated internal buffer
-            // cheaply. If the size was wrong, we'll either waste some space off the end
-            // or reallocate as needed, but in the overwhelmingly common case we'll get
-            // it just right.
             if size := fi.Size() + bytes.MinRead; size > n {
                 n = size
             }
@@ -125,12 +123,11 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
     // ...
 
-    // readAll reads from r until an error or EOF and returns the data it read
-    // from the internal buffer allocated with a specified capacity.
+    // io.Reader から EOF やエラーになるまでデータを読み取る
     func readAll(r io.Reader, capacity int64) (b []byte, err error) {
         var buf bytes.Buffer
-        // If the buffer overflows, we will get bytes.ErrTooLarge.
-        // Return that as an error. Any other panic remains.
+        // バッファオーバーフローした場合のみpanicをrecoverしてbytes.ErrTooLargeのエラーとして返す
+        // それ以外は panic を起こす
         defer func() {
             e := recover()
             if e == nil {
@@ -145,6 +142,7 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         if int64(int(capacity)) == capacity {
             buf.Grow(int(capacity))
         }
+        // 内部的には bytes の ReadFrom が呼び出される
         _, err = buf.ReadFrom(r)
         return buf.Bytes(), err
     }
@@ -152,15 +150,19 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 .. code-block:: go
     :caption: bytes/buffer.go
 
-    // ReadFrom reads data from r until EOF and appends it to the buffer, growing
-    // the buffer as needed. The return value n is the number of bytes read. Any
-    // error except io.EOF encountered during the read is also returned. If the
-    // buffer becomes too large, ReadFrom will panic with ErrTooLarge.
+    // io.Reader から EOF までデータを読み取り、バッファに追加する
+    // 必要に応じてバッファを拡張する
+    // バッファが大きくなりすぎる場合は ErrTooLarge を返す
     func (b *Buffer) ReadFrom(r io.Reader) (n int64, err error) {
         b.lastRead = opInvalid
+
+        // forループで終了条件 (io.EOF or error) に達するまで処理
         for {
+            // ここで *buffer が保持しているバッファを拡張する(約 2 倍)
             i := b.grow(MinRead)
             b.buf = b.buf[:i]
+
+            // io.Reader を満たしている構造体の Read メソッドを呼び出す
             m, e := r.Read(b.buf[i:cap(b.buf)])
             if m < 0 {
                 panic(errNegativeRead)
@@ -177,6 +179,9 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         }
     }
 
+インターフェースを扱う
+--------------------------------------------
+
 個人的に良い実装だな、と思うのは ``readAll`` のシグネチャが以下のようになっていることです。``bytes.ReadFrom`` も同様。
 
 .. code-block:: go
@@ -188,6 +193,49 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 .. code-block:: go
 
     ReadAll(r io.Reader) ([]byte, error)
+
+試しに io.Reader インターフェースを実装した myReader 構造体を作ってみます。
+
+.. code-block:: go
+
+    type myReader struct {
+        content  []byte // the stuff we're going to read from
+        position int    // index of the byte we're up to in our content
+    }
+
+    func (r *myReader) Read(buf []byte) (int, error) {
+        remainingBytes := len(r.content) - r.position
+        n := min(remainingBytes, len(buf))
+        if n == 0 {
+            return 0, io.EOF
+        }
+        copy(buf[:n], r.content[r.position:r.position+n])
+        r.position += n
+        return n, nil
+    }
+
+    func min(a int, b int) int {
+        if a < b {
+            return a
+        }
+        return b
+    }
+
+そうすると以下のように ioutil.ReadAll にわたすことができます。
+
+.. code-block:: go
+
+    func main() {
+        reader := &myReader{content: []byte("this is the stuff I'm reading")}
+        bytes, err := ioutil.ReadAll(reader)
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(string(bytes))
+    }
+    // this is the stuff I'm reading
+
+https://play.golang.org/p/xA1UdgJwwdv
 
 --------------------------------------------
 
@@ -206,4 +254,5 @@ io.Writer
 参考
 ============================================
 
-- https://qiita.com/ktnyt/items/8ede94469ba8b1399b12
+* https://qiita.com/ktnyt/items/8ede94469ba8b1399b12
+* https://github.com/jesseduffield/notes/wiki/Golang-IO-Cookbook
