@@ -11,6 +11,9 @@ io パッケージの役割は以下の2つ
 
     Groutineセーフではない
 
+.. contents::
+   :depth: 2
+
 io.Reader
 ============================================
 
@@ -26,7 +29,7 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         Read(p []byte) (n int, err error)
     }
 
-Readは非常にプリミティブなメソッドなので、通常直接このメソッドを扱うことは少なく、ラッパーの高級関数 (``ioutil.ReadAll, ioutil.ReadFile, bufio.Scanner``) を使うことが多いのではないでしょうか。
+ちなみに ``Read`` は非常にプリミティブなメソッドなので、通常直接このメソッドを扱うことは少なく、ラッパーの高級関数 (``ioutil.ReadAll, ioutil.ReadFile, bufio.Scanner``) を使うことが多いのではないでしょうか。
 
 仕様
 --------------------------------------------
@@ -38,7 +41,12 @@ Readは非常にプリミティブなメソッドなので、通常直接この�
 * 最後まで読み込んだ場合、(err == EOF) または (err == 0) を返却することがある
 * ``(0, nil)`` を返却することは非推奨。``(0, EOF)`` を返却する
 
-要は **バイト列を読み取るためのインターフェース** です。読み取るものは、標準入力でも、ファイルでも、ソケット、バッファでもなんでもよくて、バイトのスライスを読み取ります。
+.. todo:: GoDocの本文を再確認する。ちょっと意味が違うかも。
+
+要は **バイト列を読み取るためのインターフェース** です。読み取るものは、標準入力でも、ファイルでも、ソケット、バッファでもなんでもよいです。
+
+実装
+--------------------------------------------
 
 例えば ``os.File`` や ``bytes.Buffer`` 構造体は ``Read(p []byte) (n int, err error)`` メソッドを実装しており ``io.Reader`` インターフェースを満たしています。
 
@@ -52,7 +60,7 @@ Readは非常にプリミティブなメソッドなので、通常直接この�
     // ...
 
     // Readメソッドを実装しているので、io.Readerインターフェースを満たしている
-    // ファイルディスクリプタに紐づくファイルから len(b) バイトを読み出す
+    // ファイルから len(b) バイトを読み出す
     func (f *File) Read(b []byte) (n int, err error) {
         if err := f.checkValid("read"); err != nil {
             return 0, err
@@ -93,10 +101,7 @@ Readは非常にプリミティブなメソッドなので、通常直接この�
     }
 
 
-実装
---------------------------------------------
-
-実際どんな感じで ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。 ``ioutil.ReadFile`` はファイルからデータを読み取るときに使います(よね)。
+実際どんな感じで ``io.Reader`` の ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。 ``ioutil.ReadFile`` はファイルからデータを読み取るときに使います。
 
 .. code-block:: go
     :caption: ioutil/ioutil.go
@@ -158,7 +163,8 @@ Readは非常にプリミティブなメソッドなので、通常直接この�
 
         // forループで終了条件 (io.EOF or error) に達するまで処理
         for {
-            // ここで *buffer が保持しているバッファを拡張する(約 2 倍)
+            // *Bufferで保持している内部のバッファを割り当てるだけで十分であれば、拡張したスライスを返す
+            // 足りなければ *buffer が保持しているバッファを元の大きさの約2倍に拡張する
             i := b.grow(MinRead)
             b.buf = b.buf[:i]
 
@@ -182,25 +188,42 @@ Readは非常にプリミティブなメソッドなので、通常直接この�
 インターフェースを扱う
 --------------------------------------------
 
-個人的に良い実装だな、と思うのは ``readAll`` のシグネチャが以下のようになっていることです。``bytes.ReadFrom`` も同様。
-
-.. code-block:: go
-
-    readAll(r io.Reader, capacity int64) (b []byte, err error)
-
-``readAll`` の第一引数は ``r io.Reader`` とインターフェースを受けるようになっています。これによって読み出す対象が何であるか気にする必要がなく ``io.Reader`` インターフェースを満たす構造体であれば何でも良くなります。``ReadAll`` メソッドのほうが分かりやすいかもしれません。HTTPのレスポンスボディを読み取るときによく使われる気がします。
+個人的に良い実装だな、と思うのは ``ReadAll`` のシグネチャが以下のようになっていることです。``readAll`` や ``bytes.ReadFrom`` も同様。
 
 .. code-block:: go
 
     ReadAll(r io.Reader) ([]byte, error)
 
-試しに io.Reader インターフェースを実装した myReader 構造体を作ってみます。
+.. code-block:: go
+
+    readAll(r io.Reader, capacity int64) (b []byte, err error)
+
+.. code-block:: go
+
+    ReadFrom(r io.Reader) (n int64, err error)
+
+``ReadAll`` メソッドは ``r io.Reader`` とインターフェースを受けるようになっています。これによって読み出す対象が何であるか気にする必要がなく ``io.Reader`` インターフェースを満たす構造体であれば何でも受け取ることできます。ファイルを読みたい場合は ``ReadFile`` のようにラッパーとして実装すればよいだけでOKです。
+
+.. note:: インターフェースを使った汎用的なデザインになっているのが良いと思っているのでGo特有というわけではない気がします。JavaだとInterfaceとかAbstractクラスとか使って実装する気がします。
+
+上記のメソッドの他にも、例えば json を扱う際の ``json.NewDecoder`` は以下のようになっていますし、独自にI/Oを扱う場合は ``io.Reader`` を受けとるようにすればよいのではないでしょうか。
+
+.. code-block:: go
+
+    func NewDecoder(r io.Reader) *Decoder {
+        return &Decoder{r: r}
+    }
+
+独自の io.Reader を作る
+--------------------------------------------
+
+独自の io.Reader インターフェースを実装した myReader 構造体を作ってみます。
 
 .. code-block:: go
 
     type myReader struct {
-        content  []byte // the stuff we're going to read from
-        position int    // index of the byte we're up to in our content
+        content  []byte // 読み出す対象のバイト列
+        position int    // 次に読むオフセット
     }
 
     func (r *myReader) Read(buf []byte) (int, error) {
@@ -221,7 +244,7 @@ Readは非常にプリミティブなメソッドなので、通常直接この�
         return b
     }
 
-そうすると以下のように ioutil.ReadAll にわたすことができます。
+そうすると以下のように ``ioutil.ReadAll`` にわたすことができます。``io.Reader`` インターフェースを満たすだけで、``io.Reader`` を受け取る、ありとあらゆる関数を利用することができます。(以下のサンプル実装の場合はうれしみがないですが)
 
 .. code-block:: go
 
@@ -241,7 +264,7 @@ https://play.golang.org/p/xA1UdgJwwdv
 
 .. note::
 
-    ちなみにファイル終端の EOF は以下のように実装されていました。たしかにエラーになっています。
+    ちなみにファイル終端の EOF は以下のように実装されていました。たしかに error として定義されています。
 
     var EOF = errors.New("EOF")
 
@@ -249,10 +272,240 @@ https://play.golang.org/p/xA1UdgJwwdv
 io.Writer
 ============================================
 
+シグネチャ
+--------------------------------------------
 
+``io.Writer`` も ``io.Reader`` に似ているインターフェースで以下の ``Write`` メソッドだけを持っているインターフェースです。なので、 ``Write`` メソッドを満たしていれば ``io.Writer`` になれます。
+
+.. code-block:: go
+
+    type Writer interface {
+        Write(p []byte) (n int, err error)
+    }
+
+仕様
+--------------------------------------------
+
+* ``p`` から ``len(p)`` バイトを書き込み、書き込んだバイト数とエラーを返却する
+* ``n < len(p)`` の場合は非nilのエラーの返却する必要がある
+
+``io.Reader`` と比較すると仕様がシンプルです。
+
+実装
+--------------------------------------------
+
+インターフェースを満たしている構造体の例を見てみます。例えば ``os.File`` は以下のように実装しています。
+
+.. code-block:: go
+
+    func (f *File) Write(b []byte) (n int, err error) {
+        if err := f.checkValid("write"); err != nil {
+            return 0, err
+        }
+        n, e := f.write(b)
+        if n < 0 {
+            n = 0
+        }
+        if n != len(b) {
+            err = io.ErrShortWrite
+        }
+
+        epipecheck(f, e)
+
+        if e != nil {
+            err = f.wrapErr("write", e)
+        }
+
+        return n, err
+    }
+
+また ``bufio.Buffer`` では以下のように実装しています。
+
+.. code-block:: go
+    :caption: bufio/buffer.go
+
+    func (b *Buffer) Write(p []byte) (n int, err error) {
+        b.lastRead = opInvalid
+        m, ok := b.tryGrowByReslice(len(p))
+        if !ok {
+            m = b.grow(len(p))
+        }
+        return copy(b.buf[m:], p), nil
+    }
+
+
+実際どんな感じで ``io.Writer`` の ``Write`` メソッドが呼ばれているか見てみます。
+
+.. code-block:: go
+    :caption: io/io.go
+
+    func WriteString(w Writer, s string) (n int, err error) {
+        if sw, ok := w.(StringWriter); ok {
+            return sw.WriteString(s)
+        }
+        // 呼び出し元の構造体で実装している Write メソッドを呼び出す
+        return w.Write([]byte(s))
+    }
+
+.. code-block:: go
+    :caption: io/ioutil/ioutil.go
+
+    func WriteFile(filename string, data []byte, perm os.FileMode) error {
+        f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
+        if err != nil {
+            return err
+        }
+        // os.File構造体のWriteを呼び出す
+        n, err := f.Write(data)
+        if err == nil && n < len(data) {
+            err = io.ErrShortWrite
+        }
+        if err1 := f.Close(); err == nil {
+            err = err1
+        }
+        return err
+    }
+
+io.Copy
+============================================
+
+インターフェースではないですが、io パッケージの主要なメソッドだと思うので取り上げます。
+
+仕様
+--------------------------------------------
+
+* src から EOF に到達するかエラーが発生するまで dst にコピー
+* コピーしたバイトするとエラーを返す
+
+実装
+--------------------------------------------
+
+.. code-block:: go
+    :caption: io/io.go
+
+    func Copy(dst Writer, src Reader) (written int64, err error) {
+        return copyBuffer(dst, src, nil)
+    }
+
+    func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
+        if buf != nil && len(buf) == 0 {
+            panic("empty buffer in io.CopyBuffer")
+        }
+        return copyBuffer(dst, src, buf)
+    }
+
+    func copyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
+        // If the reader has a WriteTo method, use it to do the copy.
+        // Avoids an allocation and a copy.
+        if wt, ok := src.(WriterTo); ok {
+            return wt.WriteTo(dst)
+        }
+        // Similarly, if the writer has a ReadFrom method, use it to do the copy.
+        if rt, ok := dst.(ReaderFrom); ok {
+            return rt.ReadFrom(src)
+        }
+        if buf == nil {
+            // デフォルトでは 32KB をバッファとして確保
+            size := 32 * 1024
+            if l, ok := src.(*LimitedReader); ok && int64(size) > l.N {
+                if l.N < 1 {
+                    size = 1
+                } else {
+                    size = int(l.N)
+                }
+            }
+            buf = make([]byte, size)
+        }
+        for {
+            nr, er := src.Read(buf)
+            if nr > 0 {
+                nw, ew := dst.Write(buf[0:nr])
+                if nw > 0 {
+                    written += int64(nw)
+                }
+                if ew != nil {
+                    err = ew
+                    break
+                }
+                if nr != nw {
+                    err = ErrShortWrite
+                    break
+                }
+            }
+            if er != nil {
+                if er != EOF {
+                    err = er
+                }
+                break
+            }
+        }
+        return written, err
+    }
+
+
+.. note::
+
+    Go Conference で聞いた高度なテクニックですが、``sync.Pool`` でバッファを明示的に指定して io.Copy から io.CopyBuffer にしたところ、メモリ使用量が削減したという話もあります
+
+    https://github.com/src-d/go-git/pull/1179
+
+copyするバイト数がわかっていれば、``CopyN`` で明示的にコピーするバイト数を指定することもできます。``io.Copy`` のラッパー。
+
+.. code-block:: go
+
+    func CopyN(dst Writer, src Reader, n int64) (written int64, err error) {
+        written, err = Copy(dst, LimitReader(src, n))
+        if written == n {
+            return n, nil
+        }
+        if written < n && err == nil {
+            // src stopped early; must have been EOF.
+            err = EOF
+        }
+        return
+    }
+
+その他
+============================================
+
+上記に上げた ``io.Reader`` や ``io.Writer`` 以外にも ``io.Closer`` ``io.Seeker`` があります。あとは埋め込みのインターフェースと便利な関数(``io.MultiWriter``とか)があります。``io.MultiWriter`` は io.Writer のスライスを内部で保持していて、それぞれの io.Writer の Write メソッドを呼んでいました。``io/pipe.go`` はコードリーディングしていないです。
+
+.. code-block:: go
+    :caption: io/multi.go
+
+    func MultiWriter(writers ...Writer) Writer {
+        allWriters := make([]Writer, 0, len(writers))
+        for _, w := range writers {
+            if mw, ok := w.(*multiWriter); ok {
+                allWriters = append(allWriters, mw.writers...)
+            } else {
+                allWriters = append(allWriters, w)
+            }
+        }
+        return &multiWriter{allWriters}
+    }
+
+    type multiWriter struct {
+        writers []Writer
+    }
+
+    func (t *multiWriter) Write(p []byte) (n int, err error) {
+        for _, w := range t.writers {
+            n, err = w.Write(p)
+            if err != nil {
+                return
+            }
+            if n != len(p) {
+                err = ErrShortWrite
+                return
+            }
+        }
+        return len(p), nil
+    }
 
 参考
 ============================================
 
-* https://qiita.com/ktnyt/items/8ede94469ba8b1399b12
 * https://github.com/jesseduffield/notes/wiki/Golang-IO-Cookbook
+* https://medium.com/@matryer/golang-advent-calendar-day-seventeen-io-reader-in-depth-6f744bb4320b
+* https://qiita.com/ktnyt/items/8ede94469ba8b1399b12
