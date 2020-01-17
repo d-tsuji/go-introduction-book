@@ -8,7 +8,8 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set SOURCEDIR=source
-set BUILDDIR=build
+REM set BUILDDIR=build
+set BUILDDIR=docs
 
 if "%1" == "" goto help
 
@@ -37,9 +38,9 @@ REM %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 REM goto end
 
 :html
-%SPHINXBUILD% -b html %SOURCEDIR% "docs" %SPHINXOPTS% %O%
-%SPHINXBUILD% -M latexpdf %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
-cp build/latex/go.pdf ./docs
+%SPHINXBUILD% -b html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+REM %SPHINXBUILD% -M latexpdf %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+REM cp build/latex/go.pdf ./docs
 goto end
 
 :help
