@@ -309,8 +309,4 @@ context
     // func() is finished
     // all tasks are finished
 
-.. todo::
-
-    コンテキストに関しては別で詳細を確認します。
-
 .. [#] https://www.lambdanote.com/products/go
