@@ -36,14 +36,19 @@ jobs:
           echo "${{ secrets.ACTIONS_DEPLOY_KEY }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa
 
+    - name: Use Node.js [10.x]
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+
     - name: Push
       env:
-        GITHUB_USER: "builduser"
-        GITHUB_EMAIL: "test-hoge-builduser@gmail.com"
+        GITHUB_USER: "d-tsuji"
+        GITHUB_EMAIL: "{{ secrets.GITHUB_EMAIL }}"
+        CI: true
       run: |
           git config --local user.name "${GITHUB_USER}"
           git config --local user.email "${GITHUB_EMAIL}"
           git remote set-url origin git@github.com:${GITHUB_REPOSITORY}.git
-          git add docs
-          git commit -m "auto rebuilding site"
-          git push origin master
+          # npm ci && npm run deploy
+          npm install && node index.js

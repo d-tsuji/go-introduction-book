@@ -2,3 +2,8 @@ build/doctrees
 source/ext/__pycache__
 build/latex
 .DS_Store
+
+# npm
+node_modules/
+npm-debug.log*
+.npm
