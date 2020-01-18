@@ -7,3 +7,7 @@ build/latex
 node_modules/
 npm-debug.log*
 .npm
+
+# VS Code
+.vscode
+

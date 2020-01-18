@@ -45,10 +45,9 @@ jobs:
       env:
         GITHUB_USER: "d-tsuji"
         GITHUB_EMAIL: "{{ secrets.GITHUB_EMAIL }}"
-        CI: true
+        NODE_DEBUG: gh-pages
       run: |
           git config --local user.name "${GITHUB_USER}"
           git config --local user.email "${GITHUB_EMAIL}"
           git remote set-url origin git@github.com:${GITHUB_REPOSITORY}.git
-          # npm ci && npm run deploy
           npm install && node index.js

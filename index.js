@@ -6,5 +6,9 @@ var ghpages = require('gh-pages');
  */
 ghpages.publish('_build', {
     dotfiles: true,
-    message: 'auto rebuilding site'
-  }, {});
+    message: 'auto rebuilding site',
+    user: {
+      name: 'd-tsuji',
+      email: process.env.GITHUB_EMAIL
+    }
+  });

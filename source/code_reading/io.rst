@@ -4,12 +4,12 @@ io
 
 io パッケージの役割は以下の2つ
 
-* os パッケージなどの個別のI/O実装を抽象化する共通のインターフェース
+* I/Oプリミティブを抽象化する共通のインターフェース(osのファイルディスクリプタのioとか、バッファのioとか)
 * 関連するI/Oのラッパー
 
 .. note::
 
-    Groutineセーフではない
+    必ずしもGroutineセーフではない
 
 .. contents::
    :depth: 2
@@ -36,22 +36,20 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
 `GoDoc <https://godoc.org/io#Reader>`_ のパッケージコメントから特徴(想定している仕様)を見てみます。
 
-* 最大 ``len(p)`` バイトを読み取り、読み取ったバイト数 n とエラーの有無を返却
-* ``n < len(p)`` だったとしてもバッファ p はすべて使っている場合がある
-* 最後まで読み込んだ場合、(err == EOF) または (err == 0) を返却することがある
-* ``(0, nil)`` を返却することは非推奨。``(0, EOF)`` を返却する
-
-.. todo:: GoDocの本文を再確認する。ちょっと意味が違うかも。
+* 最大 ``len(p)`` バイトを読み取り、読み取ったバイト数 n とエラーを返却
+* ``n < len(p)`` だったとしてもバッファ p をすべて使っている場合がある
+* 非nilのエラーを返すか、次の呼び出しでエラーを返す(その時はn=0)
+* ``(0, nil)`` を返却することは非推奨。``(0, nil)`` はEOFを示さない。終端まで読んだときは ``(0, EOF)`` を返す
 
 要は **バイト列を読み取るためのインターフェース** です。読み取るものは、標準入力でも、ファイルでも、ソケット、バッファでもなんでもよいです。
 
 実装
 --------------------------------------------
 
-例えば ``os.File`` や ``bytes.Buffer`` 構造体は ``Read(p []byte) (n int, err error)`` メソッドを実装しており ``io.Reader`` インターフェースを満たしています。
+例えば ``os.File`` や ``bytes.Buffer`` 構造体は ``Read(p []byte) (n int, err error)`` メソッドを実装しており ``io.Reader`` インターフェースを満たしています。(同時に io.Writer も満たしていることが多い)
 
 .. code-block:: go
-    :caption: file.go
+    :caption: os/file.go
 
     type File struct {
         *file // os specific
@@ -65,22 +63,22 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         if err := f.checkValid("read"); err != nil {
             return 0, err
         }
+        // 実際の読み込み処理は各OSのファイルのreadに移譲
         n, e := f.read(b)
         return n, f.wrapErr("read", e)
     }
 
 .. code-block:: go
-    :caption: buffer.go
+    :caption: bytes/buffer.go
 
     type Buffer struct {
-        buf      []byte // contents are the bytes buf[off : len(buf)]
-        off      int    // read at &buf[off], write at &buf[len(buf)]
-        lastRead readOp // last read operation, so that Unread* can work correctly.
+        buf      []byte // データ buf[off : len(buf)] などと参照される
+        off      int    // オフセット
+        lastRead readOp
     }
 
     // ...
 
-    // Readメソッドを実装しているので、io.Readerインターフェースを満たしている
     // バッファから len(p) バイト読み出すか、バッファが空になるまで読む
     func (b *Buffer) Read(p []byte) (n int, err error) {
         b.lastRead = opInvalid
@@ -101,7 +99,15 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
     }
 
 
-実際どんな感じで ``io.Reader`` の ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。 ``ioutil.ReadFile`` はファイルからデータを読み取るときに使います。
+.. note:: 
+
+    ちなみにメソッドのレシーバがポインタ型だったけど、ちゃんとインターフェースを実装できているの？という疑問があるかも知れません。私はそう思いました。上記の例だと ``(f *File) Read(b []byte) (n int, err error)`` と ``(f *File)`` になっている点です。
+
+    結論から言うと大丈夫です。Goの仕様として、あるタイプTのポインタ型として宣言されているメソッドは、レシーバ *T と T で宣言されたメソッドとして扱われます。
+
+    https://golang.org/ref/spec#Method_sets
+
+実際どんな感じで ``io.Reader`` の ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。``ioutil.ReadFile`` はファイルからデータを読み取るときに使います。
 
 .. code-block:: go
     :caption: ioutil/ioutil.go
@@ -134,10 +140,13 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         // バッファオーバーフローした場合のみpanicをrecoverしてbytes.ErrTooLargeのエラーとして返す
         // それ以外は panic を起こす
         defer func() {
+            // 滅多に見ない recover() 関数
             e := recover()
             if e == nil {
                 return
             }
+            // panicが発生したエラーの型をチェックして、エラー型だった場合は、値を見て
+            // bytes.ErrTooLarge("bytes.Buffer: too large")の場合はエラーとして回復
             if panicErr, ok := e.(error); ok && panicErr == bytes.ErrTooLarge {
                 err = panicErr
             } else {
@@ -154,6 +163,9 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
 .. code-block:: go
     :caption: bytes/buffer.go
+
+    // 最小のバッファサイズ(512バイト)
+    const MinRead = 512
 
     // io.Reader から EOF までデータを読み取り、バッファに追加する
     // 必要に応じてバッファを拡張する
@@ -185,10 +197,15 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         }
     }
 
+.. note::
+
+    これは想定ですがos.Openやos.Createで生成したos.File構造体はio.Readerを満たしているのでOpenしたファイルをioutil.ReadAllに渡せるのですが、わざわざioutil.ReadFileがあるのは、バッファ領域の確保をより正確にするためな気がします。
+    事前にバッファをどれくらいのバッファが必要なのかある程度わかるため。
+
 インターフェースを扱う
 --------------------------------------------
 
-個人的に良い実装だな、と思うのは ``ReadAll`` のシグネチャが以下のようになっていることです。``readAll`` や ``bytes.ReadFrom`` も同様。
+個人的に良い実装だな、と思うのは ``ReadAll`` のシグネチャが以下のように ``io.Reader`` を受け取るようになっていることです。``readAll`` や ``bytes.ReadFrom``, ``bufio.NewReader`` も同様。
 
 .. code-block:: go
 
@@ -202,11 +219,16 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
     ReadFrom(r io.Reader) (n int64, err error)
 
-``ReadAll`` メソッドは ``r io.Reader`` とインターフェースを受けるようになっています。これによって読み出す対象が何であるか気にする必要がなく ``io.Reader`` インターフェースを満たす構造体であれば何でも受け取ることできます。ファイルを読みたい場合は ``ReadFile`` のようにラッパーとして実装すればよいだけでOKです。
+.. code-block:: go
+
+    NewReader(rd io.Reader) *Reader  // bufio.Reader も io.Reader を満たしている
+
+
+``ReadAll`` メソッドは ``r io.Reader`` とインターフェースを引数に取るようになっています。これによって読み出す対象が何であるか気にする必要がなく ``io.Reader`` インターフェースを満たす構造体であれば何でも受け取ることできます。ファイルを読みたい場合は ``ReadFile`` のようにラッパーとして実装すればよいだけでOKです。
 
 .. note:: インターフェースを使った汎用的なデザインになっているのが良いと思っているのでGo特有というわけではない気がします。JavaだとInterfaceとかAbstractクラスとか使って実装する気がします。
 
-上記のメソッドの他にも、例えば json を扱う際の ``json.NewDecoder`` は以下のようになっていますし、独自にI/Oを扱う場合は ``io.Reader`` を受けとるようにすればよいのではないでしょうか。
+上記のメソッド/関数の他にも、例えば json を扱う際の ``json.NewDecoder`` は以下のようになっていますし、独自にI/Oを扱う場合は ``io.Reader`` を受けとるようにすればよいのではないでしょうか。
 
 .. code-block:: go
 
@@ -232,6 +254,7 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
         if n == 0 {
             return 0, io.EOF
         }
+        // copyはビルトイン関数
         copy(buf[:n], r.content[r.position:r.position+n])
         r.position += n
         return n, nil
@@ -445,9 +468,11 @@ io.Copy
 
 .. note::
 
-    Go Conference で聞いた高度なテクニックですが、``sync.Pool`` でバッファを明示的に指定して io.Copy から io.CopyBuffer にしたところ、メモリ使用量が削減したという話もあります
+    Go Conference で聞いた高度なテクニックですが、``sync.Pool`` でバッファを明示的に指定して io.Copy から io.CopyBuffer にしたところ、メモリ使用量が削減したという話もあります。
 
     https://github.com/src-d/go-git/pull/1179
+
+    どちらかというと sync.Pool の性質(メモリに割り当てられているがもう不要なアイテムをキャッシュし、後で再利用することで、 GC の負荷を下げる)を利用しているテクということだと思います。
 
 copyするバイト数がわかっていれば、``CopyN`` で明示的にコピーするバイト数を指定することもできます。``io.Copy`` のラッパー。
 
@@ -468,7 +493,7 @@ copyするバイト数がわかっていれば、``CopyN`` で明示的にコピ
 その他
 ============================================
 
-上記に上げた ``io.Reader`` や ``io.Writer`` 以外にも ``io.Closer`` ``io.Seeker`` があります。あとは埋め込みのインターフェースと便利な関数(``io.MultiWriter``とか)があります。``io.MultiWriter`` は io.Writer のスライスを内部で保持していて、それぞれの io.Writer の Write メソッドを呼んでいました。``io/pipe.go`` はコードリーディングしていないです。
+上記に上げた ``io.Reader`` や ``io.Writer`` 以外にも ``io.Closer`` ``io.Seeker`` があります。あとは埋め込みのインターフェースと便利な関数( ``io.MultiWriter`` とか)があります。``io.MultiWriter`` は ``io.Writer`` のスライスを内部で保持していて、それぞれの ``io.Writer`` の ``Write`` メソッドを呼んでいました。デザインパターンでいうところのデコレータパターンで実装されています。``io/pipe.go`` はコードリーディングしていないです。
 
 .. code-block:: go
     :caption: io/multi.go
@@ -509,11 +534,3 @@ copyするバイト数がわかっていれば、``CopyN`` で明示的にコピ
 * https://github.com/jesseduffield/notes/wiki/Golang-IO-Cookbook
 * https://medium.com/@matryer/golang-advent-calendar-day-seventeen-io-reader-in-depth-6f744bb4320b
 * https://qiita.com/ktnyt/items/8ede94469ba8b1399b12
-
-テスト
-============================================
-
-* This is test.
-* This is test2.
-* This is test3.
-
