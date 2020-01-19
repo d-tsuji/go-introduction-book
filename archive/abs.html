@@ -1,0 +1,429 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>ABS(AtCoder Beginners Selection) &#8212; Go言語入門  ドキュメント</title>
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ABS(AtCoder Beginners Selection)</a><ul>
+<li><a class="reference internal" href="#abc086a-product">1. ABC086A - Product</a></li>
+<li><a class="reference internal" href="#abc081a-placing-marbles">2. ABC081A - Placing Marbles</a></li>
+<li><a class="reference internal" href="#abc081b-shift-only">3. ABC081B - Shift only</a></li>
+<li><a class="reference internal" href="#abc087b-coins">4. ABC087B - Coins</a></li>
+<li><a class="reference internal" href="#abc083b-some-sums">5. ABC083B - Some Sums</a></li>
+<li><a class="reference internal" href="#abc088b-card-game-for-two">6. ABC088B - Card Game for Two</a></li>
+<li><a class="reference internal" href="#abc085b-kagami-mochi">7. ABC085B - Kagami Mochi</a></li>
+<li><a class="reference internal" href="#abc085c-otoshidama">8. ABC085C - Otoshidama</a></li>
+<li><a class="reference internal" href="#abc049c-daydream">9. ABC049C - 白昼夢 / Daydream</a></li>
+<li><a class="reference internal" href="#abc086c-traveling">10. ABC086C - Traveling</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/archive/abs.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 1014</li>
+            <li>非アスキー: 1094</li>
+            <li>合計文字数: 2108</li>
+            <li>半角換算: 3202</li>
+            <li>全角換算: 1601.0</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="abs-atcoder-beginners-selection">
+<h1>ABS(AtCoder Beginners Selection)<a class="headerlink" href="#abs-atcoder-beginners-selection" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>簡単な文法のおさらいとして、プログラミングコンテストサイトのオンラインジャッジを用いて理解度を確認してみましょう。ここでは <a class="reference external" href="https://atcoder.jp/contests/abs">ABS(AtCoder Beginners Selection)</a> を用いて確認してみます。</p>
+<div class="section" id="abc086a-product">
+<h2>1. ABC086A - Product<a class="headerlink" href="#abc086a-product" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>【問題概要】</p>
+<p>二つの正整数 <span class="math notranslate nohighlight">\(a, b\)</span> が与えられます。 <span class="math notranslate nohighlight">\(a\)</span> と <span class="math notranslate nohighlight">\(b\)</span> の積が偶数か奇数か判定してください。</p>
+<p>【制約】</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le a, b \le 10000\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(a, b\)</span> は整数</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nx">a</span><span class="o">*</span><span class="nx">b</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Even&quot;</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Odd&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc081a-placing-marbles">
+<h2>2. ABC081A - Placing Marbles<a class="headerlink" href="#abc081a-placing-marbles" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong></p>
+<p>0 と 1 のみから成る 3 桁の番号 s が与えられます。1 が何個含まれるかを求めてください。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">)</span>
+    <span class="nx">ans</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">s</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="sc">&#39;1&#39;</span> <span class="p">{</span>
+            <span class="nx">ans</span><span class="o">++</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">ans</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc081b-shift-only">
+<h2>3. ABC081B - Shift only<a class="headerlink" href="#abc081b-shift-only" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong>
+黒板に <span class="math notranslate nohighlight">\(N\)</span> 個の正の整数 <span class="math notranslate nohighlight">\(A_1, \dots, A_N\)</span> が書かれています。
+すぬけ君は，黒板に書かれている整数がすべて偶数であるとき，次の操作を行うことができます。</p>
+<ul class="simple">
+<li><p>黒板に書かれている整数すべてを，<cite>2</cite> で割ったものに置き換える。</p></li>
+</ul>
+<p>すぬけ君は最大で何回操作を行うことができるかを求めてください。</p>
+<p><strong>【制約】</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le N \le 200\)</span></p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">n</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">n</span><span class="p">)</span>
+    <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="p">}</span>
+
+    <span class="nx">ans</span> <span class="o">:=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">30</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">a</span> <span class="p">{</span>
+        <span class="nx">cnt</span> <span class="o">:=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="nx">v</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nx">cnt</span><span class="o">++</span>
+            <span class="nx">v</span> <span class="o">/=</span> <span class="mi">2</span>
+        <span class="p">}</span>
+        <span class="nx">ans</span> <span class="p">=</span> <span class="nx">min</span><span class="p">(</span><span class="nx">ans</span><span class="p">,</span> <span class="nx">cnt</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">ans</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">min</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">x</span> <span class="p">&lt;</span> <span class="nx">y</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">x</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">y</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc087b-coins">
+<h2>4. ABC087B - Coins<a class="headerlink" href="#abc087b-coins" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong>
+500 円玉を <span class="math notranslate nohighlight">\(A\)</span> 枚、100 円玉を <span class="math notranslate nohighlight">\(B\)</span> 枚、50 円玉を <span class="math notranslate nohighlight">\(C\)</span> 枚持っています。これらの硬貨の中から何枚かを選び、合計金額をちょうど <span class="math notranslate nohighlight">\(X\)</span> 円にする方法は何通りあるでしょうか？</p>
+<p><strong>【制約】</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(0 \le A, B, C \le 50\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(A + B + C \ge 1\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(50 \le X \le 20000\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(A, B, C\)</span> は整数である</p></li>
+<li><p><span class="math notranslate nohighlight">\(X\)</span> は <span class="math notranslate nohighlight">\(50\)</span> の倍数である</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">x</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">c</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">x</span><span class="p">)</span>
+    <span class="nx">ans</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">a</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;=</span> <span class="nx">b</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="nx">k</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;=</span> <span class="nx">c</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="mi">500</span><span class="o">*</span><span class="nx">i</span><span class="o">+</span><span class="mi">100</span><span class="o">*</span><span class="nx">j</span><span class="o">+</span><span class="mi">50</span><span class="o">*</span><span class="nx">k</span> <span class="o">==</span> <span class="nx">x</span> <span class="p">{</span>
+                    <span class="nx">ans</span><span class="o">++</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">ans</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc083b-some-sums">
+<h2>5. ABC083B - Some Sums<a class="headerlink" href="#abc083b-some-sums" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong>
+<cite>1</cite> 以上 <span class="math notranslate nohighlight">\(N\)</span> 以下の整数のうち、<cite>10</cite> 進法で各桁の和が <span class="math notranslate nohighlight">\(A\)</span> 以上 <span class="math notranslate nohighlight">\(B\)</span> 以下であるものについて、総和を求めてください。</p>
+<p><strong>【制約】</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le N \le 10^4\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(1 \le A \le B \le 36\)</span></p></li>
+<li><p>入力はすべて整数</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">n</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">b</span><span class="p">)</span>
+    <span class="nx">ans</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">sum</span> <span class="o">:=</span> <span class="nx">dsum</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">a</span> <span class="o">&lt;=</span> <span class="nx">sum</span> <span class="o">&amp;&amp;</span> <span class="nx">sum</span> <span class="o">&lt;=</span> <span class="nx">b</span> <span class="p">{</span>
+            <span class="nx">ans</span> <span class="o">+=</span> <span class="nx">i</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">ans</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">dsum</span><span class="p">(</span><span class="nx">x</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">ret</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">x</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">10</span>
+        <span class="nx">x</span> <span class="o">/=</span> <span class="mi">10</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">ret</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc088b-card-game-for-two">
+<h2>6. ABC088B - Card Game for Two<a class="headerlink" href="#abc088b-card-game-for-two" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong>
+<cite>N</cite> 枚のカードがあり、<cite>i</cite> 枚目のカードには <span class="math notranslate nohighlight">\(a_i\)</span> という数が書かれています。
+Alice と Bob はこれらのカードを使ってゲームを行います。ゲームでは 2 人が交互に 1 枚ずつカードを取っていきます。Alice が先にカードを取ります。
+2 人がすべてのカードを取ったときゲームは終了し、取ったカードの数の合計がその人の得点になります。2 人とも自分の得点を最大化するように最適戦略をとったとき、Alice は Bob より何点多くの得点を獲得できるかを求めてください。</p>
+<p><strong>【制約】</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(N\)</span> は <span class="math notranslate nohighlight">\(1\)</span> 以上 <span class="math notranslate nohighlight">\(100\)</span> 以下の整数</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">n</span><span class="p">)</span>
+    <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="p">}</span>
+    <span class="nx">sort</span><span class="p">.</span><span class="nx">Sort</span><span class="p">(</span><span class="nx">sort</span><span class="p">.</span><span class="nx">Reverse</span><span class="p">(</span><span class="nx">sort</span><span class="p">.</span><span class="nx">IntSlice</span><span class="p">(</span><span class="nx">a</span><span class="p">)))</span>
+    <span class="nx">alice</span><span class="p">,</span> <span class="nx">bob</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nx">alice</span> <span class="o">+=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">bob</span> <span class="o">+=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">alice</span> <span class="o">-</span> <span class="nx">bob</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc085b-kagami-mochi">
+<h2>7. ABC085B - Kagami Mochi<a class="headerlink" href="#abc085b-kagami-mochi" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong>
+<cite>N</cite> 個の整数 <span class="math notranslate nohighlight">\(d[0], d[1], \dots, d[N-1]\)</span> が与えられます。
+この中に何種類の異なる値があるでしょうか？</p>
+<p><strong>【制約】</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le N \le 100\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(1 \le d[i] \le 100\)</span></p></li>
+<li><p>入力値はすべて整数</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">n</span><span class="p">)</span>
+    <span class="nx">d</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+    <span class="nx">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">d</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+        <span class="nx">m</span><span class="p">[</span><span class="nx">d</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span> <span class="p">=</span> <span class="kc">true</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">m</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc085c-otoshidama">
+<h2>8. ABC085C - Otoshidama<a class="headerlink" href="#abc085c-otoshidama" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>【問題概要】</strong>
+10000 円札と、5000 円札と、1000 円札が合計で <span class="math notranslate nohighlight">\(N\)</span> 枚あって、合計金額が <span class="math notranslate nohighlight">\(Y\)</span> 円であったという。このような条件を満たす各金額の札の枚数の組を 1 つ求めなさい。そのような状況が存在し得ない場合には -1 -1 -1 と出力しなさい。</p>
+<p><strong>【制約】</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le N \le 2000\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(1000 \le Y \le 2*10^7\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(N\)</span> は整数</p></li>
+<li><p><span class="math notranslate nohighlight">\(Y\)</span> は <span class="math notranslate nohighlight">\(1000\)</span> の倍数</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">n</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">y</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">2000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;=</span> <span class="mi">2000</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+            <span class="nx">k</span> <span class="o">:=</span> <span class="nx">n</span> <span class="o">-</span> <span class="nx">i</span> <span class="o">-</span> <span class="nx">j</span>
+            <span class="k">if</span> <span class="nx">k</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="mi">10000</span><span class="o">*</span><span class="nx">i</span><span class="o">+</span><span class="mi">5000</span><span class="o">*</span><span class="nx">j</span><span class="o">+</span><span class="mi">1000</span><span class="o">*</span><span class="nx">k</span> <span class="o">==</span> <span class="nx">y</span> <span class="p">{</span>
+                    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%d %d %d\n&quot;</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;-1 -1 -1&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc049c-daydream">
+<h2>9. ABC049C - 白昼夢 / Daydream<a class="headerlink" href="#abc049c-daydream" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>【問題概要】
+英小文字からなる文字列 <span class="math notranslate nohighlight">\(S\)</span> が与えられます。
+<cite>T</cite> が空文字列である状態から始めて、以下の操作を好きな回数繰り返すことで <span class="math notranslate nohighlight">\(S = T\)</span> とすることができるか判定してください。</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(T\)</span> の末尾に &quot;dream&quot;, &quot;dreamer&quot;, &quot;erase&quot;, &quot;eraser&quot; のいずれかを追加する。</p></li>
+</ul>
+<p>【制約】</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le |S| \le 10^5\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(S\)</span> は英小文字からなる</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">)</span>
+    <span class="nx">ts</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;dream&quot;</span><span class="p">,</span> <span class="s">&quot;dreamer&quot;</span><span class="p">,</span> <span class="s">&quot;erase&quot;</span><span class="p">,</span> <span class="s">&quot;eraser&quot;</span><span class="p">}</span>
+    <span class="nx">i</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">c</span> <span class="o">:=</span> <span class="kc">false</span>
+        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">t</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">ts</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">i</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">s</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="nx">t</span><span class="p">):</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">t</span> <span class="p">{</span>
+                <span class="nx">i</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+                <span class="nx">c</span> <span class="p">=</span> <span class="kc">true</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">c</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;NO&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;YES&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="abc086c-traveling">
+<h2>10. ABC086C - Traveling<a class="headerlink" href="#abc086c-traveling" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>【問題概要】</p>
+<p>シカの AtCoDeer くんは二次元平面上で旅行をしようとしています。AtCoDeer くんの旅行プランでは、時刻 <span class="math notranslate nohighlight">\(0\)</span> に 点 <span class="math notranslate nohighlight">\((0, 0)\)</span> を出発し、<span class="math notranslate nohighlight">\(1\)</span> 以上 <span class="math notranslate nohighlight">\(N\)</span> 以下の各 <span class="math notranslate nohighlight">\(i\)</span> に対し、時刻 <span class="math notranslate nohighlight">\(t_i\)</span> に 点 <span class="math notranslate nohighlight">\((x_i, y_i)\)</span> を訪れる予定です。</p>
+<p>AtCoDeer くんが時刻 <span class="math notranslate nohighlight">\(t\)</span> に 点 <span class="math notranslate nohighlight">\((x, y)\)</span> にいる時、 時刻 <span class="math notranslate nohighlight">\(t+1\)</span> には 点 <span class="math notranslate nohighlight">\((x+1,y), (x−1,y), (x,y+1), (x,y−1)\)</span> のうちいずれかに存在することができます。その場にとどまることは出来ないことに注意してください。AtCoDeer くんの旅行プランが実行可能かどうか判定してください。</p>
+<p>【制約】</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(1 \le N \le 10^5\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(0 \le x_i, y_i \le 10^5\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(1 \le t_i \le t_{i+1} \le 10^5\)</span></p></li>
+<li><p>入力はすべて整数</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">n</span><span class="p">)</span>
+    <span class="nx">t</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">t</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="o">&amp;</span><span class="nx">x</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="o">&amp;</span><span class="nx">y</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">n</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">dist</span> <span class="o">:=</span> <span class="nx">abs</span><span class="p">(</span><span class="nx">x</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">-</span><span class="nx">x</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="nx">abs</span><span class="p">(</span><span class="nx">y</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">-</span><span class="nx">y</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="nx">time</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">-</span> <span class="nx">t</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nx">dist</span> <span class="p">&gt;</span> <span class="nx">time</span> <span class="o">||</span> <span class="p">(</span><span class="nx">time</span><span class="o">-</span><span class="nx">dist</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;No&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Yes&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">abs</span><span class="p">(</span><span class="nx">x</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">x</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">-</span><span class="nx">x</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">x</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>

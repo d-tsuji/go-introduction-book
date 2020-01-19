@@ -1,0 +1,386 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>並行処理 &#8212; Go言語入門  ドキュメント</title>
+    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">並行処理</a><ul>
+<li><a class="reference internal" href="#goroutine">goroutine</a></li>
+<li><a class="reference internal" href="#channel">Channel</a></li>
+<li><a class="reference internal" href="#select">Select</a></li>
+<li><a class="reference internal" href="#context">context</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/archive/Parallel/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 172</li>
+            <li>非アスキー: 1015</li>
+            <li>合計文字数: 1187</li>
+            <li>半角換算: 2202</li>
+            <li>全角換算: 1101.0</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>並行処理<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="section" id="goroutine">
+<h2>goroutine<a class="headerlink" href="#goroutine" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>goroutine (ゴルーチン)は、Goのランタイムに管理される軽量なスレッドです。</p>
+<p>go 関数 で goroutine として動作します。</p>
+<p>並行して処理されていることがわかります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">f</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%d &quot;</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">go</span> <span class="nx">f</span><span class="p">()</span>
+    <span class="nx">f</span><span class="p">()</span>
+<span class="p">}</span>
+<span class="c1">// 0 0 1 1 2 2 3 3 4 4</span>
+</pre></div>
+</div>
+<p>なお以下のようにすると main 関数の処理が終了してしまい、goroutine が動作中に関わらず処理が終了します。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">f</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%d &quot;</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">go</span> <span class="nx">f</span><span class="p">()</span>
+    <span class="k">go</span> <span class="nx">f</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ゴルーチンからゴルーチンを呼び出すことも可能です。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;[%v] main() start.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+
+    <span class="n">go</span> <span class="n">Do2</span><span class="p">()</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;[%v] main() stopped.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">Do2</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;[%v] Do2() start.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+    <span class="n">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">go</span> <span class="n">heavyProcess</span><span class="p">()</span>
+    <span class="p">}()</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;[%v] Do2() completed.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">heavyProcess</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;[%v] heavyProcess() start.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;[%v] heavyProcess() completed.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="o">//</span> <span class="p">[</span><span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mf">19.1271209</span> <span class="o">+</span><span class="mi">0900</span> <span class="n">JST</span> <span class="n">m</span><span class="o">=+</span><span class="mf">0.002000001</span><span class="p">]</span> <span class="n">main</span><span class="p">()</span> <span class="n">start</span><span class="o">.</span>
+<span class="o">//</span> <span class="p">[</span><span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mf">19.1631137</span> <span class="o">+</span><span class="mi">0900</span> <span class="n">JST</span> <span class="n">m</span><span class="o">=+</span><span class="mf">0.037992801</span><span class="p">]</span> <span class="n">Do2</span><span class="p">()</span> <span class="n">start</span><span class="o">.</span>
+<span class="o">//</span> <span class="p">[</span><span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mf">19.1631137</span> <span class="o">+</span><span class="mi">0900</span> <span class="n">JST</span> <span class="n">m</span><span class="o">=+</span><span class="mf">0.037992801</span><span class="p">]</span> <span class="n">Do2</span><span class="p">()</span> <span class="n">completed</span><span class="o">.</span>
+<span class="o">//</span> <span class="p">[</span><span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mf">19.1631137</span> <span class="o">+</span><span class="mi">0900</span> <span class="n">JST</span> <span class="n">m</span><span class="o">=+</span><span class="mf">0.037992801</span><span class="p">]</span> <span class="n">heavyProcess</span><span class="p">()</span> <span class="n">start</span><span class="o">.</span>
+<span class="o">//</span> <span class="p">[</span><span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mf">22.1634087</span> <span class="o">+</span><span class="mi">0900</span> <span class="n">JST</span> <span class="n">m</span><span class="o">=+</span><span class="mf">3.038287801</span><span class="p">]</span> <span class="n">heavyProcess</span><span class="p">()</span> <span class="n">completed</span><span class="o">.</span>
+<span class="o">//</span> <span class="p">[</span><span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">07</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mf">24.1636904</span> <span class="o">+</span><span class="mi">0900</span> <span class="n">JST</span> <span class="n">m</span><span class="o">=+</span><span class="mf">5.038569501</span><span class="p">]</span> <span class="n">main</span><span class="p">()</span> <span class="n">stopped</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="channel">
+<h2>Channel<a class="headerlink" href="#channel" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>チャネル( Channel )型は、チャネルオペレータの &lt;- を用いて値の送受信ができる通り道です。同一プロセスのゴルーチン間での、通信・同期・値の共用、に使用します。GoのチャネルはFIFOキューに並行処理をしても正しく処理できることを保証する機能を組み合わせたものです。</p>
+<p>Goならわかるシステムプログラミング <a class="footnote-reference brackets" href="#id3" id="id2">1</a> のよると、チャネルには以下の3つの性質があります。</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">チャネルは、データを順序よく受け渡すためのデータ構造である</div>
+<div class="line">チャネルは、並行処理されても正しくデータを受け渡す同期機構である</div>
+<div class="line">チャネルは、読み込み・書き込みの準備ができるまでブロックする機能である</div>
+</div>
+</div></blockquote>
+<p>チャネル型は chan です。</p>
+<p>チャネルの送受信の書式は以下のようになります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">chan</span> <span class="nx">要素型</span>
+<span class="kd">chan</span> <span class="o">&lt;-</span> <span class="nx">送信する値</span> <span class="p">(</span><span class="nx">送信専用チャネル</span><span class="p">)</span>
+<span class="o">&lt;-</span> <span class="kd">chan</span> <span class="p">(</span><span class="nx">受信専用チャネル</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>チャネルの生成は以下のように宣言します。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">要素型</span><span class="p">)</span>
+<span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">要素型</span><span class="p">,</span> <span class="nx">キャパシティ</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>チャネルを利用した送受信は以下のようになります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">チャネル</span> <span class="o">&lt;-</span> <span class="nx">送信する値</span> <span class="c1">// 送信</span>
+<span class="o">&lt;-</span> <span class="nx">チャネル</span> <span class="c1">// 受信</span>
+</pre></div>
+</div>
+<p>以下はchar &lt;-string 型のチャネルを用いてメッセージをやりとりするサンプルです。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">message</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">string</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">m</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">m</span> <span class="o">&lt;-</span> <span class="s">&quot;Ping &quot;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">m</span> <span class="o">&lt;-</span> <span class="s">&quot;Pong &quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;func() finished.&quot;</span><span class="p">)</span>
+    <span class="p">}(</span><span class="nx">message</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+        <span class="nx">msg</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">message</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+            <span class="k">break</span>
+        <span class="p">}</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// func() finished.</span>
+<span class="c1">// Ping Pong Ping Pong Ping</span>
+</pre></div>
+</div>
+<p>チャネルは、キャパシティの有無によって動作が変わってきます。バッファつきのチャネルの場合、送信側はバッファがある限りすぐに送信を完了して、次の処理を実行できます。一方、バッファなしのチャネルの場合、送信後、受信されないとそれまで処理がブロックされます。</p>
+<p>先程の例でチャネル生成時に以下のようにバッファありのチャネルを生成していました。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">string</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>これを以下のようにバッファなしのチャネルに変更してみます。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>送信側は受信側でチャネルから受信されるまでブロッキングされるので、出力される順序が変わることがわかります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">message</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">string</span><span class="p">)</span>
+
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">m</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">m</span> <span class="o">&lt;-</span> <span class="s">&quot;Ping &quot;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">m</span> <span class="o">&lt;-</span> <span class="s">&quot;Pong &quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;func() finished.&quot;</span><span class="p">)</span>
+    <span class="p">}(</span><span class="nx">message</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+        <span class="nx">msg</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">message</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+            <span class="k">break</span>
+        <span class="p">}</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Ping Pong Ping Pong Ping func() finished.</span>
+</pre></div>
+</div>
+<p>バッファチャネルを使った別の例を見てます。次の例は同時実行数を制限するようなチャネルの使い方です。いわゆるセマフォです。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">concurrency</span> <span class="p">=</span> <span class="mi">3</span>
+<span class="kd">const</span> <span class="nx">total</span> <span class="p">=</span> <span class="mi">10</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">semaphore</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">concurrency</span><span class="p">)</span>
+
+    <span class="k">go</span> <span class="nx">consume</span><span class="p">(</span><span class="nx">semaphore</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">total</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">semaphore</span> <span class="o">&lt;-</span> <span class="nx">i</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[%v] Add Semaphore: num -&gt; %d\n&quot;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">(),</span> <span class="nx">i</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">consume</span><span class="p">(</span><span class="nx">semaphore</span> <span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">total</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">_</span> <span class="p">=</span> <span class="o">&lt;-</span><span class="nx">semaphore</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">500</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>結果は以下のように最初にチャネルのバッファ上限である3つまで追加され、その後は0.5秒ごとに処理するゴルーチンの結果を待って逐次処理されます。ゴルーチンは最大3並列で処理されていることがわかります。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[2019-06-30 22:56:24.1686604 +0900 JST m=+0.002497701] Add Semaphore: num -&gt; 0
+[2019-06-30 22:56:24.2056768 +0900 JST m=+0.039514101] Add Semaphore: num -&gt; 1
+[2019-06-30 22:56:24.2056768 +0900 JST m=+0.039514101] Add Semaphore: num -&gt; 2
+[2019-06-30 22:56:27.1689285 +0900 JST m=+3.002765801] Add Semaphore: num -&gt; 3
+[2019-06-30 22:56:27.6691217 +0900 JST m=+3.502959001] Add Semaphore: num -&gt; 4
+[2019-06-30 22:56:28.1695923 +0900 JST m=+4.003429601] Add Semaphore: num -&gt; 5
+[2019-06-30 22:56:28.6700202 +0900 JST m=+4.503857501] Add Semaphore: num -&gt; 6
+[2019-06-30 22:56:29.1704991 +0900 JST m=+5.004336401] Add Semaphore: num -&gt; 7
+[2019-06-30 22:56:29.6706213 +0900 JST m=+5.504458601] Add Semaphore: num -&gt; 8
+[2019-06-30 22:56:30.1715697 +0900 JST m=+6.005407001] Add Semaphore: num -&gt; 9
+</pre></div>
+</div>
+</div>
+<div class="section" id="select">
+<h2>Select<a class="headerlink" href="#select" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>select は複数のチャネルに対して同時に送受信待ちを行うときに使用します。以下の例では、チャネルを通じてデータを送受信する場合に、データ送信用のチャネルとは別に、送受信が終わったことを示すチャネルを用いています。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">fibonacci</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">quit</span> <span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="k">select</span> <span class="p">{</span>
+
+        <span class="c1">// (c)チャネルに値を送信</span>
+        <span class="k">case</span> <span class="nx">c</span> <span class="o">&lt;-</span> <span class="nx">x</span><span class="p">:</span>
+            <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="p">=</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span><span class="o">+</span><span class="nx">y</span>
+
+            <span class="c1">// (quit)チャネルから値を受信できるようになった場合は関数からreturnする</span>
+        <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">quit</span><span class="p">:</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;quit&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+    <span class="nx">quit</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+
+    <span class="c1">// 値の送受信をゴルーチンとして非同期処理する</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="c1">// チャネルから値を受信</span>
+            <span class="c1">// チャネルが空の場合は、チャネルに値が送信されるまでブロッキング</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%v &quot;</span><span class="p">,</span> <span class="o">&lt;-</span><span class="nx">c</span><span class="p">)</span>
+            <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">500</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1">// quit チャネルに値を送信することでfibonacci関数からreturnさせる</span>
+        <span class="nx">quit</span> <span class="o">&lt;-</span> <span class="mi">0</span>
+    <span class="p">}()</span>
+
+    <span class="nx">fibonacci</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">quit</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// 0 1 1 2 3 5 8 13 21 34 quit</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="context">
+<h2>context<a class="headerlink" href="#context" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>コンテキストの簡単な例を見てみます。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;start func()&quot;</span><span class="p">)</span>
+    <span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">WithCancel</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Background</span><span class="p">())</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%v second passes\n&quot;</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+            <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;func() is finished&quot;</span><span class="p">)</span>
+        <span class="nx">cancel</span><span class="p">()</span>
+    <span class="p">}()</span>
+    <span class="o">&lt;-</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;all tasks are finished&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// start func()</span>
+<span class="c1">// 0 second passes</span>
+<span class="c1">// 1 second passes</span>
+<span class="c1">// 2 second passes</span>
+<span class="c1">// 3 second passes</span>
+<span class="c1">// 4 second passes</span>
+<span class="c1">// func() is finished</span>
+<span class="c1">// all tasks are finished</span>
+</pre></div>
+</div>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p><a class="reference external" href="https://www.lambdanote.com/products/go">https://www.lambdanote.com/products/go</a></p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>
