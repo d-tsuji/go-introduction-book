@@ -41,27 +41,29 @@
   <h3><a href="../index.html">目次</a></h3>
   <ul>
 <li><a class="reference internal" href="#">io</a><ul>
-<li><a class="reference internal" href="#io-reader">io.Reader</a><ul>
+<li><a class="reference internal" href="#io-reader-interface">io.Reader (interface)</a><ul>
 <li><a class="reference internal" href="#id2">シグネチャ</a></li>
 <li><a class="reference internal" href="#id3">仕様</a></li>
 <li><a class="reference internal" href="#id4">実装</a></li>
-<li><a class="reference internal" href="#id7">インターフェースを扱う</a></li>
-<li><a class="reference internal" href="#id8">独自の io.Reader を作る</a></li>
+<li><a class="reference internal" href="#id11">インターフェースを扱う</a></li>
+<li><a class="reference internal" href="#io-reader">独自の io.Reader を作る</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#io-writer">io.Writer</a><ul>
-<li><a class="reference internal" href="#id9">シグネチャ</a></li>
-<li><a class="reference internal" href="#id10">仕様</a></li>
-<li><a class="reference internal" href="#id11">実装</a></li>
+<li><a class="reference internal" href="#io-writer-interface">io.Writer (interface)</a><ul>
+<li><a class="reference internal" href="#id12">シグネチャ</a></li>
+<li><a class="reference internal" href="#id13">仕様</a></li>
+<li><a class="reference internal" href="#id14">実装</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#io-copy">io.Copy</a><ul>
-<li><a class="reference internal" href="#id12">仕様</a></li>
-<li><a class="reference internal" href="#id13">実装</a></li>
+<li><a class="reference internal" href="#io-copy-func">io.Copy (func)</a><ul>
+<li><a class="reference internal" href="#id15">仕様</a></li>
+<li><a class="reference internal" href="#id16">実装</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id14">その他</a></li>
-<li><a class="reference internal" href="#id15">参考</a></li>
+<li><a class="reference internal" href="#io-multiwriter-func">io.MultiWriter (func)</a></li>
+<li><a class="reference internal" href="#io-pipe-func">io.Pipe (func)</a></li>
+<li><a class="reference internal" href="#id17">その他</a></li>
+<li><a class="reference internal" href="#id18">参考</a></li>
 </ul>
 </li>
 </ul>
@@ -79,11 +81,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 1566</li>
-            <li>非アスキー: 1961</li>
-            <li>合計文字数: 3527</li>
-            <li>半角換算: 5488</li>
-            <li>全角換算: 2744.0</li>
+            <li>英数記号: 1740</li>
+            <li>非アスキー: 2106</li>
+            <li>合計文字数: 3846</li>
+            <li>半角換算: 5952</li>
+            <li>全角換算: 2976.0</li>
         </ul>
     </p>
 </div>
@@ -106,7 +108,7 @@
           <div class="body" role="main">
             
   <div class="section" id="io">
-<h1><a class="toc-backref" href="#id26">io</a><a class="headerlink" href="#io" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1><a class="toc-backref" href="#id30">io</a><a class="headerlink" href="#io" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <p>io パッケージの役割は以下の2つ</p>
 <ul class="simple">
 <li><p>I/Oプリミティブを抽象化する共通のインターフェース(osのファイルディスクリプタのioとか、バッファのioとか)</p></li>
@@ -119,24 +121,26 @@
 <div class="contents topic" id="id1">
 <p class="topic-title">目次</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#io" id="id26">io</a></p>
+<li><p><a class="reference internal" href="#io" id="id30">io</a></p>
 <ul>
-<li><p><a class="reference internal" href="#io-reader" id="id27">io.Reader</a></p></li>
-<li><p><a class="reference internal" href="#io-writer" id="id28">io.Writer</a></p></li>
-<li><p><a class="reference internal" href="#io-copy" id="id29">io.Copy</a></p></li>
-<li><p><a class="reference internal" href="#id14" id="id30">その他</a></p></li>
-<li><p><a class="reference internal" href="#id15" id="id31">参考</a></p></li>
+<li><p><a class="reference internal" href="#io-reader-interface" id="id31">io.Reader (interface)</a></p></li>
+<li><p><a class="reference internal" href="#io-writer-interface" id="id32">io.Writer (interface)</a></p></li>
+<li><p><a class="reference internal" href="#io-copy-func" id="id33">io.Copy (func)</a></p></li>
+<li><p><a class="reference internal" href="#io-multiwriter-func" id="id34">io.MultiWriter (func)</a></p></li>
+<li><p><a class="reference internal" href="#io-pipe-func" id="id35">io.Pipe (func)</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id36">その他</a></p></li>
+<li><p><a class="reference internal" href="#id18" id="id37">参考</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
-<div class="section" id="io-reader">
-<h2><a class="toc-backref" href="#id27">io.Reader</a><a class="headerlink" href="#io-reader" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="io-reader-interface">
+<h2><a class="toc-backref" href="#id31">io.Reader (interface)</a><a class="headerlink" href="#io-reader-interface" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="section" id="id2">
 <h3>シグネチャ<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>io.Readerは以下のシグネチャを持つReadメソッドを定義しているインターフェースです。<code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">byte[]</span></code> は引数の読み取りした内容を一時的に格納しておくバッファです。</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">io.go</span><a class="headerlink" href="#id16" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">io.go</span><a class="headerlink" href="#id19" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Reader</span> <span class="kd">interface</span> <span class="p">{</span>
     <span class="nx">Read</span><span class="p">(</span><span class="nx">p</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
 <span class="p">}</span>
@@ -159,8 +163,8 @@
 <div class="section" id="id4">
 <h3>実装<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>例えば <code class="docutils literal notranslate"><span class="pre">os.File</span></code> や <code class="docutils literal notranslate"><span class="pre">bytes.Buffer</span></code> 構造体は <code class="docutils literal notranslate"><span class="pre">Read(p</span> <span class="pre">[]byte)</span> <span class="pre">(n</span> <span class="pre">int,</span> <span class="pre">err</span> <span class="pre">error)</span></code> メソッドを実装しており <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> インターフェースを満たしています。(同時に io.Writer も満たしていることが多い)</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">os/file.go</span><a class="headerlink" href="#id17" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">os/file.go</span><a class="headerlink" href="#id20" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">File</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="o">*</span><span class="nx">file</span> <span class="c1">// os specific</span>
 <span class="p">}</span>
@@ -180,8 +184,8 @@
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">bytes/buffer.go</span><a class="headerlink" href="#id18" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">bytes/buffer.go</span><a class="headerlink" href="#id21" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Buffer</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">buf</span>      <span class="p">[]</span><span class="kt">byte</span> <span class="c1">// データ buf[off : len(buf)] などと参照される</span>
     <span class="nx">off</span>      <span class="kt">int</span>    <span class="c1">// オフセット</span>
@@ -213,13 +217,14 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
-<p>ちなみにメソッドのレシーバがポインタ型だったけど、ちゃんとインターフェースを実装できているの？という疑問があるかも知れません。私はそう思いました。上記の例だと <code class="docutils literal notranslate"><span class="pre">(f</span> <span class="pre">*File)</span> <span class="pre">Read(b</span> <span class="pre">[]byte)</span> <span class="pre">(n</span> <span class="pre">int,</span> <span class="pre">err</span> <span class="pre">error)</span></code> と <code class="docutils literal notranslate"><span class="pre">(f</span> <span class="pre">*File)</span></code> になっている点です。</p>
-<p>結論から言うと大丈夫です。Goの仕様として、あるタイプTのポインタ型として宣言されているメソッドは、レシーバ <a href="#id5"><span class="problematic" id="id6">*</span></a>T と T で宣言されたメソッドとして扱われます。</p>
-<p><a class="reference external" href="https://golang.org/ref/spec#Method_sets">https://golang.org/ref/spec#Method_sets</a></p>
+<p>ちなみにメソッドのレシーバがポインタ型(<a href="#id5"><span class="problematic" id="id6">*</span></a>T)だったけど、それで大丈夫？呼び出すときは型 T から呼び出しても大丈夫なの？という疑問があるかも知れません。私はそう思いました。</p>
+<p>結論から言うと大丈夫です。というよりもポインタに変換されて呼び出されます。まずGoの仕様として、あるタイプTのポインタ型(<a href="#id7"><span class="problematic" id="id8">*</span></a>T)として宣言されているメソッドは、レシーバ <a href="#id9"><span class="problematic" id="id10">*</span></a>T として宣言されたメソッドと T で宣言されたメソッドを含みます。また型 T の変数 t で宣言されたオブジェクトが t.x() のメソッドを呼び出すときに &amp;t のメソッドとして x が含まれている場合は (&amp;t).x() がGoのコンパイラによって変換されて呼び出されます。</p>
+<p><a class="reference external" href="https://golang.org/ref/spec#Method_sets">https://golang.org/ref/spec#Method_sets</a>
+<a class="reference external" href="https://golang.org/ref/spec#Calls">https://golang.org/ref/spec#Calls</a></p>
 </div>
 <p>実際どんな感じで <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> の <code class="docutils literal notranslate"><span class="pre">Read</span></code> メソッドが呼ばれているか <code class="docutils literal notranslate"><span class="pre">ioutil/ioutil.go</span></code> の <code class="docutils literal notranslate"><span class="pre">ReadFile</span></code> メソッドを見てみます。<code class="docutils literal notranslate"><span class="pre">ioutil.ReadFile</span></code> はファイルからデータを読み取るときに使います。</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">ioutil/ioutil.go</span><a class="headerlink" href="#id19" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">ioutil/ioutil.go</span><a class="headerlink" href="#id22" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// ファイルからデータを読み出す</span>
 <span class="c1">// すべて読んだ場合は EOF error は返さず nil を返す</span>
 <span class="kd">func</span> <span class="nx">ReadFile</span><span class="p">(</span><span class="nx">filename</span> <span class="kt">string</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
@@ -271,8 +276,8 @@
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">bytes/buffer.go</span><a class="headerlink" href="#id20" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">bytes/buffer.go</span><a class="headerlink" href="#id23" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// 最小のバッファサイズ(512バイト)</span>
 <span class="kd">const</span> <span class="nx">MinRead</span> <span class="p">=</span> <span class="mi">512</span>
 
@@ -310,12 +315,11 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
-<p>これは想定ですがos.Openやos.Createで生成したos.File構造体はio.Readerを満たしているのでOpenしたファイルをioutil.ReadAllに渡せるのですが、わざわざioutil.ReadFileがあるのは、バッファ領域の確保をより正確にするためな気がします。
-事前にバッファをどれくらいのバッファが必要なのかある程度わかるため。</p>
+<p>os.Openやos.Createで生成したos.File構造体はio.Readerを満たしており、Openした変数をそのままioutil.ReadAllに渡せるので、わざわざioutil.ReadFileがあるのはなんでだろうと思います。ファイルの場合は <code class="docutils literal notranslate"><span class="pre">stat()</span></code> などによりおおよそのファイルサイズがわかるため、バッファ領域の確保をより正確にするためと想定しています。</p>
 </div>
 </div>
-<div class="section" id="id7">
-<h3>インターフェースを扱う<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id11">
+<h3>インターフェースを扱う<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>個人的に良い実装だな、と思うのは <code class="docutils literal notranslate"><span class="pre">ReadAll</span></code> のシグネチャが以下のように <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> を受け取るようになっていることです。<code class="docutils literal notranslate"><span class="pre">readAll</span></code> や <code class="docutils literal notranslate"><span class="pre">bytes.ReadFrom</span></code>, <code class="docutils literal notranslate"><span class="pre">bufio.NewReader</span></code> も同様。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">ReadAll</span><span class="p">(</span><span class="nx">r</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Reader</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
 </pre></div>
@@ -341,8 +345,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id8">
-<h3>独自の io.Reader を作る<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="io-reader">
+<h3>独自の io.Reader を作る<a class="headerlink" href="#io-reader" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>独自の io.Reader インターフェースを実装した myReader 構造体を作ってみます。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">myReader</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">content</span>  <span class="p">[]</span><span class="kt">byte</span> <span class="c1">// 読み出す対象のバイト列</span>
@@ -390,10 +394,10 @@
 </div>
 </div>
 </div>
-<div class="section" id="io-writer">
-<h2><a class="toc-backref" href="#id28">io.Writer</a><a class="headerlink" href="#io-writer" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="section" id="id9">
-<h3>シグネチャ<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="io-writer-interface">
+<h2><a class="toc-backref" href="#id32">io.Writer (interface)</a><a class="headerlink" href="#io-writer-interface" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id12">
+<h3>シグネチャ<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> も <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> に似ているインターフェースで以下の <code class="docutils literal notranslate"><span class="pre">Write</span></code> メソッドだけを持っているインターフェースです。なので、 <code class="docutils literal notranslate"><span class="pre">Write</span></code> メソッドを満たしていれば <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> になれます。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Writer</span> <span class="kd">interface</span> <span class="p">{</span>
     <span class="nx">Write</span><span class="p">(</span><span class="nx">p</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
@@ -401,16 +405,16 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id10">
-<h3>仕様<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id13">
+<h3>仕様<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">p</span></code> から <code class="docutils literal notranslate"><span class="pre">len(p)</span></code> バイトを書き込み、書き込んだバイト数とエラーを返却する</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;</span> <span class="pre">len(p)</span></code> の場合は非nilのエラーの返却する必要がある</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> と比較すると仕様がシンプルです。</p>
 </div>
-<div class="section" id="id11">
-<h3>実装<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id14">
+<h3>実装<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>インターフェースを満たしている構造体の例を見てみます。例えば <code class="docutils literal notranslate"><span class="pre">os.File</span></code> は以下のように実装しています。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">File</span><span class="p">)</span> <span class="nx">Write</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">checkValid</span><span class="p">(</span><span class="s">&quot;write&quot;</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
@@ -435,8 +439,8 @@
 </pre></div>
 </div>
 <p>また <code class="docutils literal notranslate"><span class="pre">bufio.Buffer</span></code> では以下のように実装しています。</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">bufio/buffer.go</span><a class="headerlink" href="#id21" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">bufio/buffer.go</span><a class="headerlink" href="#id24" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">Buffer</span><span class="p">)</span> <span class="nx">Write</span><span class="p">(</span><span class="nx">p</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">b</span><span class="p">.</span><span class="nx">lastRead</span> <span class="p">=</span> <span class="nx">opInvalid</span>
     <span class="nx">m</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">tryGrowByReslice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">p</span><span class="p">))</span>
@@ -449,8 +453,8 @@
 </div>
 </div>
 <p>実際どんな感じで <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> の <code class="docutils literal notranslate"><span class="pre">Write</span></code> メソッドが呼ばれているか見てみます。</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text">io/io.go</span><a class="headerlink" href="#id22" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">io/io.go</span><a class="headerlink" href="#id25" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WriteString</span><span class="p">(</span><span class="nx">w</span> <span class="nx">Writer</span><span class="p">,</span> <span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="nx">sw</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">w</span><span class="p">.(</span><span class="nx">StringWriter</span><span class="p">);</span> <span class="nx">ok</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nx">sw</span><span class="p">.</span><span class="nx">WriteString</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
@@ -461,8 +465,8 @@
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text">io/ioutil/ioutil.go</span><a class="headerlink" href="#id23" title="このコードへのパーマリンク">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">io/ioutil/ioutil.go</span><a class="headerlink" href="#id26" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WriteFile</span><span class="p">(</span><span class="nx">filename</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">perm</span> <span class="nx">os</span><span class="p">.</span><span class="nx">FileMode</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
     <span class="nx">f</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">OpenFile</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">O_WRONLY</span><span class="p">|</span><span class="nx">os</span><span class="p">.</span><span class="nx">O_CREATE</span><span class="p">|</span><span class="nx">os</span><span class="p">.</span><span class="nx">O_TRUNC</span><span class="p">,</span> <span class="nx">perm</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
@@ -483,20 +487,20 @@
 </div>
 </div>
 </div>
-<div class="section" id="io-copy">
-<h2><a class="toc-backref" href="#id29">io.Copy</a><a class="headerlink" href="#io-copy" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>インターフェースではないですが、io パッケージの主要なメソッドだと思うので取り上げます。</p>
-<div class="section" id="id12">
-<h3>仕様<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="io-copy-func">
+<h2><a class="toc-backref" href="#id33">io.Copy (func)</a><a class="headerlink" href="#io-copy-func" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>インターフェースではないですが、<code class="docutils literal notranslate"><span class="pre">io.Copy</span></code> も io パッケージの主要なメソッドの一つだと思うので取り上げます。</p>
+<div class="section" id="id15">
+<h3>仕様<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <ul class="simple">
 <li><p>src から EOF に到達するかエラーが発生するまで dst にコピー</p></li>
 <li><p>コピーしたバイトするとエラーを返す</p></li>
 </ul>
 </div>
-<div class="section" id="id13">
-<h3>実装<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text">io/io.go</span><a class="headerlink" href="#id24" title="このコードへのパーマリンク">¶</a></div>
+<div class="section" id="id16">
+<h3>実装<a class="headerlink" href="#id16" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">io/io.go</span><a class="headerlink" href="#id27" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">Copy</span><span class="p">(</span><span class="nx">dst</span> <span class="nx">Writer</span><span class="p">,</span> <span class="nx">src</span> <span class="nx">Reader</span><span class="p">)</span> <span class="p">(</span><span class="nx">written</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nx">copyBuffer</span><span class="p">(</span><span class="nx">dst</span><span class="p">,</span> <span class="nx">src</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
 <span class="p">}</span>
@@ -562,16 +566,16 @@
 <p class="admonition-title">注釈</p>
 <p>Go Conference で聞いた高度なテクニックですが、<code class="docutils literal notranslate"><span class="pre">sync.Pool</span></code> でバッファを明示的に指定して io.Copy から io.CopyBuffer にしたところ、メモリ使用量が削減したという話もあります。</p>
 <p><a class="reference external" href="https://github.com/src-d/go-git/pull/1179">https://github.com/src-d/go-git/pull/1179</a></p>
-<p>どちらかというと sync.Pool の性質(メモリに割り当てられているがもう不要なアイテムをキャッシュし、後で再利用することで、 GC の負荷を下げる)を利用しているテクということだと思います。</p>
+<p>どちらかというと sync.Pool の性質(メモリに割り当てられている不要なアイテムをキャッシュし、後で再利用することで、 GC の負荷を下げる)を利用しているテクということだと思います。</p>
 </div>
 <p>copyするバイト数がわかっていれば、<code class="docutils literal notranslate"><span class="pre">CopyN</span></code> で明示的にコピーするバイト数を指定することもできます。<code class="docutils literal notranslate"><span class="pre">io.Copy</span></code> のラッパー。</p>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">CopyN</span><span class="p">(</span><span class="nx">dst</span> <span class="nx">Writer</span><span class="p">,</span> <span class="nx">src</span> <span class="nx">Reader</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int64</span><span class="p">)</span> <span class="p">(</span><span class="nx">written</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// LimitReader は src の io.Reader から n バイトだけ読むこむ io.Reader を返却する関数</span>
     <span class="nx">written</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">Copy</span><span class="p">(</span><span class="nx">dst</span><span class="p">,</span> <span class="nx">LimitReader</span><span class="p">(</span><span class="nx">src</span><span class="p">,</span> <span class="nx">n</span><span class="p">))</span>
     <span class="k">if</span> <span class="nx">written</span> <span class="o">==</span> <span class="nx">n</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nx">n</span><span class="p">,</span> <span class="kc">nil</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="nx">written</span> <span class="p">&lt;</span> <span class="nx">n</span> <span class="o">&amp;&amp;</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-        <span class="c1">// src stopped early; must have been EOF.</span>
         <span class="nx">err</span> <span class="p">=</span> <span class="nx">EOF</span>
     <span class="p">}</span>
     <span class="k">return</span>
@@ -580,11 +584,11 @@
 </div>
 </div>
 </div>
-<div class="section" id="id14">
-<h2><a class="toc-backref" href="#id30">その他</a><a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>上記に上げた <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> や <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> 以外にも <code class="docutils literal notranslate"><span class="pre">io.Closer</span></code> <code class="docutils literal notranslate"><span class="pre">io.Seeker</span></code> があります。あとは埋め込みのインターフェースと便利な関数( <code class="docutils literal notranslate"><span class="pre">io.MultiWriter</span></code> とか)があります。<code class="docutils literal notranslate"><span class="pre">io.MultiWriter</span></code> は <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> のスライスを内部で保持していて、それぞれの <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> の <code class="docutils literal notranslate"><span class="pre">Write</span></code> メソッドを呼んでいました。デザインパターンでいうところのデコレータパターンで実装されています。<code class="docutils literal notranslate"><span class="pre">io/pipe.go</span></code> はコードリーディングしていないです。</p>
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text">io/multi.go</span><a class="headerlink" href="#id25" title="このコードへのパーマリンク">¶</a></div>
+<div class="section" id="io-multiwriter-func">
+<h2><a class="toc-backref" href="#id34">io.MultiWriter (func)</a><a class="headerlink" href="#io-multiwriter-func" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">io.MultiWriter</span></code> は <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> のスライスを内部で保持していて、それぞれの <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> の <code class="docutils literal notranslate"><span class="pre">Write</span></code> メソッドを呼んでいました。デザインパターンでいうところのデコレータパターンらしいです。</p>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">io/multi.go</span><a class="headerlink" href="#id28" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">MultiWriter</span><span class="p">(</span><span class="nx">writers</span> <span class="o">...</span><span class="nx">Writer</span><span class="p">)</span> <span class="nx">Writer</span> <span class="p">{</span>
     <span class="nx">allWriters</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">Writer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">writers</span><span class="p">))</span>
     <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">w</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">writers</span> <span class="p">{</span>
@@ -595,10 +599,6 @@
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="o">&amp;</span><span class="nx">multiWriter</span><span class="p">{</span><span class="nx">allWriters</span><span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kd">type</span> <span class="nx">multiWriter</span> <span class="kd">struct</span> <span class="p">{</span>
-    <span class="nx">writers</span> <span class="p">[]</span><span class="nx">Writer</span>
 <span class="p">}</span>
 
 <span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">multiWriter</span><span class="p">)</span> <span class="nx">Write</span><span class="p">(</span><span class="nx">p</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
@@ -618,8 +618,95 @@
 </div>
 </div>
 </div>
-<div class="section" id="id15">
-<h2><a class="toc-backref" href="#id31">参考</a><a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="io-pipe-func">
+<h2><a class="toc-backref" href="#id35">io.Pipe (func)</a><a class="headerlink" href="#io-pipe-func" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>インメモリで io.Writer と io.Reader を同期的につなげるパイプの機能。内部でバッファリング <strong>されない</strong> のが特徴。シーケンシャルに読み書きされる。</p>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">io/pipe.go</span><a class="headerlink" href="#id29" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">Pipe</span><span class="p">()</span> <span class="p">(</span><span class="o">*</span><span class="nx">PipeReader</span><span class="p">,</span> <span class="o">*</span><span class="nx">PipeWriter</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pipe</span><span class="p">{</span>
+        <span class="nx">wrCh</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">),</span>
+        <span class="nx">rdCh</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">),</span>
+        <span class="nx">done</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}),</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">PipeReader</span><span class="p">{</span><span class="nx">p</span><span class="p">},</span> <span class="o">&amp;</span><span class="nx">PipeWriter</span><span class="p">{</span><span class="nx">p</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">pipe</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">wrMu</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span> <span class="c1">// Serializes Write operations</span>
+    <span class="nx">wrCh</span> <span class="kd">chan</span> <span class="p">[]</span><span class="kt">byte</span>
+    <span class="nx">rdCh</span> <span class="kd">chan</span> <span class="kt">int</span>
+
+    <span class="nx">once</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Once</span> <span class="c1">// Protects closing done</span>
+    <span class="nx">done</span> <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">rerr</span> <span class="nx">atomicError</span>
+    <span class="nx">werr</span> <span class="nx">atomicError</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">multiWriter</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">writers</span> <span class="p">[]</span><span class="nx">Writer</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">PipeWriter</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">p</span> <span class="o">*</span><span class="nx">pipe</span>
+<span class="p">}</span>
+
+<span class="c1">// 書き込みの処理は pipe に移譲</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">PipeWriter</span><span class="p">)</span> <span class="nx">Write</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">w</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nx">Write</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">pipe</span><span class="p">)</span> <span class="nx">Write</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="c1">// done チャネルがクローズされている場合</span>
+    <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">p</span><span class="p">.</span><span class="nx">done</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">writeCloseError</span><span class="p">()</span>
+    <span class="c1">// そうでない場合はmutexでロックを取得</span>
+    <span class="k">default</span><span class="p">:</span>
+        <span class="nx">p</span><span class="p">.</span><span class="nx">wrMu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+        <span class="k">defer</span> <span class="nx">p</span><span class="p">.</span><span class="nx">wrMu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="c1">// このスコープでの once の役割がよくわからない</span>
+    <span class="k">for</span> <span class="nx">once</span> <span class="o">:=</span> <span class="kc">true</span><span class="p">;</span> <span class="nx">once</span> <span class="o">||</span> <span class="nb">len</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">once</span> <span class="p">=</span> <span class="kc">false</span> <span class="p">{</span>
+        <span class="k">select</span> <span class="p">{</span>
+        <span class="c1">// バイトスライスをチャネルに送信</span>
+        <span class="k">case</span> <span class="nx">p</span><span class="p">.</span><span class="nx">wrCh</span> <span class="o">&lt;-</span> <span class="nx">b</span><span class="p">:</span>
+            <span class="c1">// reader のチャネルから読み込んだint値を受信</span>
+            <span class="nx">nw</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">p</span><span class="p">.</span><span class="nx">rdCh</span>
+            <span class="c1">// reader が読み込んだ文字数バイトスライスをすすめる</span>
+            <span class="nx">b</span> <span class="p">=</span> <span class="nx">b</span><span class="p">[</span><span class="nx">nw</span><span class="p">:]</span>
+            <span class="nx">n</span> <span class="o">+=</span> <span class="nx">nw</span>
+        <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">p</span><span class="p">.</span><span class="nx">done</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">writeCloseError</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 読んだ文字数を返却</span>
+    <span class="c1">// n は名前付き変数の戻り値 (参考: https://golang.org/doc/effective_go.html#named-results)</span>
+    <span class="k">return</span> <span class="nx">n</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// クローズした場合はこれが呼ばれる</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">pipe</span><span class="p">)</span> <span class="nx">CloseWrite</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">err</span> <span class="p">=</span> <span class="nx">EOF</span>
+    <span class="p">}</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">werr</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="c1">// done チャネルのクローズ、sync.Onceなので複数のゴルーチンから同時に呼ばれたとしても一回きりしか呼ばれない</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">once</span><span class="p">.</span><span class="nx">Do</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nb">close</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">})</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id17">
+<h2><a class="toc-backref" href="#id36">その他</a><a class="headerlink" href="#id17" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>上記に上げた <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> や <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> 以外にも <code class="docutils literal notranslate"><span class="pre">io.Closer</span></code> <code class="docutils literal notranslate"><span class="pre">io.Seeker</span></code> があります。あとは埋め込みのインターフェースやその他の便利な関数などです。割愛します。</p>
+</div>
+<div class="section" id="id18">
+<h2><a class="toc-backref" href="#id37">参考</a><a class="headerlink" href="#id18" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/jesseduffield/notes/wiki/Golang-IO-Cookbook">https://github.com/jesseduffield/notes/wiki/Golang-IO-Cookbook</a></p></li>
 <li><p><a class="reference external" href="https://medium.com/&#64;matryer/golang-advent-calendar-day-seventeen-io-reader-in-depth-6f744bb4320b">https://medium.com/&#64;matryer/golang-advent-calendar-day-seventeen-io-reader-in-depth-6f744bb4320b</a></p></li>
