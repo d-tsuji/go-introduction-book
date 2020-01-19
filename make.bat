@@ -18,13 +18,18 @@ if "%1" == "preview" (
 	echo.  http://0.0.0.0:8000
 	sphinx-autobuild -b html %SOURCEDIR% %BUILDDIR%/html
 	if errorlevel 1 exit /b 1
+	echo.
+	for /d %%i in (%BUILDDIR%\*) do rmdir /q /s %%i
+	del /q /s %BUILDDIR%\*
+	echo.cleaned dir "%BUILDDIR%".
 	goto end
 )
 
 if "%1" == "clean" (
 	for /d %%i in (%BUILDDIR%\*) do rmdir /q /s %%i
 	del /q /s %BUILDDIR%\*
-	echo.  cleaned.
+	echo.
+	echo.cleaned dir "%BUILDDIR%"
 	goto end
 )
 
