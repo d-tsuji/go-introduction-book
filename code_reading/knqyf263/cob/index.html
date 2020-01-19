@@ -1,0 +1,270 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>cob &#8212; Go言語入門  ドキュメント</title>
+    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../../_static/translations.js"></script>
+    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="検索" href="../../../search.html" />
+    <link rel="prev" title="io" href="../../io.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../../io.html" title="io"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cob</a><ul>
+<li><a class="reference internal" href="#id1">モチベーション</a></li>
+<li><a class="reference internal" href="#id2">どんなツールなのか</a></li>
+<li><a class="reference internal" href="#id3">コードリーディング</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../../io.html"
+                        title="前の章へ">io</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/code_reading/knqyf263/cob/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 540</li>
+            <li>非アスキー: 398</li>
+            <li>合計文字数: 938</li>
+            <li>半角換算: 1336</li>
+            <li>全角換算: 668.0</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cob">
+<h1>cob<a class="headerlink" href="#cob" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="section" id="id1">
+<h2>モチベーション<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Go で cli を作りたい</p></li>
+<li><p>軽量かつ良質な cli ツールのコードを読むことで cli の作り方のエッセンスを学ぶ</p></li>
+<li><p>Go の書き方のエッセンスを学ぶ</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>どんなツールなのか<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><a class="reference external" href="https://knqyf263.hatenablog.com/entry/2020/01/14/063941">コミット前後でベンチマークが悪化していたらテストを落とすGoのCI用ツール</a> に書いてある。シュッと作ってあるのでソード全体が読める。</p>
+</div>
+<div class="section" id="id3">
+<h2>コードリーディング<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>コミット履歴を置いながらコードを追ってみることにする。コミット履歴を追わなくても、シンプルに master の main.go を読めばよい、という話でもある。</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/knqyf263/cob/commit/3f485104260dcfd739d7596e0820ec89e50fbcea">https://github.com/knqyf263/cob/commit/3f485104260dcfd739d7596e0820ec89e50fbcea</a></p></li>
+</ul>
+<p>cli は <a class="reference external" href="https://github.com/urfave/cli">urfave/cli</a> を使うと良いっぽい。他にもよく見る。こんな感じ。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;log&quot;</span>
+    <span class="s">&quot;os&quot;</span>
+
+    <span class="s">&quot;github.com/urfave/cli/v2&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">app</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">cli</span><span class="p">.</span><span class="nx">App</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;cob&quot;</span><span class="p">,</span>
+        <span class="nx">Usage</span><span class="p">:</span> <span class="s">&quot;Continuous Benchmark for Go project&quot;</span><span class="p">,</span>
+        <span class="nx">Action</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cli</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">nil</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">app</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// hello world</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/bbcLV5goqE6">https://play.golang.org/p/bbcLV5goqE6</a></p>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/knqyf263/cob/commit/d0a7c0d9252ef6e686bae03c8c1e7785a4a79f92">https://github.com/knqyf263/cob/commit/d0a7c0d9252ef6e686bae03c8c1e7785a4a79f92</a></p></li>
+</ul>
+<p>実際に cli で動かしたいロジックを記述している</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">run</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cli</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">args</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="s">&quot;-bench&quot;</span><span class="p">}</span>
+    <span class="nx">args</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Args</span><span class="p">().</span><span class="nx">Slice</span><span class="p">()</span><span class="o">...</span><span class="p">)</span>
+    <span class="nx">out</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nx">Command</span><span class="p">(</span><span class="s">&quot;go&quot;</span><span class="p">,</span> <span class="nx">args</span><span class="o">...</span><span class="p">).</span><span class="nx">Output</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+
+    <span class="nx">b</span> <span class="o">:=</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">NewBuffer</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+    <span class="nx">s</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">parse</span><span class="p">.</span><span class="nx">ParseSet</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/knqyf263/cob/commit/451804a4214b2ca6bfc564dbe715055195b3380c">https://github.com/knqyf263/cob/commit/451804a4214b2ca6bfc564dbe715055195b3380c</a></p></li>
+</ul>
+<p>初期化時に config する項目を構造体にして別ファイルとして作成</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">config.go</span><a class="headerlink" href="#id4" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">config</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">args</span>           <span class="p">[]</span><span class="kt">string</span>
+    <span class="nx">onlyDegression</span> <span class="kt">bool</span>
+    <span class="nx">threshold</span>      <span class="kt">float64</span>
+    <span class="nx">bench</span>          <span class="kt">string</span>
+    <span class="nx">benchmem</span>       <span class="kt">bool</span>
+    <span class="nx">benchtime</span>      <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">newConfig</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cli</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="nx">config</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">config</span><span class="p">{</span>
+        <span class="nx">args</span><span class="p">:</span>           <span class="nx">c</span><span class="p">.</span><span class="nx">Args</span><span class="p">().</span><span class="nx">Slice</span><span class="p">(),</span>
+        <span class="nx">onlyDegression</span><span class="p">:</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Bool</span><span class="p">(</span><span class="s">&quot;only-degression&quot;</span><span class="p">),</span>
+        <span class="nx">threshold</span><span class="p">:</span>      <span class="nx">c</span><span class="p">.</span><span class="nx">Float64</span><span class="p">(</span><span class="s">&quot;threshold&quot;</span><span class="p">),</span>
+        <span class="nx">bench</span><span class="p">:</span>          <span class="nx">c</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;bench&quot;</span><span class="p">),</span>
+        <span class="nx">benchmem</span><span class="p">:</span>       <span class="nx">c</span><span class="p">.</span><span class="nx">Bool</span><span class="p">(</span><span class="s">&quot;benchmem&quot;</span><span class="p">),</span>
+        <span class="nx">benchtime</span><span class="p">:</span>      <span class="nx">c</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;benchtime&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>フラグとして入力時に input する項目の設定</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">main.go</span><a class="headerlink" href="#id5" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">Flags</span><span class="p">:</span> <span class="p">[]</span><span class="nx">cli</span><span class="p">.</span><span class="nx">Flag</span><span class="p">{</span>
+    <span class="o">&amp;</span><span class="nx">cli</span><span class="p">.</span><span class="nx">BoolFlag</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;only-degression&quot;</span><span class="p">,</span>
+        <span class="nx">Usage</span><span class="p">:</span> <span class="s">&quot;Show only benchmarks with worse score&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="o">&amp;</span><span class="nx">cli</span><span class="p">.</span><span class="nx">Float64Flag</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;threshold&quot;</span><span class="p">,</span>
+        <span class="nx">Usage</span><span class="p">:</span> <span class="s">&quot;The program fails if the benchmark gets worse than the threshold&quot;</span><span class="p">,</span>
+        <span class="nx">Value</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="o">&amp;</span><span class="nx">cli</span><span class="p">.</span><span class="nx">StringFlag</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;bench&quot;</span><span class="p">,</span>
+        <span class="nx">Usage</span><span class="p">:</span> <span class="s">&quot;Run only those benchmarks matching a regular expression.&quot;</span><span class="p">,</span>
+        <span class="nx">Value</span><span class="p">:</span> <span class="s">&quot;.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="o">&amp;</span><span class="nx">cli</span><span class="p">.</span><span class="nx">BoolFlag</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;benchmem&quot;</span><span class="p">,</span>
+        <span class="nx">Usage</span><span class="p">:</span> <span class="s">&quot;Print memory allocation statistics for benchmarks.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="o">&amp;</span><span class="nx">cli</span><span class="p">.</span><span class="nx">StringFlag</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>  <span class="s">&quot;benchtime&quot;</span><span class="p">,</span>
+        <span class="nx">Usage</span><span class="p">:</span> <span class="s">&quot;Run enough iterations of each benchmark to take t, specified as a time.Duration (for example, -benchtime 1h30s).&quot;</span><span class="p">,</span>
+        <span class="nx">Value</span><span class="p">:</span> <span class="s">&quot;1s&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/knqyf263/cob/commit/239f2c4e3e0aeaad80c1e43c1619e44f4c5dd191">https://github.com/knqyf263/cob/commit/239f2c4e3e0aeaad80c1e43c1619e44f4c5dd191</a></p></li>
+</ul>
+<p>テストは <a class="reference external" href="https://github.com/stretchr/testify">stretchr/testify</a> を使っているみたい。<code class="docutils literal notranslate"><span class="pre">assert</span></code> が便利ということだろうか。(使ったことがないのでわからない)</p>
+<p>結果を出力するときに、最初は <code class="docutils literal notranslate"><span class="pre">fmt.Println(&quot;...&quot;)</span></code> を使っておいて、後から <code class="docutils literal notranslate"><span class="pre">fmt.Fprintln(w,</span> <span class="pre">&quot;...&quot;)</span></code> とするのはリファクタリングのテクとしてありそう。呼び出し側で <code class="docutils literal notranslate"><span class="pre">os.Stdout</span></code> を渡せば同じ動作になる。</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">main.go</span><a class="headerlink" href="#id6" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-func showResult(rows [][]string, benchmem bool) {</span>
+<span class="gd">-    fmt.Println(&quot;\nResult&quot;)</span>
+<span class="gd">-    fmt.Printf(&quot;%s\n\n&quot;, strings.Repeat(&quot;=&quot;, 6))</span>
+<span class="gi">+func showResult(w io.Writer, rows [][]string, benchmem bool) {</span>
+<span class="gi">+    fmt.Fprintln(w, &quot;\nResult&quot;)</span>
+<span class="gi">+    fmt.Fprintf(w, &quot;%s\n\n&quot;, strings.Repeat(&quot;=&quot;, 6))</span>
+
+// ..
+
+<span class="gd">-showResult(rows, c.benchmem)</span>
+<span class="gi">+showResult(os.Stdout, rows, c.benchmem)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../../io.html" title="io"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Go言語入門  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>
