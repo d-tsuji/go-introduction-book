@@ -14,7 +14,7 @@ io パッケージの役割は以下の2つ
 .. contents::
    :depth: 2
 
-io.Reader
+io.Reader (interface)
 ============================================
 
 シグネチャ
@@ -101,11 +101,12 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
 .. note:: 
 
-    ちなみにメソッドのレシーバがポインタ型だったけど、ちゃんとインターフェースを実装できているの？という疑問があるかも知れません。私はそう思いました。上記の例だと ``(f *File) Read(b []byte) (n int, err error)`` と ``(f *File)`` になっている点です。
+    ちなみにメソッドのレシーバがポインタ型(*T)だったけど、それで大丈夫？呼び出すときは型 T から呼び出しても大丈夫なの？という疑問があるかも知れません。私はそう思いました。
 
-    結論から言うと大丈夫です。Goの仕様として、あるタイプTのポインタ型として宣言されているメソッドは、レシーバ *T と T で宣言されたメソッドとして扱われます。
+    結論から言うと大丈夫です。というよりもポインタに変換されて呼び出されます。まずGoの仕様として、あるタイプTのポインタ型(*T)として宣言されているメソッドは、レシーバ *T として宣言されたメソッドと T で宣言されたメソッドを含みます。また型 T の変数 t で宣言されたオブジェクトが t.x() のメソッドを呼び出すときに &t のメソッドとして x が含まれている場合は (&t).x() がGoのコンパイラによって変換されて呼び出されます。
 
     https://golang.org/ref/spec#Method_sets
+    https://golang.org/ref/spec#Calls
 
 実際どんな感じで ``io.Reader`` の ``Read`` メソッドが呼ばれているか ``ioutil/ioutil.go`` の ``ReadFile`` メソッドを見てみます。``ioutil.ReadFile`` はファイルからデータを読み取るときに使います。
 
@@ -199,8 +200,7 @@ io.Readerは以下のシグネチャを持つReadメソッドを定義してい�
 
 .. note::
 
-    これは想定ですがos.Openやos.Createで生成したos.File構造体はio.Readerを満たしているのでOpenしたファイルをioutil.ReadAllに渡せるのですが、わざわざioutil.ReadFileがあるのは、バッファ領域の確保をより正確にするためな気がします。
-    事前にバッファをどれくらいのバッファが必要なのかある程度わかるため。
+    os.Openやos.Createで生成したos.File構造体はio.Readerを満たしており、Openした変数をそのままioutil.ReadAllに渡せるので、わざわざioutil.ReadFileがあるのはなんでだろうと思います。ファイルの場合は ``stat()`` などによりおおよそのファイルサイズがわかるため、バッファ領域の確保をより正確にするためと想定しています。
 
 インターフェースを扱う
 --------------------------------------------
@@ -292,7 +292,7 @@ https://play.golang.org/p/xA1UdgJwwdv
     var EOF = errors.New("EOF")
 
 
-io.Writer
+io.Writer (interface)
 ============================================
 
 シグネチャ
@@ -389,10 +389,10 @@ io.Writer
         return err
     }
 
-io.Copy
+io.Copy (func)
 ============================================
 
-インターフェースではないですが、io パッケージの主要なメソッドだと思うので取り上げます。
+インターフェースではないですが、``io.Copy`` も io パッケージの主要なメソッドの一つだと思うので取り上げます。
 
 仕様
 --------------------------------------------
@@ -465,35 +465,34 @@ io.Copy
         return written, err
     }
 
-
 .. note::
 
     Go Conference で聞いた高度なテクニックですが、``sync.Pool`` でバッファを明示的に指定して io.Copy から io.CopyBuffer にしたところ、メモリ使用量が削減したという話もあります。
 
     https://github.com/src-d/go-git/pull/1179
 
-    どちらかというと sync.Pool の性質(メモリに割り当てられているがもう不要なアイテムをキャッシュし、後で再利用することで、 GC の負荷を下げる)を利用しているテクということだと思います。
+    どちらかというと sync.Pool の性質(メモリに割り当てられている不要なアイテムをキャッシュし、後で再利用することで、 GC の負荷を下げる)を利用しているテクということだと思います。
 
 copyするバイト数がわかっていれば、``CopyN`` で明示的にコピーするバイト数を指定することもできます。``io.Copy`` のラッパー。
 
 .. code-block:: go
 
     func CopyN(dst Writer, src Reader, n int64) (written int64, err error) {
+        // LimitReader は src の io.Reader から n バイトだけ読むこむ io.Reader を返却する関数
         written, err = Copy(dst, LimitReader(src, n))
         if written == n {
             return n, nil
         }
         if written < n && err == nil {
-            // src stopped early; must have been EOF.
             err = EOF
         }
         return
     }
 
-その他
+io.MultiWriter (func)
 ============================================
 
-上記に上げた ``io.Reader`` や ``io.Writer`` 以外にも ``io.Closer`` ``io.Seeker`` があります。あとは埋め込みのインターフェースと便利な関数( ``io.MultiWriter`` とか)があります。``io.MultiWriter`` は ``io.Writer`` のスライスを内部で保持していて、それぞれの ``io.Writer`` の ``Write`` メソッドを呼んでいました。デザインパターンでいうところのデコレータパターンで実装されています。``io/pipe.go`` はコードリーディングしていないです。
+``io.MultiWriter`` は ``io.Writer`` のスライスを内部で保持していて、それぞれの ``io.Writer`` の ``Write`` メソッドを呼んでいました。デザインパターンでいうところのデコレータパターンらしいです。
 
 .. code-block:: go
     :caption: io/multi.go
@@ -510,10 +509,6 @@ copyするバイト数がわかっていれば、``CopyN`` で明示的にコピ
         return &multiWriter{allWriters}
     }
 
-    type multiWriter struct {
-        writers []Writer
-    }
-
     func (t *multiWriter) Write(p []byte) (n int, err error) {
         for _, w := range t.writers {
             n, err = w.Write(p)
@@ -527,6 +522,95 @@ copyするバイト数がわかっていれば、``CopyN`` で明示的にコピ
         }
         return len(p), nil
     }
+
+io.Pipe (func)
+============================================
+
+インメモリで io.Writer と io.Reader を同期的につなげるパイプの機能。内部でバッファリング **されない** のが特徴。シーケンシャルに読み書きされる。
+
+.. code-block:: go
+    :caption: io/pipe.go
+
+    func Pipe() (*PipeReader, *PipeWriter) {
+        p := &pipe{
+            wrCh: make(chan []byte),
+            rdCh: make(chan int),
+            done: make(chan struct{}),
+        }
+        return &PipeReader{p}, &PipeWriter{p}
+    }
+
+    type pipe struct {
+        wrMu sync.Mutex // Serializes Write operations
+        wrCh chan []byte
+        rdCh chan int
+
+        once sync.Once // Protects closing done
+        done chan struct{}
+        rerr atomicError
+        werr atomicError
+    }
+
+    type multiWriter struct {
+        writers []Writer
+    }
+
+    type PipeWriter struct {
+        p *pipe
+    }
+
+    // 書き込みの処理は pipe に移譲
+    func (w *PipeWriter) Write(data []byte) (n int, err error) {
+        return w.p.Write(data)
+    }
+
+    func (p *pipe) Write(b []byte) (n int, err error) {
+        select {
+        // done チャネルがクローズされている場合
+        case <-p.done:
+            return 0, p.writeCloseError()
+        // そうでない場合はmutexでロックを取得
+        default:
+            p.wrMu.Lock()
+            defer p.wrMu.Unlock()
+        }
+
+        // このスコープでの once の役割がよくわからない
+        for once := true; once || len(b) > 0; once = false {
+            select {
+            // バイトスライスをチャネルに送信
+            case p.wrCh <- b:
+                // reader のチャネルから読み込んだint値を受信
+                nw := <-p.rdCh
+                // reader が読み込んだ文字数バイトスライスをすすめる
+                b = b[nw:]
+                n += nw
+            case <-p.done:
+                return n, p.writeCloseError()
+            }
+        }
+
+        // 読んだ文字数を返却
+        // n は名前付き変数の戻り値 (参考: https://golang.org/doc/effective_go.html#named-results)
+        return n, nil
+    }
+
+    // クローズした場合はこれが呼ばれる
+    func (p *pipe) CloseWrite(err error) error {
+        if err == nil {
+            err = EOF
+        }
+        p.werr.Store(err)
+        // done チャネルのクローズ、sync.Onceなので複数のゴルーチンから同時に呼ばれたとしても一回きりしか呼ばれない
+        p.once.Do(func() { close(p.done) })
+        return nil
+    }
+
+
+その他
+============================================
+
+上記に上げた ``io.Reader`` や ``io.Writer`` 以外にも ``io.Closer`` ``io.Seeker`` があります。あとは埋め込みのインターフェースやその他の便利な関数などです。割愛します。
 
 参考
 ============================================
