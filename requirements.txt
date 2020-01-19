@@ -2,3 +2,4 @@ Pillow
 Sphinx
 setuptools
 recommonmark
+sphinxcontrib.github_ribbon

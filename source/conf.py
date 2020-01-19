@@ -18,9 +18,9 @@ sys.path.insert(0, os.path.abspath('ext'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Go言語入門'
-copyright = '2019, tsuji'
-author = 'tsuji'
+project = 'Go Note'
+copyright = '2020, d-tsuji'
+author = 'd-tsuji'
 
 # The full version, including alpha/beta/rc tags
 release = ''
@@ -37,7 +37,7 @@ source_parsers = {
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['pageinfo', 'sphinx.ext.todo',
-              'sphinx.ext.githubpages', 'sphinx.ext.mathjax']
+              'sphinx.ext.githubpages', 'sphinx.ext.mathjax', 'sphinxcontrib.github_ribbon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -78,3 +78,8 @@ html_sidebars = {
 
 # LaTeX の docclass 設定
 latex_docclass = {'manual': 'jsbook'}
+
+# -- Options for sphinxcontrib-githubribbon ----------------------------------
+github_ribbon_repo = 'd-tsuji/go-introduction-book'
+github_ribbon_position = 'right'
+github_ribbon_color = "gray"
