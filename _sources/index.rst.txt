@@ -13,4 +13,10 @@ Go Note
 
     code_reading/knqyf263/cob/index
 
+.. toctree::
+    :caption: メモ
+    :maxdepth: 1
+
+    memo/index
+
 .. todolist::

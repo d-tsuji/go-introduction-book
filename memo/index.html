@@ -1,0 +1,250 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>メモ &#8212; Go Note  ドキュメント</title>
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="prev" title="cob" href="../code_reading/knqyf263/cob/index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../code_reading/knqyf263/cob/index.html" title="cob"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">メモ</a><ul>
+<li><a class="reference internal" href="#go-gh-pages">go-gh-pages</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../code_reading/knqyf263/cob/index.html"
+                        title="前の章へ">cob</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/memo/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 169</li>
+            <li>非アスキー: 462</li>
+            <li>合計文字数: 631</li>
+            <li>半角換算: 1093</li>
+            <li>全角換算: 546.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <a href="https://github.com/d-tsuji/go-introduction-book"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a><div class="section" id="id1">
+<h1>メモ<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p>cli のたたき台として <a class="reference external" href="https://www.npmjs.com/package/gh-pages#command-line-utility">gh-pages</a> を Go で実装する
+* go-git を使って git を操作すると pure go になっておしゃれ</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>go-git で同様の操作ができるかどうかは要確認</p>
+</div>
+<div class="section" id="go-gh-pages">
+<h2>go-gh-pages<a class="headerlink" href="#go-gh-pages" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>あるディレクトリにgit cloneする。</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone <span class="s1">&#39;https://github.com/d-tsuji/test-go-gh-pages.git&#39;</span> tempDir --branch xxx --single-branch --origin origin --depth <span class="m">1</span>
+</pre></div>
+</div>
+<p>ブランチが存在しない場合はエラーになるので、その場合はオプションを変更して再度 git clone する。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone <span class="s1">&#39;https://github.com/d-tsuji/test-go-gh-pages.git&#39;</span> tempDir --origin origin
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>リポートリポジトリの URL を取得する</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git config --get remote.origin.url
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>アントラッキングなファイルを強制的に削除する</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clean -f -d
+<span class="c1"># ちなみに git のオプション的には以下のようになっている。</span>
+<span class="c1"># git clean -h</span>
+<span class="c1"># usage: git clean [-d] [-f] [-i] [-n] [-q] [-e &lt;pattern&gt;] [-x | -X] [--] &lt;paths&gt;...</span>
+<span class="c1">#</span>
+<span class="c1">#     -q, --quiet           do not print names of files removed</span>
+<span class="c1">#     -n, --dry-run         dry run</span>
+<span class="c1">#     -f, --force           force</span>
+<span class="c1">#     -i, --interactive     interactive cleaning</span>
+<span class="c1">#     -d                    remove whole directories</span>
+<span class="c1">#     -e, --exclude &lt;pattern&gt;</span>
+<span class="c1">#                         add &lt;pattern&gt; to ignore rules</span>
+<span class="c1">#     -x                    remove ignored files, too</span>
+<span class="c1">#     -X                    remove only ignored files</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>リモートリポジトリから fetch する</p></li>
+<li><p>リモートリポジトリから checkout する</p></li>
+</ul>
+<p>リモートリポジトリにターゲットのブランチが存在するかチェックする</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git ls-remote --exit-code  . origin/gh-pages
+</pre></div>
+</div>
+<p>リモートに存在しない場合はローカルに <code class="docutils literal notranslate"><span class="pre">--orphan</span></code> オプションを付けてブランチを作成する</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout --orphan gh-pages
+</pre></div>
+</div>
+<p>リモートに存在する場合はローカルで初期化する</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clean -f -d
+git reset --hard origin/gh-pages
+</pre></div>
+</div>
+<p>ちなみに <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span></code> のオプションは以下。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#git checkout -h</span>
+<span class="c1">#usage: git checkout [&lt;options&gt;] &lt;branch&gt;</span>
+<span class="c1">#or: git checkout [&lt;options&gt;] [&lt;branch&gt;] -- &lt;file&gt;...</span>
+<span class="c1">#</span>
+<span class="c1">#    -b &lt;branch&gt;           create and checkout a new branch</span>
+<span class="c1">#    -B &lt;branch&gt;           create/reset and checkout a branch</span>
+<span class="c1">#    -l                    create reflog for new branch</span>
+<span class="c1">#    --guess               second guess &#39;git checkout &lt;no-such-branch&gt;&#39; (default)</span>
+<span class="c1">#    --overlay             use overlay mode (default)</span>
+<span class="c1">#    -q, --quiet           suppress progress reporting</span>
+<span class="c1">#    --recurse-submodules[=&lt;checkout&gt;]</span>
+<span class="c1">#                        control recursive updating of submodules</span>
+<span class="c1">#    --progress            force progress reporting</span>
+<span class="c1">#    -m, --merge           perform a 3-way merge with the new branch</span>
+<span class="c1">#    --conflict &lt;style&gt;    conflict style (merge or diff3)</span>
+<span class="c1">#    -d, --detach          detach HEAD at named commit</span>
+<span class="c1">#    -t, --track           set upstream info for new branch</span>
+<span class="c1">#    -f, --force           force checkout (throw away local modifications)</span>
+<span class="c1">#    --orphan &lt;new-branch&gt;</span>
+<span class="c1">#                        new unparented branch</span>
+<span class="c1">#    --overwrite-ignore    update ignored files (default)</span>
+<span class="c1">#    --ignore-other-worktrees</span>
+<span class="c1">#                        do not check if another worktree is holding the given ref</span>
+<span class="c1">#    -2, --ours            checkout our version for unmerged files</span>
+<span class="c1">#    -3, --theirs          checkout their version for unmerged files</span>
+<span class="c1">#    -p, --patch           select hunks interactively</span>
+<span class="c1">#    --ignore-skip-worktree-bits</span>
+<span class="c1">#                        do not limit pathspecs to sparse entries only</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>強制的な更新( <code class="docutils literal notranslate"><span class="pre">-f</span></code> )を許容するかどうか</p></li>
+<li><p>追加のみ(既存のファイルを削除しない)の設定するかどうか</p></li>
+</ul>
+<p>デフォルトの設定ではすべて更新するモードになっている。以下の git コマンドでファイルを削除している。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git rm --ignore-unmatch -r -f files
+<span class="c1">#git rm --ignore-unmatch -r -f .</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>ファイルのコピーをする</p></li>
+</ul>
+<p>元のディレクトリの対象のディレクトリパス(basePath)からファイルを対象の新しく作成したディレクトリにコピーする</p>
+<ul class="simple">
+<li><p>ファイルのトラッキングをする(git add)</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git add .
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>git config の設定をする</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git confil.email xxx
+git confil.user xxx
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>コミットする</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git diff-index --quiet HEAD
+git commit -m <span class="s2">&quot;update&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>タグを打つかどうか</p></li>
+<li><p>プッシュする</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git push --tags origin gh-pages
+git commit -m <span class="s2">&quot;update&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../code_reading/knqyf263/cob/index.html" title="cob"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, d-tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>
