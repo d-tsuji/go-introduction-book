@@ -36,6 +36,6 @@ $(window).resize(function(){
         $("li.nav-item-0 a").text("Top");
     }
     else {
-        $("li.nav-item-0 a").text("Go言語入門  ドキュメント");
+        $("li.nav-item-0 a").text("Go Note  ドキュメント");
     }
 });
