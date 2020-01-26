@@ -1,5 +1,5 @@
 ==========================
-メモ
+go-gh-pages
 ==========================
 
 * cli のたたき台として `gh-pages <https://www.npmjs.com/package/gh-pages#command-line-utility>`_ を Go で実装する
@@ -147,3 +147,5 @@ go-gh-pages
 
     git push --tags origin gh-pages
     git commit -m "update"
+
+.. note:: ちなみに gh-pages では swapn を使ってサーバ上の実行環境の git を実行している。ワーキングディレクトリは Git インスタンスを生成するときに設定
