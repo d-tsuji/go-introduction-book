@@ -97,11 +97,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 1902</li>
-            <li>非アスキー: 1579</li>
-            <li>合計文字数: 3481</li>
-            <li>半角換算: 5060</li>
-            <li>全角換算: 2530.0</li>
+            <li>英数記号: 2039</li>
+            <li>非アスキー: 2137</li>
+            <li>合計文字数: 4176</li>
+            <li>半角換算: 6313</li>
+            <li>全角換算: 3156.5</li>
         </ul>
     </p>
 </div>
@@ -142,13 +142,7 @@
 </dl>
 </li>
 <li><p>Go で実装されたメジャーなプロダクト(Docker, Kebernetes, etcd, CockroachDB, gRCP, BoltDB)が調査対象</p></li>
-<li><dl class="simple">
-<dt>171 個の並行処理に関するバグがあり、伝統的なバグと伝統的なバグではない Go 特有のバグ</dt><dd><ul>
-<li><p>半数以上は Go 特有のバグ</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p>171 個の並行処理に関するバグがあった</p></li>
 <li><p>調査するために Bug 検出器を使って検証/評価した</p></li>
 </ul>
 </div>
@@ -180,7 +174,7 @@
 <dt>バグの種類</dt><dd><ul>
 <li><dl class="simple">
 <dt>ブロッキングバグ</dt><dd><ul>
-<li><p>goroutine がブロックされてしまうバグ</p></li>
+<li><p>ゴルーチンがブロックされてしまうバグ</p></li>
 </ul>
 </dd>
 </dl>
@@ -240,10 +234,15 @@
 <div class="section" id="goroutine">
 <h3>2.1 Goroutine<a class="headerlink" href="#goroutine" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <ul class="simple">
+<li><p>Go は並行処理のメカニズムとしてゴルーチンという概念を用いる</p></li>
+<li><p>ゴルーチンは軽量のユーザーランドのスレッド</p></li>
+<li><p>Go のランタイムライブラリが管理</p></li>
+<li><p>OS のスレッドとは M:N でマップ</p></li>
 <li><dl class="simple">
 <dt>Goroutine の説明</dt><dd><ul>
+<li><p>ゴルーチンは匿名関数の実行をサポート</p></li>
 <li><dl class="simple">
-<dt>ゴルーチンは匿名関数の実行をサポートしていて、親と変数を共有することができる</dt><dd><ul>
+<dt>呼び出し元と変数を共有することができる</dt><dd><ul>
 <li><p>データ競合をもたらす</p></li>
 </ul>
 </dd>
@@ -352,10 +351,47 @@
 <div class="section" id="bug-study-methodology">
 <h2>4 Bug Study Methodology<a class="headerlink" href="#bug-study-methodology" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <ul class="simple">
-<li><p>並行バグの分類</p></li>
+<li><dl class="simple">
+<dt>並行バグの分類</dt><dd><ul>
+<li><dl class="simple">
+<dt>GitHub のコミットログに対してキーワードを用いて検索</dt><dd><ul>
+<li><p>race</p></li>
+<li><p>deadlock</p></li>
+<li><p>synchronizataion</p></li>
+<li><p>concurrency</p></li>
+<li><p>Lock</p></li>
+<li><p>mutex</p></li>
+<li><p>atomic</p></li>
+<li><p>conpete</p></li>
+<li><p>context</p></li>
+<li><p>once</p></li>
+<li><p>goroutine leak</p></li>
 </ul>
-<img alt="../_images/Table_5_Taxonomy.PNG" src="../_images/Table_5_Taxonomy.PNG" />
-<img alt="../_images/Table_6_Blocking_Bug_Causes.PNG" src="../_images/Table_6_Blocking_Bug_Causes.PNG" />
+</dd>
+</dl>
+</li>
+<li><p>検索でフィルター後、手動でコミットを特定し調査</p></li>
+<li><dl class="simple">
+<dt>バグの分類</dt><dd><ul>
+<li><p>ブロッキングバグ</p></li>
+<li><p>ノンブロッキングバグ</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>従来の研究はバグをデッドロックバグと非デッドロックバグに分類</dt><dd><ul>
+<li><p>ブロッキングバグはデッドロックバグを包括していて、より広い概念</p></li>
+<li><p>従来の分類方法を拡張している</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 <table class="docutils align-default" id="id4">
 <caption><span class="caption-text">バグの分類 * 原因</span><a class="headerlink" href="#id4" title="このテーブルへのパーマリンク">¶</a></caption>
 <colgroup>
@@ -389,6 +425,7 @@
 </tr>
 </tbody>
 </table>
+<img alt="../_images/Table_5_Taxonomy.PNG" src="../_images/Table_5_Taxonomy.PNG" />
 </div>
 <div class="section" id="blocking-bugs">
 <h2>5 Blocking Bugs<a class="headerlink" href="#blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h2>
@@ -398,11 +435,18 @@
 <div class="section" id="root-causes-of-blocking-bugs">
 <h3>5.1 Root Causes of Blocking Bugs<a class="headerlink" href="#root-causes-of-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <ul class="simple">
+<li><dl class="simple">
+<dt>ブロッキングバグの原因を共有メモリとメッセージパッシングの観点で分類</dt><dd><ul>
 <li><p>約 42 %は共有メモリの保護エラーが原因</p></li>
 <li><p>約 58 %はメッセージパッシングのエラーが原因</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><p>共有メモリプリミティブはメッセージパッシングプリミティブよりも頻繁に使用される</p></li>
 <li><p>メッセージパッシングはブロッキングバグを引き起こしやすくなる</p></li>
 </ul>
+<img alt="../_images/Table_6_Blocking_Bug_Causes.PNG" src="../_images/Table_6_Blocking_Bug_Causes.PNG" />
 <div class="section" id="mis-protection-of-shared-memory">
 <h4>5.1.1 (mis)Protection of Shared Memory<a class="headerlink" href="#mis-protection-of-shared-memory" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <ul class="simple">
@@ -501,15 +545,17 @@ func goroutine2() {
 <div class="section" id="root-causes-of-non-blocking-bugs">
 <h3>6.1 Root Causes of Non-blocking Bugs<a class="headerlink" href="#root-causes-of-non-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <ul class="simple">
-<li><p>ノンブロッキングバグも、ブロッキングバグと同様に共有メモリの保護によるバグとメッセージパッシングに関するエラーに分類</p></li>
+<li><p>ノンブロッキングバグも、ブロッキングバグと同様に、共有メモリとメッセージパッシングに関するバグに分類</p></li>
 </ul>
+<img alt="../_images/Table_9_Root_causes_of_non-blocking_bugs.PNG" src="../_images/Table_9_Root_causes_of_non-blocking_bugs.PNG" />
 <div class="section" id="failing-to-protect-shared-memory">
 <h4>6.1.1 Failing to Protect Shared Memory<a class="headerlink" href="#failing-to-protect-shared-memory" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <ul class="simple">
-<li><p>データ競合によるバグ</p></li>
+<li><p>半数以上は従来(CやJava)同様、原子性違反や順序違反、データ競合によるもの</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">go</span></code> でゴルーチンを簡単に作れるが、データ共有のバグを増やす可能性がある</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Figure 8. A data race caused by anonymous function.</span><a class="headerlink" href="#id8" title="このコードへのパーマリンク">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Docker Figure 8. A data race caused by anonymous function.</span><a class="headerlink" href="#id8" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>for i := 17; i &lt;= 21; i++ { // write
     // 無名関数の中で外側から変数をキャプチャしてゴルーチン内で使用している
     // この場合は変数のメモリアドレスを参照する
@@ -525,7 +571,7 @@ func goroutine2() {
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Figure 9. A non-blocking bug caused by misusing WaitGroup.</span><a class="headerlink" href="#id9" title="このコードへのパーマリンク">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">CockroachDB Figure 9. A non-blocking bug caused by misusing WaitGroup.</span><a class="headerlink" href="#id9" title="このコードへのパーマリンク">¶</a></div>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>func (p *peer) send() {
     p.mu.Lock()
     defer p.mu.Unlock()
@@ -595,8 +641,14 @@ for {
 </div>
 </div>
 <ul class="simple">
-<li><p>ライブラリの中でチャネルを使用することによるノンブロッキングバグ</p></li>
-<li><p>開発者は dur が 0 より大きい、または <code class="docutils literal notranslate"><span class="pre">ctx.Done()</span></code> が呼ばれた場合のみ関数から return することを意図している</p></li>
+<li><p>ライブラリの中でチャネルを使用されることによるノンブロッキングバグ</p></li>
+<li><dl class="simple">
+<dt>開発者は dur が 0 より大きい、または <code class="docutils literal notranslate"><span class="pre">ctx.Done()</span></code> が呼ばれた場合のみ関数から return することを意図している</dt><dd><ul>
+<li><p>Fix前は dur が 0 以下の場合に処理をすり抜けてしまう、というバグ</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">Figure 11. A non-blocking bug caused by select and channel.</span><a class="headerlink" href="#id12" title="このコードへのパーマリンク">¶</a></div>
@@ -627,12 +679,33 @@ case &lt;- ctx.done():
 </div>
 <div class="section" id="discussion-and-future-work">
 <h2>7 Discussion and Future Work<a class="headerlink" href="#discussion-and-future-work" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>スレッド間の通信としてメッセージパッシングを推奨</p></li>
+<li><dl class="simple">
+<dt>共有メモリを使う場合としてバグが減るかどうかは不明</dt><dd><ul>
+<li><p>メッセージパッシングと Go の同期メカニズムを理解する必要がある</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>ブロッキングバグの検出には、従来の静的解析やデッドロック検出が役に立つ</p></li>
+<li><p>筆者らの検出器は、バグを学習して未知のバグを検出することができる</p></li>
+</ul>
 </div>
 <div class="section" id="related-works">
 <h2>8 Related Works<a class="headerlink" href="#related-works" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>現実世界のバグの調査</p></li>
+<li><p>ブロッキングバグとの闘い</p></li>
+<li><p>ノンブロッキングバグとの闘い</p></li>
+</ul>
 </div>
 <div class="section" id="conclusion">
 <h2>9 Conclusion<a class="headerlink" href="#conclusion" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>ブロッキングバグとノンブロッキングバグの観点から実プロダクトの並行処理のバグを研究した最初の研究</p></li>
+<li><p>筆者らは Go の並行バグの理解を深め、より注意されることを期待している</p></li>
+</ul>
 </div>
 <div class="section" id="id2">
 <h2>その他参考<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
