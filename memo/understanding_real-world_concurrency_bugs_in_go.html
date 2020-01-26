@@ -1,0 +1,668 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>Understanding Real-World Concurrency Bugs in Go &#8212; Go Note  ドキュメント</title>
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="prev" title="go-gh-pages" href="go-gh-pages.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="go-gh-pages.html" title="go-gh-pages"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Understanding Real-World Concurrency Bugs in Go</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#introduction">1 Introduction</a></li>
+<li><a class="reference internal" href="#background-and-applications">2 Background and Applications</a><ul>
+<li><a class="reference internal" href="#goroutine">2.1 Goroutine</a></li>
+<li><a class="reference internal" href="#synchronization-with-shared-memory">2.2 Synchronization with Shared Memory</a></li>
+<li><a class="reference internal" href="#synchronization-with-message-passing">2.3 Synchronization with Message Passing</a></li>
+<li><a class="reference internal" href="#go-applications">2.4 Go Applications</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#go-concurrency-usage-patterns">3 Go Concurrency Usage Patterns</a><ul>
+<li><a class="reference internal" href="#goroutine-usages">3.1 Goroutine Usages</a></li>
+<li><a class="reference internal" href="#concurrency-primitive-usages">3.2 Concurrency Primitive Usages</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-study-methodology">4 Bug Study Methodology</a></li>
+<li><a class="reference internal" href="#blocking-bugs">5 Blocking Bugs</a><ul>
+<li><a class="reference internal" href="#root-causes-of-blocking-bugs">5.1 Root Causes of Blocking Bugs</a><ul>
+<li><a class="reference internal" href="#mis-protection-of-shared-memory">5.1.1 (mis)Protection of Shared Memory</a></li>
+<li><a class="reference internal" href="#misuse-of-message-passing">5.1.2 Misuse of Message Passing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fixes-of-blocking-bugs">5.2 Fixes of Blocking Bugs</a></li>
+<li><a class="reference internal" href="#detection-of-blocking-bugs">5.3 Detection of Blocking Bugs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#non-blocking-bugs">6 Non-Blocking Bugs</a><ul>
+<li><a class="reference internal" href="#root-causes-of-non-blocking-bugs">6.1 Root Causes of Non-blocking Bugs</a><ul>
+<li><a class="reference internal" href="#failing-to-protect-shared-memory">6.1.1 Failing to Protect Shared Memory</a></li>
+<li><a class="reference internal" href="#errors-during-message-passing">6.1.2 Errors during Message Passing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fixes-of-non-blocking-bugs">6.2 Fixes of Non-Blocking Bugs</a></li>
+<li><a class="reference internal" href="#detection-of-non-blocking-bugs">6.3 Detection of Non-Blocking Bugs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#discussion-and-future-work">7 Discussion and Future Work</a></li>
+<li><a class="reference internal" href="#related-works">8 Related Works</a></li>
+<li><a class="reference internal" href="#conclusion">9 Conclusion</a></li>
+<li><a class="reference internal" href="#id2">その他参考</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="go-gh-pages.html"
+                        title="前の章へ">go-gh-pages</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/memo/understanding_real-world_concurrency_bugs_in_go.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 1902</li>
+            <li>非アスキー: 1579</li>
+            <li>合計文字数: 3481</li>
+            <li>半角換算: 5060</li>
+            <li>全角換算: 2530.0</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <a href="https://github.com/d-tsuji/go-introduction-book"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a><div class="section" id="understanding-real-world-concurrency-bugs-in-go">
+<h1>Understanding Real-World Concurrency Bugs in Go<a class="headerlink" href="#understanding-real-world-concurrency-bugs-in-go" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://songlh.github.io/paper/go-study.pdf">https://songlh.github.io/paper/go-study.pdf</a></p></li>
+<li><p><a class="reference external" href="https://github.com/system-pclub/go-concurrency-bugs">https://github.com/system-pclub/go-concurrency-bugs</a></p></li>
+</ul>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Go の並行処理に関するバグの研究</p></li>
+<li><dl class="simple">
+<dt>Go のマルチスレッドプログラミングの並行化メカニズム</dt><dd><ul>
+<li><p>メッセージパッシング</p></li>
+<li><p>共有メモリ</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Go で実装されたメジャーなプロダクト(Docker, Kebernetes, etcd, CockroachDB, gRCP, BoltDB)が調査対象</p></li>
+<li><dl class="simple">
+<dt>171 個の並行処理に関するバグがあり、伝統的なバグと伝統的なバグではない Go 特有のバグ</dt><dd><ul>
+<li><p>半数以上は Go 特有のバグ</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>調査するために Bug 検出器を使って検証/評価した</p></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2>1 Introduction<a class="headerlink" href="#introduction" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>バグの原因</dt><dd><ul>
+<li><dl class="simple">
+<dt>共有メモリ</dt><dd><ul>
+<li><p>traditional(Mutex, RWMutex)</p></li>
+<li><p>WaitGroup</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>メッセージパッシングの誤用</dt><dd><ul>
+<li><p>チャネル</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>バグの種類</dt><dd><ul>
+<li><dl class="simple">
+<dt>ブロッキングバグ</dt><dd><ul>
+<li><p>goroutine がブロックされてしまうバグ</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ノンブロッキングバグ</dt><dd><ul>
+<li><p>処理自体は進むが意図しない動作をするバグ</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ブロッキングバグの約 58 %はメッセージパッシングが原因</dt><dd><ul>
+<li><p>どのゴルーチンも Read していないチャネルにメッセージを送信</p></li>
+<li><p>...</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<hr class="docutils" />
+<ul class="simple">
+<li><p>バグの例</p></li>
+</ul>
+<p>タイムアウトすると <code class="docutils literal notranslate"><span class="pre">time.After(timeout)</span></code> からチャネルが return されてメインのルーチンは抜けるけど、ゴルーチンは残っている。後にゴルーチンはチャネルに書き込もうとするが、チャネルを受信するルーチンがいないので、チャネルへの書き込みがブロックされる。ゴルーチンリークにつながる。バッファ付きチャネルにすることで結果をチャネルに書き込むことができる。</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Kubernetes Figure 1. A blocking bug caused by channel.</span><a class="headerlink" href="#id3" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>func finishReq(timeout time.Duration) r ob {
+<span class="gd">-   ch := make(chan ob)</span>
+<span class="gi">+   ch := make(chan ob, 1)</span>
+    go func() {
+        result := fn()
+        ch &lt;- result // block
+    }()
+    select {
+    case result = &lt;-ch:
+        return result
+    case &lt;-time.After(timeout):
+        return nil
+    }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="background-and-applications">
+<h2>2 Background and Applications<a class="headerlink" href="#background-and-applications" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>Go は静的型付けの言語で並行プログラミング用に設計されている</p></li>
+<li><p>スレッドモデル、スレッド間の通信方法、スレッド同期メカニズム、Go の並行処理のメカニズムの説明</p></li>
+<li><p>6 つのアプリケーションの紹介</p></li>
+</ul>
+<div class="section" id="goroutine">
+<h3>2.1 Goroutine<a class="headerlink" href="#goroutine" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Goroutine の説明</dt><dd><ul>
+<li><dl class="simple">
+<dt>ゴルーチンは匿名関数の実行をサポートしていて、親と変数を共有することができる</dt><dd><ul>
+<li><p>データ競合をもたらす</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="synchronization-with-shared-memory">
+<h3>2.2 Synchronization with Shared Memory<a class="headerlink" href="#synchronization-with-shared-memory" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>従来の共有メモリアクセスのサポート</dt><dd><ul>
+<li><p>ロックとロックの解除(sync.Mutex)</p></li>
+<li><p>書き込み、読み込みロック(RWMutex)</p></li>
+<li><p>条件変数(Cond)</p></li>
+<li><p>アトミックな読み取り、書き込み(Atomic)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>複数のゴルーチンが一度だけ実行する</dt><dd><ul>
+<li><p>Go の新しいプリミティブ(<code class="docutils literal notranslate"><span class="pre">WaitGroup</span></code>)</p></li>
+<li><p>Once.Do(f)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>複数のゴルーチンの待機</dt><dd><ul>
+<li><p>誤用するとブロッキングバグとノンブロッキングの両方が発生する可能性がある</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">課題</p>
+<p>sync パッケージから調べる</p>
+</div>
+</div>
+<div class="section" id="synchronization-with-message-passing">
+<h3>2.3 Synchronization with Message Passing<a class="headerlink" href="#synchronization-with-message-passing" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>チャネル(<code class="docutils literal notranslate"><span class="pre">chan</span></code>)</dt><dd><ul>
+<li><p>Goによって導入された新しい並行性プリミティブ</p></li>
+<li><p>ゴルーチン間のデータと状態の送受信</p></li>
+<li><p>nil チャネルへのデータ送信またはデータの受信は、ゴルーチンをブロックする</p></li>
+<li><p>close されたチャネルを再度 close すると実行時パニックを起こす可能性がある</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">select</span></code></dt><dd><ul>
+<li><p>ゴルーチンの複数チャネルの待機</p></li>
+<li><dl class="simple">
+<dt>複数のケースが有効な場合は非決定的(ランダムに決まる)</dt><dd><ul>
+<li><p>並行バグを引き起こしうる</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">context</span></code></dt><dd><ul>
+<li><p>ゴルーチン間でリクエストデータやメタデータを伝播</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Pipe</span></code></dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Reader</span></code> と <code class="docutils literal notranslate"><span class="pre">Writer</span></code> 間のストリームデータのやり取り</p></li>
+<li><p>新しいタイプの並行バグを生み出しうる</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="go-applications">
+<h3>2.4 Go Applications<a class="headerlink" href="#go-applications" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>Go の人気と採用が増えている話</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="go-concurrency-usage-patterns">
+<h2>3 Go Concurrency Usage Patterns<a class="headerlink" href="#go-concurrency-usage-patterns" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="goroutine-usages">
+<h3>3.1 Goroutine Usages<a class="headerlink" href="#goroutine-usages" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+<div class="section" id="concurrency-primitive-usages">
+<h3>3.2 Concurrency Primitive Usages<a class="headerlink" href="#concurrency-primitive-usages" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+</div>
+<div class="section" id="bug-study-methodology">
+<h2>4 Bug Study Methodology<a class="headerlink" href="#bug-study-methodology" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>並行バグの分類</p></li>
+</ul>
+<img alt="../_images/Table_5_Taxonomy.PNG" src="../_images/Table_5_Taxonomy.PNG" />
+<img alt="../_images/Table_6_Blocking_Bug_Causes.PNG" src="../_images/Table_6_Blocking_Bug_Causes.PNG" />
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">バグの分類 * 原因</span><a class="headerlink" href="#id4" title="このテーブルへのパーマリンク">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>分類</p></th>
+<th class="head"><p>メッセージパッシング</p></th>
+<th class="head"><p>共有メモリ</p></th>
+<th class="head"><p>合計</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ブロッキングバグ</p></td>
+<td><p>49</p></td>
+<td><p>36</p></td>
+<td><p>85</p></td>
+</tr>
+<tr class="row-odd"><td><p>ノンブロッキングバグ</p></td>
+<td><p>17</p></td>
+<td><p>69</p></td>
+<td><p>86</p></td>
+</tr>
+<tr class="row-even"><td><p>合計</p></td>
+<td><p>66</p></td>
+<td><p>105</p></td>
+<td><p>171</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="blocking-bugs">
+<h2>5 Blocking Bugs<a class="headerlink" href="#blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>ブロッキングバグに関する調査結果</p></li>
+</ul>
+<div class="section" id="root-causes-of-blocking-bugs">
+<h3>5.1 Root Causes of Blocking Bugs<a class="headerlink" href="#root-causes-of-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>約 42 %は共有メモリの保護エラーが原因</p></li>
+<li><p>約 58 %はメッセージパッシングのエラーが原因</p></li>
+<li><p>共有メモリプリミティブはメッセージパッシングプリミティブよりも頻繁に使用される</p></li>
+<li><p>メッセージパッシングはブロッキングバグを引き起こしやすくなる</p></li>
+</ul>
+<div class="section" id="mis-protection-of-shared-memory">
+<h4>5.1.1 (mis)Protection of Shared Memory<a class="headerlink" href="#mis-protection-of-shared-memory" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">WaitGroup</span></code> の誤用によるバグの例</dt><dd><ul>
+<li><p>ループの中で <code class="docutils literal notranslate"><span class="pre">group.Wait()</span></code> しているためループが回らず、ブロックされてしまう</p></li>
+<li><p>ループの外に出すことでバグは Fix される</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Docker Figure 5. A blocking bug caused by WaitGroup.</span><a class="headerlink" href="#id5" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>var group sync.WaitGroup
+group.Add(len(pm.plugins))
+for _, p := range pm.plugins {
+    go func(p *plugin) {
+        defer group.Done()
+    }
+    // len(pm.plugins) 分の group.Done を待つのでブロックされてしまう
+<span class="gd">-   group.Wait()</span>
+}
+<span class="gi">+group.Wait()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="misuse-of-message-passing">
+<h4>5.1.2 Misuse of Message Passing<a class="headerlink" href="#misuse-of-message-passing" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li><p>コンテキストオブジェクトを別のコンテキストオブジェクトで上書きしてしまうことで、古いオブジェクトを使っているゴルーチンにメッセージを送信/closeすることできなくなる</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Figure 6. A blocking bug caused by context.</span><a class="headerlink" href="#id6" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-hctx, hcancel := context.WithCancel(ctx)</span>
+<span class="gi">+var hctx context.Context</span>
+<span class="gi">+var hcancel context.CancelFunc</span>
+if timeout &gt; 0 {
+    hctx, hcancel = context.WithTimeout(ctx, timeout)
+<span class="gi">+} else {</span>
+<span class="gi">+   hctx, hcancel = context.WithCancel(ctx)</span>
+}
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><dl class="simple">
+<dt>チャネルを使うことの考慮不足によるブロッキングバグ</dt><dd><ul>
+<li><p>関数の実行順序(<code class="docutils literal notranslate"><span class="pre">gorotine1()</span></code> =&gt; <code class="docutils literal notranslate"><span class="pre">goroutine2()</span></code>)によっては永久にブロックされる</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">select</span></code> の <code class="docutils literal notranslate"><span class="pre">default</span></code> を使うことでFixした</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Figure 7. A blocking bug caused by wrong usage of channel with lock.</span><a class="headerlink" href="#id7" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>func gorotine1() {
+    m.Lock()
+    // goroutine2() がまだチャネルをReadしていないと、リクエストが書き込めないためブロックされる
+<span class="gd">-    ch &lt;- request</span>
+<span class="gi">+    select {</span>
+<span class="gi">+    case ch &lt;- request:</span>
+    // default を用いることで書き込めない場合は何も処理せずアンロックする
+<span class="gi">+    default:</span>
+<span class="gi">+    }</span>
+    m.Unlock()
+}
+
+func goroutine2() {
+    for {
+        // ブロックされる
+        m.Lock()
+        m.Unlock()
+        request &lt;-ch
+    }
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="fixes-of-blocking-bugs">
+<h3>5.2 Fixes of Blocking Bugs<a class="headerlink" href="#fixes-of-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+<div class="section" id="detection-of-blocking-bugs">
+<h3>5.3 Detection of Blocking Bugs<a class="headerlink" href="#detection-of-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+</div>
+<div class="section" id="non-blocking-bugs">
+<h2>6 Non-Blocking Bugs<a class="headerlink" href="#non-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>ノンブロッキングバグの調査</p></li>
+</ul>
+<div class="section" id="root-causes-of-non-blocking-bugs">
+<h3>6.1 Root Causes of Non-blocking Bugs<a class="headerlink" href="#root-causes-of-non-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>ノンブロッキングバグも、ブロッキングバグと同様に共有メモリの保護によるバグとメッセージパッシングに関するエラーに分類</p></li>
+</ul>
+<div class="section" id="failing-to-protect-shared-memory">
+<h4>6.1.1 Failing to Protect Shared Memory<a class="headerlink" href="#failing-to-protect-shared-memory" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li><p>データ競合によるバグ</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Figure 8. A data race caused by anonymous function.</span><a class="headerlink" href="#id8" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>for i := 17; i &lt;= 21; i++ { // write
+    // 無名関数の中で外側から変数をキャプチャしてゴルーチン内で使用している
+    // この場合は変数のメモリアドレスを参照する
+    // ゴルーチンの中で変数を参照するときには変数のアドレスが更新されていて、意図した値が取得できない
+    // 関数で引数として値をコピーすることでFixできる
+<span class="gd">-   go func() { /* Create a new goroutine */</span>
+<span class="gi">+   go func(i int) {</span>
+        apiVersion := fmt.Sprintf(&quot;v1.%d&quot;, i) // read
+        // ...
+<span class="gd">-   }()</span>
+<span class="gi">+   }(i)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Figure 9. A non-blocking bug caused by misusing WaitGroup.</span><a class="headerlink" href="#id9" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>func (p *peer) send() {
+    p.mu.Lock()
+    defer p.mu.Unlock()
+    switch p.status {
+    case idle:
+        // ゴルーチンの中で Add したとしても先にメインルーチンが Wait に到達するとゴルーチンを待つことができない
+        // ゴルーチンを呼び出す前に Add することで Fix できる
+<span class="gi">+       p.wg.Add(1)</span>
+        go func() {
+<span class="gd">-           p.wg.Add(1)</span>
+            ...
+            p.wg.Done()
+        }()
+    case stopped:
+    }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="errors-during-message-passing">
+<h4>6.1.2 Errors during Message Passing<a class="headerlink" href="#errors-during-message-passing" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li><p>メッセージパッシングでエラーが発生するとノンブロッキングバグが発生する</p></li>
+<li><p>ノンブロッキングバグの約 20 %を占める</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Docker#24007 Figure 10. A bug caused by closing a channel twice.</span><a class="headerlink" href="#id10" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-   select {</span>
+<span class="gd">-   case &lt;- c.closed:</span>
+    // 複数のゴルーチンが同時に close すると panic が起こる
+    // Once.Do を用いることで確実に一度だけ close することができる
+<span class="gd">-   default:</span>
+<span class="gi">+           Once.Do(func() {</span>
+            close(c.closed)
+<span class="gi">+           })</span>
+<span class="gd">-   }</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">select</span></code> の非決定的選択による不具合</dt><dd><ul>
+<li><p>チャネルが close されたとしてもタイミングによっては重い処理 f() が再度実行されてしまう</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Figure 11. A non-blocking bug caused by select and channel.</span><a class="headerlink" href="#id11" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>ticker := time.NewTicker()
+for {
+<span class="gi">+   select {</span>
+<span class="gi">+   case &lt;-stopCh:</span>
+<span class="gi">+           return</span>
+<span class="gi">+   default:</span>
+<span class="gi">+   }</span>
+    f()
+    select {
+    case &lt;-stopCh:
+            return
+    case &lt;-ticker:
+    }
+}
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>ライブラリの中でチャネルを使用することによるノンブロッキングバグ</p></li>
+<li><p>開発者は dur が 0 より大きい、または <code class="docutils literal notranslate"><span class="pre">ctx.Done()</span></code> が呼ばれた場合のみ関数から return することを意図している</p></li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Figure 11. A non-blocking bug caused by select and channel.</span><a class="headerlink" href="#id12" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gd">-timer := time.NewTimer(0)</span>
+<span class="gi">+var timeout &lt;- chan time.Time</span>
+if dur &gt; 0 {
+<span class="gd">-   timer = time.NewTimer(dur)</span>
+<span class="gi">+    timeout = time.NewTimer(dur).C</span>
+}
+
+select {
+<span class="gd">-case &lt;- timer.C:</span>
+<span class="gi">+case &lt;- timeout:</span>
+case &lt;- ctx.done():
+    return nil
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="fixes-of-non-blocking-bugs">
+<h3>6.2 Fixes of Non-Blocking Bugs<a class="headerlink" href="#fixes-of-non-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+<div class="section" id="detection-of-non-blocking-bugs">
+<h3>6.3 Detection of Non-Blocking Bugs<a class="headerlink" href="#detection-of-non-blocking-bugs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+</div>
+</div>
+<div class="section" id="discussion-and-future-work">
+<h2>7 Discussion and Future Work<a class="headerlink" href="#discussion-and-future-work" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</div>
+<div class="section" id="related-works">
+<h2>8 Related Works<a class="headerlink" href="#related-works" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</div>
+<div class="section" id="conclusion">
+<h2>9 Conclusion<a class="headerlink" href="#conclusion" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</div>
+<div class="section" id="id2">
+<h2>その他参考<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://speakerdeck.com/keitatomozawa/concurrency-bugsnituitefalselun-wen-wodu-mu">https://speakerdeck.com/keitatomozawa/concurrency-bugsnituitefalselun-wen-wodu-mu</a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="go-gh-pages.html" title="go-gh-pages"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, d-tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>

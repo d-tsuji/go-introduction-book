@@ -17,6 +17,7 @@ Go Note
     :caption: メモ
     :maxdepth: 1
 
-    memo/index
+    memo/go-gh-pages
+    memo/understanding_real-world_concurrency_bugs_in_go
 
 .. todolist::
