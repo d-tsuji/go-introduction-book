@@ -1,0 +1,289 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>go quiz &#8212; Go Note  ドキュメント</title>
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="prev" title="Understanding Real-World Concurrency Bugs in Go" href="../memo/understanding_real-world_concurrency_bugs_in_go.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../memo/understanding_real-world_concurrency_bugs_in_go.html" title="Understanding Real-World Concurrency Bugs in Go"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">go quiz</a><ul>
+<li><a class="reference internal" href="#id1">Go理解度チェック 関数・ポインタ・スライス編</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../memo/understanding_real-world_concurrency_bugs_in_go.html"
+                        title="前の章へ">Understanding Real-World Concurrency Bugs in Go</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/go_quiz/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 436</li>
+            <li>非アスキー: 614</li>
+            <li>合計文字数: 1050</li>
+            <li>半角換算: 1664</li>
+            <li>全角換算: 832.0</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <a href="https://github.com/d-tsuji/go-introduction-book"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a><div class="section" id="go-quiz">
+<h1>go quiz<a class="headerlink" href="#go-quiz" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Go quiz を解くメモです。クイズを解いて、Goへの理解を深めよう、という趣旨です。解説は資料にはついていないことが多いので、回答との行間を埋める意味もあります。</p>
+<div class="section" id="id1">
+<h2><a class="reference external" href="https://docs.google.com/presentation/d/1oqfPIEJlw1u0GStHPEJFMtq2FPFUGDVSgMW2sLsXZF8/edit#slide=id.g7a74c7c8ae_0_298">Go理解度チェック 関数・ポインタ・スライス編</a><a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">#1</span><a class="headerlink" href="#id2" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">as</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">struct</span><span class="p">{</span> <span class="nx">N</span> <span class="kt">int</span> <span class="p">}{{</span><span class="nx">N</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span> <span class="p">{</span><span class="nx">N</span><span class="p">:</span> <span class="mi">20</span><span class="p">}}</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">a</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">as</span> <span class="p">{</span>
+        <span class="nx">a</span><span class="p">.</span><span class="nx">N</span> <span class="o">*=</span> <span class="mi">10</span>
+    <span class="p">}</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">as</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">N</span><span class="p">,</span> <span class="nx">as</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">N</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>1 問目から間違えました。初見では <code class="docutils literal notranslate"><span class="pre">100</span> <span class="pre">200</span></code> だと思ったけど違いました。これは slice をループでイテレーションすると、その一番目はindexで、二番目は、indexで示される要素の <strong>コピー</strong> を示します。Tour of Go にも書いてあります。</p>
+<ul>
+<li><p><a class="reference external" href="https://tour.golang.org/moretypes/16">https://tour.golang.org/moretypes/16</a></p>
+<blockquote>
+<div><p>When ranging over a slice, two values are returned for each iteration. The first is the index, and the second is a copy of the element at that index.</p>
+</div></blockquote>
+</li>
+</ul>
+<p>なので、for-range 文の中では要素が書き換わることがないために <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">20</span></code> と表示されます。</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">#2</span><a class="headerlink" href="#id3" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">as</span> <span class="o">:=</span> <span class="p">[]</span><span class="o">*</span><span class="kd">struct</span><span class="p">{</span> <span class="nx">N</span> <span class="kt">int</span> <span class="p">}{{</span><span class="nx">N</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span> <span class="p">{</span><span class="nx">N</span><span class="p">:</span> <span class="mi">20</span><span class="p">}}</span>
+    <span class="nx">fs</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kd">func</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="nx">as</span><span class="p">))</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">as</span> <span class="p">{</span>
+        <span class="nx">fs</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">as</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">N</span> <span class="o">*=</span> <span class="mi">10</span> <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">f</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">fs</span> <span class="p">{</span>
+        <span class="nx">f</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">as</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">N</span><span class="p">,</span> <span class="nx">as</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">N</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p><cite>10 2000</cite> で正解でした。<code class="docutils literal notranslate"><span class="pre">func()</span> <span class="pre">{</span> <span class="pre">as[i].N</span> <span class="pre">*=</span> <span class="pre">10</span> <span class="pre">}</span></code> の中の <code class="docutils literal notranslate"><span class="pre">i</span></code> が何の値になっているか？ということがポイントのような気がします。 <code class="docutils literal notranslate"><span class="pre">i</span></code> はクロージャとして参照されているが、実際に呼び出されるときは <code class="docutils literal notranslate"><span class="pre">i</span></code> の値が <code class="docutils literal notranslate"><span class="pre">1</span></code> になっている(最後の参照を残している)ために <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">2000</span></code> と2つ目の要素が2回 <code class="docutils literal notranslate"><span class="pre">*10</span></code> されることになります。</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">#3</span><a class="headerlink" href="#id4" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+    <span class="p">{</span>
+        <span class="nx">n</span> <span class="o">:=</span> <span class="nx">n</span>
+        <span class="nx">n</span> <span class="o">+=</span> <span class="mi">100</span>
+    <span class="p">}</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>間違えました。中括弧内での <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">:=</span> <span class="pre">n</span></code> として中括弧内のローカル変数に対して <code class="docutils literal notranslate"><span class="pre">+100</span></code> しているため、外側の <code class="docutils literal notranslate"><span class="pre">n</span></code> には影響がない例です。</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">#4</span><a class="headerlink" href="#id5" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">f</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span> <span class="nx">n</span> <span class="p">=</span> <span class="mi">100</span> <span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">n</span> <span class="kt">int</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>正解でした。関数には値のコピーが渡されているため <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">f(n</span> <span class="pre">int)</span> <span class="pre">{</span> <span class="pre">n</span> <span class="pre">=</span> <span class="pre">100</span> <span class="pre">}</span></code> の効果は関数内の <code class="docutils literal notranslate"><span class="pre">n</span></code> のみに閉じます。</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">#5</span><a class="headerlink" href="#id6" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span> <span class="kd">struct</span><span class="p">{</span> <span class="nx">N</span> <span class="kt">int</span> <span class="p">}</span>
+    <span class="nx">b</span> <span class="o">:=</span> <span class="nx">a</span>
+    <span class="nx">a</span><span class="p">.</span><span class="nx">N</span> <span class="p">=</span> <span class="mi">100</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>正解でした。変数 <code class="docutils literal notranslate"><span class="pre">b</span></code> には <code class="docutils literal notranslate"><span class="pre">a</span></code> の変数のコピーを渡されるため <code class="docutils literal notranslate"><span class="pre">b</span></code> の宣言後に <code class="docutils literal notranslate"><span class="pre">a</span></code> の変数の値を変更したとしても <code class="docutils literal notranslate"><span class="pre">b</span></code> には影響がありません。</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">#6</span><a class="headerlink" href="#id7" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">type</span> <span class="nx">A</span> <span class="kd">struct</span><span class="p">{</span> <span class="nx">N</span> <span class="kt">int</span> <span class="p">}</span>
+<span class="kd">func</span> <span class="nx">f</span><span class="p">(</span><span class="nx">a</span> <span class="nx">A</span><span class="p">)</span> <span class="p">{</span> <span class="nx">a</span><span class="p">.</span><span class="nx">N</span> <span class="p">=</span> <span class="mi">100</span> <span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span> <span class="nx">A</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">N</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>正解でした。変数 <code class="docutils literal notranslate"><span class="pre">a</span></code> は関数 <code class="docutils literal notranslate"><span class="pre">f</span></code> に <code class="docutils literal notranslate"><span class="pre">a</span></code> の値のコピーとして渡されるため、呼び出し元に影響はありません。</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">#7</span><a class="headerlink" href="#id8" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">f</span><span class="p">(</span><span class="nx">ns</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="mi">100</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ns</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">ns</span><span class="p">)</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>正解でした。配列も値のコピーが関数に渡されます。</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">#8</span><a class="headerlink" href="#id9" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">f</span><span class="p">(</span><span class="nx">ns</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="mi">100</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ns</span> <span class="p">[]</span><span class="kt">int</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">ns</span><span class="p">)</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>凡ミスしました。slice は宣言のみで初期化されていないために要素を更新しようとすると <code class="docutils literal notranslate"><span class="pre">panic</span></code> になります。</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">#9</span><a class="headerlink" href="#id10" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">f</span><span class="p">(</span><span class="nx">ns</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ns</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ns</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ns</span> <span class="p">[]</span><span class="kt">int</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">ns</span><span class="p">)</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">ns</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">1</span></code> と思いましたが、間違えました。</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">#10</span><a class="headerlink" href="#id11" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">}</span>
+    <span class="nx">b</span> <span class="o">:=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+    <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="mi">100</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+    <span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="mi">200</span>
+    <span class="nb">println</span><span class="p">(</span><span class="nx">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nx">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">30</span></code> かと思いましたが、違いました。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../memo/understanding_real-world_concurrency_bugs_in_go.html" title="Understanding Real-World Concurrency Bugs in Go"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, d-tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>
