@@ -1,0 +1,230 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>spec &#8212; Go Note  ドキュメント</title>
+    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="prev" title="go quiz" href="../../go_quiz/index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../../go_quiz/index.html" title="go quiz"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">spec</a><ul>
+<li><a class="reference internal" href="#id1">値型のみで構成される構造体は直接アドレスを取得できない</a><ul>
+<li><a class="reference internal" href="#id2">変数</a></li>
+<li><a class="reference internal" href="#id3">ポインタ参照</a></li>
+<li><a class="reference internal" href="#index">スライスのindex操作</a></li>
+<li><a class="reference internal" href="#id4">アドレス化可能な構造体のフィールド</a></li>
+<li><a class="reference internal" href="#id5">アドレス化可能な配列のindex操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="../../go_quiz/index.html"
+                        title="前の章へ">go quiz</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/memo/spec/index.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 631</li>
+            <li>非アスキー: 275</li>
+            <li>合計文字数: 906</li>
+            <li>半角換算: 1181</li>
+            <li>全角換算: 590.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <a href="https://github.com/d-tsuji/go-introduction-book"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a><div class="section" id="spec">
+<h1>spec<a class="headerlink" href="#spec" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Goの仕様に関する、あるいは関するらしい事柄ではまったことをまとめていきたい</p>
+<div class="section" id="id1">
+<h2>値型のみで構成される構造体は直接アドレスを取得できない<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下のコードはコンパイルエラーになります。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">type</span> <span class="nx">OnlyString</span> <span class="kt">string</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">_</span> <span class="p">=</span> <span class="nx">OnlyString</span><span class="p">(</span><span class="s">&quot;hoge&quot;</span><span class="p">)</span>
+
+    <span class="c1">// 以下はコンパイラエラーになる</span>
+    <span class="nx">_</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">OnlyString</span><span class="p">(</span><span class="s">&quot;hoge&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/A1pfwbljldj">https://play.golang.org/p/A1pfwbljldj</a></p>
+<p>直感的には <code class="docutils literal notranslate"><span class="pre">string</span></code> が値型なので値型のアドレスを取得することができないため、という理解です。がGoの以下の仕様を確認しました。</p>
+<p><a class="reference external" href="https://golang.org/ref/spec#Address_operators">https://golang.org/ref/spec#Address_operators</a></p>
+<blockquote>
+<div><p>For an operand x of type T, the address operation &amp;x generates a pointer of type *T to x. The operand must be addressable, that is, either a variable, pointer indirection, or slice indexing operation; or a field selector of an addressable struct operand; or an array indexing operation of an addressable array. As an exception to the addressability requirement, x may also be a (possibly parenthesized) composite literal. If the evaluation of x would cause a run-time panic, then the evaluation of &amp;x does too.</p>
+</div></blockquote>
+<p>つまり <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> を用いてアドレスを取得できるのは以下の場合のみです。</p>
+<ul class="simple">
+<li><p>変数</p></li>
+<li><p>ポインタ参照</p></li>
+<li><p>スライスのindex操作</p></li>
+<li><p>アドレス化可能な構造体のフィールド</p></li>
+<li><p>アドレス化可能な配列のindex操作</p></li>
+</ul>
+<p>以下はいずれも有効なコードです。</p>
+<div class="section" id="id2">
+<h3>変数<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+
+<span class="kd">type</span> <span class="nx">OnlyString</span> <span class="kt">string</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">h</span> <span class="o">:=</span> <span class="nx">OnlyString</span><span class="p">(</span><span class="s">&quot;hoge&quot;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">h</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>ポインタ参照<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="s">&quot;hoge&quot;</span>
+    <span class="nx">sp</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">s</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sp</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="index">
+<h3>スライスのindex操作<a class="headerlink" href="#index" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>アドレス化可能な構造体のフィールド<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+
+<span class="kd">type</span> <span class="nx">A</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">B</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="nx">A</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">b</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">B</span><span class="p">{</span><span class="nx">a</span><span class="p">:</span> <span class="nx">A</span><span class="p">{</span><span class="nx">s</span><span class="p">:</span> <span class="s">&quot;foo&quot;</span><span class="p">}}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>アドレス化可能な配列のindex操作<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../../go_quiz/index.html" title="go quiz"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, d-tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1 で生成しました。
+    </div>
+  </body>
+</html>
