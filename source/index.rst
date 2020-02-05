@@ -26,5 +26,6 @@ Go Note
     memo/go-gh-pages
     memo/understanding_real-world_concurrency_bugs_in_go
     go_quiz/index
+    memo/spec/index
 
 .. todolist::
