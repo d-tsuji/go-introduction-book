@@ -120,3 +120,109 @@ https://golang.org/ref/spec#Address_operators
         s := [3]int{1, 2, 3}
         fmt.Println(&s[0])
     }
+
+エラーが無限ループする
+=====================================================================
+
+題材は A Tour of Go の  Exercise からです。
+
+https://go-tour-jp.appspot.com/methods/20
+
+以下は完全に正しいコードです。
+
+.. code-block:: go
+
+    package main
+
+    import (
+        "fmt"
+    )
+
+    type ErrNegativeSqrt float64
+
+    func (e ErrNegativeSqrt) Error() string {
+        return fmt.Sprintf("cannot Sqrt negative number: %v", float64(e))
+    }
+
+    func Sqrt(x float64) (float64, error) {
+        if x < 0 {
+            return 0, ErrNegativeSqrt(x)
+        }
+        z := 1.0
+        for i := 0; i < 10; i++ {
+            z -= (z*z - x) / (2 * z)
+        }
+        return z, nil
+    }
+
+    func main() {
+        fmt.Println(Sqrt(2))
+        fmt.Println(Sqrt(-2))
+    }
+
+上記のコードに1行変更を加えてみます。以下のコードは無限ループします。
+
+.. code-block:: diff
+
+    package main
+
+    import (
+        "fmt"
+    )
+
+    type ErrNegativeSqrt float64
+
+    func (e ErrNegativeSqrt) Error() string {
+    -    return fmt.Sprintf("cannot Sqrt negative number: %v", float64(e))
+    +    return fmt.Sprintf("cannot Sqrt negative number: %v", e)
+    }
+
+    func Sqrt(x float64) (float64, error) {
+        if x < 0 {
+            return 0, ErrNegativeSqrt(x)
+        }
+        z := 1.0
+        for i := 0; i < 10; i++ {
+            z -= (z*z - x) / (2 * z)
+        }
+        return z, nil
+    }
+
+    func main() {
+        fmt.Println(Sqrt(2))
+        fmt.Println(Sqrt(-2))
+    }
+
+https://play.golang.org/p/tikMDE_Sq_R
+
+.. code-block:: bash
+
+    1.414213562373095 <nil>
+    runtime: goroutine stack exceeds 250000000-byte limit
+    fatal error: stack overflow
+
+    runtime stack:
+    runtime.throw(0x117172, 0xe)
+        /usr/local/go/src/runtime/panic.go:774 +0x80
+    runtime.newstack()
+        /usr/local/go/src/runtime/stack.go:1046 +0x960
+    runtime.morestack()
+        /usr/local/go/src/runtime/asm_amd64p32.s:300 +0xc0
+    ...
+
+``Error()`` は ``string`` の呼び出しに等しいので、以下と言いかえられます。これも無限ループします。
+
+.. code-block:: go
+
+    type MyType struct {
+        f float64
+    }
+
+    func (m MyType) String() string {
+        return fmt.Sprintf("MyType: %v", m)
+    }
+
+    func main() {
+        m := MyType{-1}
+        fmt.Println(m)
+    }

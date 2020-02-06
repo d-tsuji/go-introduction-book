@@ -49,6 +49,7 @@
 <li><a class="reference internal" href="#id5">アドレス化可能な配列のindex操作</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id6">エラーが無限ループする</a></li>
 </ul>
 </li>
 </ul>
@@ -66,11 +67,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 631</li>
-            <li>非アスキー: 275</li>
-            <li>合計文字数: 906</li>
-            <li>半角換算: 1181</li>
-            <li>全角換算: 590.5</li>
+            <li>英数記号: 751</li>
+            <li>非アスキー: 381</li>
+            <li>合計文字数: 1132</li>
+            <li>半角換算: 1513</li>
+            <li>全角換算: 756.5</li>
         </ul>
     </p>
 </div>
@@ -200,6 +201,102 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>エラーが無限ループする<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>題材は A Tour of Go の  Exercise からです。</p>
+<p><a class="reference external" href="https://go-tour-jp.appspot.com/methods/20">https://go-tour-jp.appspot.com/methods/20</a></p>
+<p>以下は完全に正しいコードです。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">ErrNegativeSqrt</span> <span class="kt">float64</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">ErrNegativeSqrt</span><span class="p">)</span> <span class="nx">Error</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;cannot Sqrt negative number: %v&quot;</span><span class="p">,</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">e</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">Sqrt</span><span class="p">(</span><span class="nx">x</span> <span class="kt">float64</span><span class="p">)</span> <span class="p">(</span><span class="kt">float64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">x</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">ErrNegativeSqrt</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">z</span> <span class="o">:=</span> <span class="mf">1.0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">z</span> <span class="o">-=</span> <span class="p">(</span><span class="nx">z</span><span class="o">*</span><span class="nx">z</span> <span class="o">-</span> <span class="nx">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">z</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">z</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">Sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">Sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>上記のコードに1行変更を加えてみます。以下のコードは無限ループします。</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>package main
+
+import (
+    &quot;fmt&quot;
+)
+
+type ErrNegativeSqrt float64
+
+func (e ErrNegativeSqrt) Error() string {
+<span class="gd">-    return fmt.Sprintf(&quot;cannot Sqrt negative number: %v&quot;, float64(e))</span>
+<span class="gi">+    return fmt.Sprintf(&quot;cannot Sqrt negative number: %v&quot;, e)</span>
+}
+
+func Sqrt(x float64) (float64, error) {
+    if x &lt; 0 {
+        return 0, ErrNegativeSqrt(x)
+    }
+    z := 1.0
+    for i := 0; i &lt; 10; i++ {
+        z -= (z*z - x) / (2 * z)
+    }
+    return z, nil
+}
+
+func main() {
+    fmt.Println(Sqrt(2))
+    fmt.Println(Sqrt(-2))
+}
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/tikMDE_Sq_R">https://play.golang.org/p/tikMDE_Sq_R</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">1</span>.414213562373095 &lt;nil&gt;
+runtime: goroutine stack exceeds <span class="m">250000000</span>-byte limit
+fatal error: stack overflow
+
+runtime stack:
+runtime.throw<span class="o">(</span>0x117172, 0xe<span class="o">)</span>
+    /usr/local/go/src/runtime/panic.go:774 +0x80
+runtime.newstack<span class="o">()</span>
+    /usr/local/go/src/runtime/stack.go:1046 +0x960
+runtime.morestack<span class="o">()</span>
+    /usr/local/go/src/runtime/asm_amd64p32.s:300 +0xc0
+...
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Error()</span></code> は <code class="docutils literal notranslate"><span class="pre">string</span></code> の呼び出しに等しいので、以下と言いかえられます。これも無限ループします。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">MyType</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">f</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="nx">MyType</span><span class="p">)</span> <span class="nx">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;MyType: %v&quot;</span><span class="p">,</span> <span class="nx">m</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">m</span> <span class="o">:=</span> <span class="nx">MyType</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
 </div>
 </div>
 </div>
