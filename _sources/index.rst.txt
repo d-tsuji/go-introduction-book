@@ -6,6 +6,7 @@ Go Note
     :maxdepth: 1
 
     code_reading/io
+    code_reading/context
 
 .. toctree::
     :caption: OSSソースコードリーディング

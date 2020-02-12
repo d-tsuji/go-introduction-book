@@ -1,0 +1,407 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>context &#8212; Go Note  ドキュメント</title>
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script src="../_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="cob" href="knqyf263/cob/index.html" />
+    <link rel="prev" title="io" href="io.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="knqyf263/cob/index.html" title="cob"
+             accesskey="N">次へ</a> |</li>
+        <li class="right" >
+          <a href="io.html" title="io"
+             accesskey="P">前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">目次</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">context</a><ul>
+<li><a class="reference internal" href="#id1">概要</a><ul>
+<li><a class="reference internal" href="#id2">とりあえず動かしてみる</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">実装</a><ul>
+<li><a class="reference internal" href="#func-withcancel-parent-context-ctx-context-cancel-cancelfunc"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithCancel(parent</span> <span class="pre">Context)</span> <span class="pre">(ctx</span> <span class="pre">Context,</span> <span class="pre">cancel</span> <span class="pre">CancelFunc)</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>前のトピックへ</h4>
+  <p class="topless"><a href="io.html"
+                        title="前の章へ">io</a></p>
+  <h4>次のトピックへ</h4>
+  <p class="topless"><a href="knqyf263/cob/index.html"
+                        title="次の章へ">cob</a></p>
+  <div role="note" aria-label="source link">
+    <h3>このページ</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code_reading/context.rst.txt"
+            rel="nofollow">ソースコードを表示</a></li>
+    </ul>
+   </div><div>
+    <h4>Page Info</h4>
+    <p>
+        <ul>
+            <li>英数記号: 585</li>
+            <li>非アスキー: 143</li>
+            <li>合計文字数: 728</li>
+            <li>半角換算: 871</li>
+            <li>全角換算: 435.5</li>
+        </ul>
+    </p>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <a href="https://github.com/d-tsuji/go-introduction-book"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a><div class="section" id="context">
+<h1>context<a class="headerlink" href="#context" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="section" id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Context 型を提供するパッケージでデッドラインやキャンセルのシグナルやAPIの境界を超えてプロセス間でリクエストの値を渡す</p>
+<p>Context インターフェースは4つのメソッドで構成される。コメントを除くと以下のようになる。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>type Context interface {</dt><dd><p>Deadline() (deadline time.Time, ok bool)
+Done() &lt;-chan struct{}
+Err() error
+Value(key interface{}) interface{}</p>
+</dd>
+</dl>
+<p>}</p>
+<p>Contextを作るには2つのファクトリ関数が存在する。親になる基点。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">Background()</span> <span class="pre">Context</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">TODO()</span> <span class="pre">Context</span></code></p></li>
+</ul>
+<p>メソッドは以下の4つ</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithCancel(parent</span> <span class="pre">Context)</span> <span class="pre">(ctx</span> <span class="pre">Context,</span> <span class="pre">cancel</span> <span class="pre">CancelFunc)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithDeadline(parent</span> <span class="pre">Context,</span> <span class="pre">d</span> <span class="pre">time.Time)</span> <span class="pre">(Context,</span> <span class="pre">CancelFunc)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithTimeout(parent</span> <span class="pre">Context,</span> <span class="pre">timeout</span> <span class="pre">time.Duration)</span> <span class="pre">(Context,</span> <span class="pre">CancelFunc)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithValue(parent</span> <span class="pre">Context,</span> <span class="pre">key,</span> <span class="pre">val</span> <span class="pre">interface{})</span> <span class="pre">Context</span></code></p></li>
+</ul>
+<div class="section" id="id2">
+<h3>とりあえず動かしてみる<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;context&quot;</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;time&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">Process</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">id</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="k">select</span> <span class="p">{</span>
+        <span class="c1">// ctx.Done() 自体はチャネルを返す(かつ自身が持っているコンテキストのフィールドにチャネルをセット)</span>
+        <span class="c1">// しかし close() されていないためこの case が選択されない</span>
+        <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">Done</span><span class="p">():</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[goroutine %d] Process is canceled.\n&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">default</span><span class="p">:</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[goroutine %d] Processing...\n&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+            <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+            <span class="c1">// something do...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[goroutine main] start\n&quot;</span><span class="p">)</span>
+    <span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">WithCancel</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Background</span><span class="p">())</span>
+    <span class="k">go</span> <span class="nx">Process</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="nx">Process</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+
+    <span class="nx">cancel</span><span class="p">()</span>
+
+    <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;[goroutine main] finish\n&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/l0rREisGyUQ">https://play.golang.org/p/l0rREisGyUQ</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">goroutine</span> <span class="n">main</span><span class="p">]</span> <span class="n">start</span>
+<span class="p">[</span><span class="n">goroutine</span> <span class="mi">1</span><span class="p">]</span> <span class="n">Processing</span><span class="o">...</span>
+<span class="p">[</span><span class="n">goroutine</span> <span class="mi">2</span><span class="p">]</span> <span class="n">Processing</span><span class="o">...</span>
+<span class="p">[</span><span class="n">goroutine</span> <span class="mi">1</span><span class="p">]</span> <span class="n">Processing</span><span class="o">...</span>
+<span class="p">[</span><span class="n">goroutine</span> <span class="mi">2</span><span class="p">]</span> <span class="n">Process</span> <span class="ow">is</span> <span class="n">canceled</span><span class="o">.</span>
+<span class="p">[</span><span class="n">goroutine</span> <span class="mi">1</span><span class="p">]</span> <span class="n">Process</span> <span class="ow">is</span> <span class="n">canceled</span><span class="o">.</span>
+<span class="p">[</span><span class="n">goroutine</span> <span class="n">main</span><span class="p">]</span> <span class="n">finish</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>実装<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="func-withcancel-parent-context-ctx-context-cancel-cancelfunc">
+<h3><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithCancel(parent</span> <span class="pre">Context)</span> <span class="pre">(ctx</span> <span class="pre">Context,</span> <span class="pre">cancel</span> <span class="pre">CancelFunc)</span></code><a class="headerlink" href="#func-withcancel-parent-context-ctx-context-cancel-cancelfunc" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// cancelCtx はキャンセル可能</span>
+<span class="c1">// キャンセルされた場合は canceler インターフェースを実装している子どももキャンセルする</span>
+<span class="kd">type</span> <span class="nx">cancelCtx</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Context</span>
+
+    <span class="nx">mu</span>       <span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>            <span class="c1">// protects following fields</span>
+    <span class="nx">done</span>     <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>         <span class="c1">// created lazily, closed by first cancel call</span>
+    <span class="nx">children</span> <span class="kd">map</span><span class="p">[</span><span class="nx">canceler</span><span class="p">]</span><span class="kd">struct</span><span class="p">{}</span> <span class="c1">// set to nil by the first cancel call</span>
+    <span class="nx">err</span>      <span class="kt">error</span>                 <span class="c1">// set to non-nil by the first cancel call</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">Done</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span> <span class="p">{</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+    <span class="p">}</span>
+    <span class="nx">d</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">d</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">Err</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">err</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">contextName</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.WithCancel&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// A canceler is a context type that can be canceled directly. The</span>
+<span class="c1">// implementations are *cancelCtx and *timerCtx.</span>
+<span class="kd">type</span> <span class="nx">canceler</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">cancel</span><span class="p">(</span><span class="nx">removeFromParent</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="nx">Done</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// closedchan is a reusable closed channel.</span>
+<span class="kd">var</span> <span class="nx">closedchan</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+
+<span class="c1">// init 時にcloseするので常にクローズしたチャネルを取得</span>
+<span class="kd">func</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nb">close</span><span class="p">(</span><span class="nx">closedchan</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WithCancel</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="nx">ctx</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">cancel</span> <span class="nx">CancelFunc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// cancelCtx 構造体の作成(ファクトリメソッド)</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="nx">newCancelCtx</span><span class="p">(</span><span class="nx">parent</span><span class="p">)</span>
+
+    <span class="c1">// コンテキストの親子関係のグラフを構築</span>
+    <span class="nx">propagateCancel</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">c</span><span class="p">)</span>
+
+    <span class="c1">// 子の cancelCtx と子の cancelCtx に紐づくキャンセル関数を返却</span>
+    <span class="c1">// 親から CancelFunc を呼ぶことで cancelCtx の cancel が実行される</span>
+    <span class="c1">// この場合のみ親と子が分離される</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">c</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">c</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="nx">Canceled</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">newCancelCtx</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">)</span> <span class="nx">cancelCtx</span> <span class="p">{</span>
+    <span class="c1">// cancelCtx の Context 以外のフィールドはゼロ値で初期化</span>
+    <span class="k">return</span> <span class="nx">cancelCtx</span><span class="p">{</span><span class="nx">Context</span><span class="p">:</span> <span class="nx">parent</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// propagateCancel は親がキャンセルされた場合に、子をキャンセルする</span>
+<span class="kd">func</span> <span class="nx">propagateCancel</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">child</span> <span class="nx">canceler</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 親の場合(emptyCtx)は ctx.Done() == nil</span>
+    <span class="c1">// 親の場合はキャンセル処理をせず、アーリーリターン</span>
+    <span class="k">if</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="c1">// parent is never canceled</span>
+    <span class="p">}</span>
+
+    <span class="c1">// キャンセル処理の準備として map でグラフを形成</span>
+    <span class="c1">// 親コンテキストが cancelCtx 型</span>
+    <span class="k">if</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">parentCancelCtx</span><span class="p">(</span><span class="nx">parent</span><span class="p">);</span> <span class="nx">ok</span> <span class="p">{</span>
+        <span class="nx">p</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">p</span><span class="p">.</span><span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="c1">// parent has already been canceled</span>
+            <span class="nx">child</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">err</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">p</span><span class="p">.</span><span class="nx">children</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+                <span class="nx">p</span><span class="p">.</span><span class="nx">children</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="nx">canceler</span><span class="p">]</span><span class="kd">struct</span><span class="p">{})</span>
+            <span class="p">}</span>
+            <span class="nx">p</span><span class="p">.</span><span class="nx">children</span><span class="p">[</span><span class="nx">child</span><span class="p">]</span> <span class="p">=</span> <span class="kd">struct</span><span class="p">{}{}</span>
+        <span class="p">}</span>
+        <span class="nx">p</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+    <span class="c1">// 親コンテキストがcancelCtx型ではない場合(valueCtx型)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">parent</span><span class="p">.</span><span class="nx">Done</span><span class="p">():</span>
+                <span class="nx">child</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">Err</span><span class="p">())</span>
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">child</span><span class="p">.</span><span class="nx">Done</span><span class="p">():</span>
+            <span class="p">}</span>
+        <span class="p">}()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// parentCancelCtx は *cancelCtx が見つかるか emptyCtx が見つかるまでコンテキストグラフを逆向きにたどる</span>
+<span class="c1">//</span>
+<span class="c1">// parentCancelCtx follows a chain of parent references until it finds a</span>
+<span class="c1">// *cancelCtx. This function understands how each of the concrete types in this</span>
+<span class="c1">// package represents its parent.</span>
+<span class="kd">func</span> <span class="nx">parentCancelCtx</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">cancelCtx</span><span class="p">,</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="nx">c</span> <span class="o">:=</span> <span class="nx">parent</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nx">c</span><span class="p">,</span> <span class="kc">true</span>
+        <span class="k">case</span> <span class="o">*</span><span class="nx">timerCtx</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">cancelCtx</span><span class="p">,</span> <span class="kc">true</span>
+        <span class="k">case</span> <span class="o">*</span><span class="nx">valueCtx</span><span class="p">:</span>
+            <span class="nx">parent</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Context</span>
+        <span class="k">default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// cancel closes c.done, cancels each of c&#39;s children, and, if</span>
+<span class="c1">// removeFromParent is true, removes c from its parent&#39;s children.</span>
+<span class="c1">//</span>
+<span class="c1">// cancel は本質的にはチャネルのクローズ</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">cancel</span><span class="p">(</span><span class="nx">removeFromParent</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;context: internal error: missing cancel error&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+        <span class="k">return</span> <span class="c1">// already canceled</span>
+    <span class="p">}</span>
+
+    <span class="c1">// キャンセルされた理由をセット</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">err</span> <span class="p">=</span> <span class="nx">err</span>
+
+    <span class="c1">// チャネルのクローズ</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="p">=</span> <span class="nx">closedchan</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// map から key を取得</span>
+    <span class="k">for</span> <span class="nx">child</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">c</span><span class="p">.</span><span class="nx">children</span> <span class="p">{</span>
+        <span class="c1">// NOTE: acquiring the child&#39;s lock while holding parent&#39;s lock.</span>
+        <span class="c1">// 葉の方向にキャンセル</span>
+        <span class="nx">child</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">// 子の canceler はすべてキャンセル済なので map を空にする</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">children</span> <span class="p">=</span> <span class="kc">nil</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nx">removeFromParent</span> <span class="p">{</span>
+        <span class="nx">removeChild</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// removeChild は親から(今呼ばれた)子を分離</span>
+<span class="kd">func</span> <span class="nx">removeChild</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">child</span> <span class="nx">canceler</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">parentCancelCtx</span><span class="p">(</span><span class="nx">parent</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">p</span><span class="p">.</span><span class="nx">children</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">delete</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">children</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Done は c.done にチャネルを初期化(後にcloseされる)</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">Done</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span> <span class="p">{</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+    <span class="p">}</span>
+    <span class="nx">d</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">d</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="knqyf263/cob/index.html" title="cob"
+             >次へ</a> |</li>
+        <li class="right" >
+          <a href="io.html" title="io"
+             >前へ</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Go Note  ドキュメント</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, d-tsuji.
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1 で生成しました。
+    </div>
+  </body>
+</html>
