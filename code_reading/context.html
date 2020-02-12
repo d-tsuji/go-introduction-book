@@ -73,11 +73,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 585</li>
+            <li>英数記号: 450</li>
             <li>非アスキー: 143</li>
-            <li>合計文字数: 728</li>
-            <li>半角換算: 871</li>
-            <li>全角換算: 435.5</li>
+            <li>合計文字数: 593</li>
+            <li>半角換算: 736</li>
+            <li>全角換算: 368.0</li>
         </ul>
     </p>
 </div>
@@ -105,17 +105,14 @@
 <h2>概要<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>Context 型を提供するパッケージでデッドラインやキャンセルのシグナルやAPIの境界を超えてプロセス間でリクエストの値を渡す</p>
 <p>Context インターフェースは4つのメソッドで構成される。コメントを除くと以下のようになる。</p>
-<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Context</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">Deadline</span><span class="p">()</span> <span class="p">(</span><span class="nx">deadline</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">ok</span> <span class="kt">bool</span><span class="p">)</span>
+    <span class="nx">Done</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">Err</span><span class="p">()</span> <span class="kt">error</span>
+    <span class="nx">Value</span><span class="p">(</span><span class="nx">key</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>type Context interface {</dt><dd><p>Deadline() (deadline time.Time, ok bool)
-Done() &lt;-chan struct{}
-Err() error
-Value(key interface{}) interface{}</p>
-</dd>
-</dl>
-<p>}</p>
 <p>Contextを作るには2つのファクトリ関数が存在する。親になる基点。</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">Background()</span> <span class="pre">Context</span></code></p></li>

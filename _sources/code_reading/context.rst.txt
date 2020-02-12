@@ -11,12 +11,12 @@ Context インターフェースは4つのメソッドで構成される。コ�
 
 .. code-block:: go
 
-type Context interface {
-	Deadline() (deadline time.Time, ok bool)
-	Done() <-chan struct{}
-	Err() error
-	Value(key interface{}) interface{}
-}
+    type Context interface {
+        Deadline() (deadline time.Time, ok bool)
+        Done() <-chan struct{}
+        Err() error
+        Value(key interface{}) interface{}
+    }
 
 Contextを作るには2つのファクトリ関数が存在する。親になる基点。
 
