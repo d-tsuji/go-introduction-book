@@ -88,8 +88,12 @@ https://play.golang.org/p/l0rREisGyUQ
 実装
 ============================================
 
-``func WithCancel(parent Context) (ctx Context, cancel CancelFunc)``
-----------------------------------------------------------------------------
+全体的な構成(キャンセルの場合)
+--------------------------------------------
+
+- cancelCtx という構造体がコンテキストの状態を保持する重要な構造体
+- 埋め込みされている ``Context`` によって親コンテキストを保持する
+- ``children map[canceler]struct{}`` が子コンテキストの一覧を保持する 
 
 .. code-block:: go
 
@@ -104,6 +108,7 @@ https://play.golang.org/p/l0rREisGyUQ
         err      error                 // set to non-nil by the first cancel call
     }
 
+    // Done は c.done にチャネルを初期化(後にcloseされる)
     func (c *cancelCtx) Done() <-chan struct{} {
         c.mu.Lock()
         if c.done == nil {
@@ -143,6 +148,9 @@ https://play.golang.org/p/l0rREisGyUQ
     func init() {
         close(closedchan)
     }
+
+``func WithCancel(parent Context) (ctx Context, cancel CancelFunc)``
+----------------------------------------------------------------------------
 
 .. code-block:: go
 
@@ -268,21 +276,243 @@ https://play.golang.org/p/l0rREisGyUQ
             return
         }
         p.mu.Lock()
+        // 親のコンテキストが持っている子コンテキストの map から子コンテキスト自身を削除
         if p.children != nil {
             delete(p.children, child)
         }
         p.mu.Unlock()
     }
 
+全体的な構成(デッドライン付の場合)
+--------------------------------------------
+
+- ``timerCtx`` という構造体が ``cancelCtx`` を内包している
+- 加えて時間に関する状態 ``timer *time.Timer`` と ``deadline time.Time`` を持っている
+
 .. code-block:: go
 
-    // Done は c.done にチャネルを初期化(後にcloseされる)
-    func (c *cancelCtx) Done() <-chan struct{} {
-        c.mu.Lock()
-        if c.done == nil {
-            c.done = make(chan struct{})
+    type timerCtx struct {
+        cancelCtx
+        timer *time.Timer // Under cancelCtx.mu.
+
+        deadline time.Time
+    }
+
+    // Deadline() は timeCtx の deadline へのゲッター
+    func (c *timerCtx) Deadline() (deadline time.Time, ok bool) {
+        return c.deadline, true
+    }
+
+    func (c *timerCtx) String() string {
+        return contextName(c.cancelCtx.Context) + ".WithDeadline(" +
+            c.deadline.String() + " [" +
+            time.Until(c.deadline).String() + "])"
+    }
+
+    // timeCtx の cancel 自体は cancelCtx で保持している cancel メソッドへのラッパーとなっている
+    func (c *timerCtx) cancel(removeFromParent bool, err error) {
+        c.cancelCtx.cancel(false, err)
+        if removeFromParent {
+            // Remove this timerCtx from its parent cancelCtx's children.
+            removeChild(c.cancelCtx.Context, c)
         }
-        d := c.done
+        c.mu.Lock()
+        // time.AfterFunc によるキャンセル処理と重複しないように、すでに設定されていれば無効化する
+        if c.timer != nil {
+            c.timer.Stop()
+            c.timer = nil
+        }
         c.mu.Unlock()
-        return d
+    }
+
+[補足] timeパッケージ
+--------------------------------------------
+
+- ``context`` パッケージで用いられている ``time`` パッケージのいくつかの関数を補足しておく
+
+``func (t Time) Before(u Time) bool``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+時刻を比較。サンプルコードが分かりやすいのでそのまま転記
+
+.. code-block:: go
+
+    year2000 := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+    year3000 := time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
+
+    isYear2000BeforeYear3000 := year2000.Before(year3000) // True
+    isYear3000BeforeYear2000 := year3000.Before(year2000) // False
+
+    fmt.Printf("year2000.Before(year3000) = %v\n", isYear2000BeforeYear3000)
+    fmt.Printf("year3000.Before(year2000) = %v\n", isYear3000BeforeYear2000)
+
+``func Until(t Time) Duration``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+現在時刻から t までの期間を返却する。``t.Sub(time.Now())`` と同じ。現在よりも前の時刻と比較する場合は負の結果が返ってくる。
+
+.. code-block:: go
+
+    package main
+
+    import (
+        "fmt"
+        "time"
+    )
+
+    func main() {
+        // playground 上はいつも "2009-11-10 23:00:00 UTC"
+        year20091111 := time.Date(2009, 11, 11, 23, 0, 0, 0, time.UTC)
+
+        fmt.Printf("t.until(year20091111) = %v\n", time.Until(year20091111))
+    }
+    // t.until(year20091111) = 24h0m0s
+
+https://play.golang.org/p/Xvpadl3dm81
+
+``func AfterFunc(d Duration, f func()) *Timer``
+----------------------------------------------------------------------------
+
+``d`` の時間経過後に ``f func()`` を実行する
+
+.. code-block:: go
+
+    package main
+
+    import (
+        "fmt"
+        "os"
+        "time"
+    )
+
+    func main() {
+        time.AfterFunc(3 * time.Second, func() {
+            fmt.Println("Timeout")
+            os.Exit(0)
+        })
+
+        select {}
+    }
+    // Timeout ※ 3秒経過後に
+
+https://play.golang.org/p/SgbuZyi3qk2
+
+``func WithDeadline(parent Context, d time.Time) (Context, CancelFunc)``
+----------------------------------------------------------------------------
+
+``WithCancel`` に ``d`` を組み合わせたラッパー
+
+.. code-block:: go
+
+    func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
+        if cur, ok := parent.Deadline(); ok && cur.Before(d) {
+            // The current deadline is already sooner than the new one.
+            return WithCancel(parent)
+        }
+        c := &timerCtx{
+            cancelCtx: newCancelCtx(parent),
+            // input の期限を保持
+            deadline:  d,
+
+            // timer *time.Timer は time.AfterFunc でセットされる
+        }
+        // グラフの構築
+        propagateCancel(parent, c)
+
+        // すでに期限到来の場合はキャンセルする
+        dur := time.Until(d)
+        if dur <= 0 {
+            c.cancel(true, DeadlineExceeded) // deadline has already passed
+            return c, func() { c.cancel(false, Canceled) }
+        }
+        c.mu.Lock()
+        defer c.mu.Unlock()
+
+        // time.AfterFunc を使用して dur 時間経過後にキャンセルを実行
+        if c.err == nil {
+            c.timer = time.AfterFunc(dur, func() {
+                c.cancel(true, DeadlineExceeded)
+            })
+        }
+        return c, func() { c.cancel(true, Canceled) }
+    }
+
+``func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)``
+------------------------------------------------------------------------------------
+
+こちらも ``WithDeadline`` のラッパー。期限を指定された場合は、現在時刻に期限を追加した時刻として ``WithDeadline`` を呼び出すようになっている
+
+.. code-block:: go
+
+    func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
+        return WithDeadline(parent, time.Now().Add(timeout))
+    }
+
+WithValueの場合
+--------------------------------------------
+
+- キャンセル処理ではなく、値を引き回すためのコンテキスト
+- 元のコンテキストに key, value をラップしたコンテキストを返すだけ
+
+どんな感じで使われているか？
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+構造体の key, value を持つコンテキストということが実装からもわかる
+
+https://github.com/google/gapid/blob/master/core/data/id/id_remap.go#L25-L48
+
+.. code-block:: go
+
+    // Remapper is an interface which allows remapping between ID to int64.
+    // One such remapper can be stored in the current Context.
+    // This is used to handle resource when converting to/from proto.
+    // It needs to live here to break go package dependency cycles.
+    type Remapper interface {
+        RemapIndex(ctx context.Context, index int64) (ID, error)
+        RemapID(ctx context.Context, id ID) (int64, error)
+    }
+
+    type remapperKeyTy string
+
+    const remapperKey = remapperKeyTy("remapper")
+
+    // GetRemapper returns the Remapper attached to the given context.
+    func GetRemapper(ctx context.Context) Remapper {
+        if val := ctx.Value(remapperKey); val != nil {
+            return val.(Remapper)
+        }
+        panic("remapper missing from context")
+    }
+
+    // PutRemapper amends a Context by attaching a Remapper reference to it.
+    func PutRemapper(ctx context.Context, d Remapper) context.Context {
+        if val := ctx.Value(remapperKey); val != nil {
+            panic("Context already holds remapper")
+        }
+        return context.WithValue(ctx, remapperKey, d)
+    }
+
+-------------------
+
+.. code-block:: go
+
+    type valueCtx struct {
+        Context
+        // (構造体の) key, val をフィールドとして保持
+        key, val interface{}
+    }
+
+.. code-block:: go
+
+    func WithValue(parent Context, key, val interface{}) Context {
+        if key == nil {
+            panic("nil key")
+        }
+
+        // 比較可能な型かどうかは以下を参照
+        // https://golang.org/ref/spec#Comparison_operators
+        if !reflectlite.TypeOf(key).Comparable() {
+            panic("key is not comparable")
+        }
+        return &valueCtx{parent, key, val}
     }

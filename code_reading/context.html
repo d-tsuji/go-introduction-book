@@ -50,7 +50,21 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id3">実装</a><ul>
+<li><a class="reference internal" href="#id4">全体的な構成(キャンセルの場合)</a></li>
 <li><a class="reference internal" href="#func-withcancel-parent-context-ctx-context-cancel-cancelfunc"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithCancel(parent</span> <span class="pre">Context)</span> <span class="pre">(ctx</span> <span class="pre">Context,</span> <span class="pre">cancel</span> <span class="pre">CancelFunc)</span></code></a></li>
+<li><a class="reference internal" href="#id5">全体的な構成(デッドライン付の場合)</a></li>
+<li><a class="reference internal" href="#time">[補足] timeパッケージ</a><ul>
+<li><a class="reference internal" href="#func-t-time-before-u-time-bool"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">(t</span> <span class="pre">Time)</span> <span class="pre">Before(u</span> <span class="pre">Time)</span> <span class="pre">bool</span></code></a></li>
+<li><a class="reference internal" href="#func-until-t-time-duration"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">Until(t</span> <span class="pre">Time)</span> <span class="pre">Duration</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#func-afterfunc-d-duration-f-func-timer"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">AfterFunc(d</span> <span class="pre">Duration,</span> <span class="pre">f</span> <span class="pre">func())</span> <span class="pre">*Timer</span></code></a></li>
+<li><a class="reference internal" href="#func-withdeadline-parent-context-d-time-time-context-cancelfunc"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithDeadline(parent</span> <span class="pre">Context,</span> <span class="pre">d</span> <span class="pre">time.Time)</span> <span class="pre">(Context,</span> <span class="pre">CancelFunc)</span></code></a></li>
+<li><a class="reference internal" href="#func-withtimeout-parent-context-timeout-time-duration-context-cancelfunc"><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithTimeout(parent</span> <span class="pre">Context,</span> <span class="pre">timeout</span> <span class="pre">time.Duration)</span> <span class="pre">(Context,</span> <span class="pre">CancelFunc)</span></code></a></li>
+<li><a class="reference internal" href="#withvalue">WithValueの場合</a><ul>
+<li><a class="reference internal" href="#id6">どんな感じで使われているか？</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -73,11 +87,11 @@
     <h4>Page Info</h4>
     <p>
         <ul>
-            <li>英数記号: 450</li>
-            <li>非アスキー: 143</li>
-            <li>合計文字数: 593</li>
-            <li>半角換算: 736</li>
-            <li>全角換算: 368.0</li>
+            <li>英数記号: 1090</li>
+            <li>非アスキー: 563</li>
+            <li>合計文字数: 1653</li>
+            <li>半角換算: 2216</li>
+            <li>全角換算: 1108.0</li>
         </ul>
     </p>
 </div>
@@ -180,8 +194,13 @@
 </div>
 <div class="section" id="id3">
 <h2>実装<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="section" id="func-withcancel-parent-context-ctx-context-cancel-cancelfunc">
-<h3><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithCancel(parent</span> <span class="pre">Context)</span> <span class="pre">(ctx</span> <span class="pre">Context,</span> <span class="pre">cancel</span> <span class="pre">CancelFunc)</span></code><a class="headerlink" href="#func-withcancel-parent-context-ctx-context-cancel-cancelfunc" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id4">
+<h3>全体的な構成(キャンセルの場合)<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>cancelCtx という構造体がコンテキストの状態を保持する重要な構造体</p></li>
+<li><p>埋め込みされている <code class="docutils literal notranslate"><span class="pre">Context</span></code> によって親コンテキストを保持する</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">children</span> <span class="pre">map[canceler]struct{}</span></code> が子コンテキストの一覧を保持する</p></li>
+</ul>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// cancelCtx はキャンセル可能</span>
 <span class="c1">// キャンセルされた場合は canceler インターフェースを実装している子どももキャンセルする</span>
 <span class="kd">type</span> <span class="nx">cancelCtx</span> <span class="kd">struct</span> <span class="p">{</span>
@@ -193,6 +212,7 @@
     <span class="nx">err</span>      <span class="kt">error</span>                 <span class="c1">// set to non-nil by the first cancel call</span>
 <span class="p">}</span>
 
+<span class="c1">// Done は c.done にチャネルを初期化(後にcloseされる)</span>
 <span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">Done</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span> <span class="p">{</span>
     <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
     <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
@@ -232,6 +252,9 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="func-withcancel-parent-context-ctx-context-cancel-cancelfunc">
+<h3><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithCancel(parent</span> <span class="pre">Context)</span> <span class="pre">(ctx</span> <span class="pre">Context,</span> <span class="pre">cancel</span> <span class="pre">CancelFunc)</span></code><a class="headerlink" href="#func-withcancel-parent-context-ctx-context-cancel-cancelfunc" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WithCancel</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="nx">ctx</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">cancel</span> <span class="nx">CancelFunc</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// cancelCtx 構造体の作成(ファクトリメソッド)</span>
     <span class="nx">c</span> <span class="o">:=</span> <span class="nx">newCancelCtx</span><span class="p">(</span><span class="nx">parent</span><span class="p">)</span>
@@ -352,6 +375,7 @@
         <span class="k">return</span>
     <span class="p">}</span>
     <span class="nx">p</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="c1">// 親のコンテキストが持っている子コンテキストの map から子コンテキスト自身を削除</span>
     <span class="k">if</span> <span class="nx">p</span><span class="p">.</span><span class="nx">children</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
         <span class="nb">delete</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">children</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span>
     <span class="p">}</span>
@@ -359,17 +383,223 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Done は c.done にチャネルを初期化(後にcloseされる)</span>
-<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">cancelCtx</span><span class="p">)</span> <span class="nx">Done</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span> <span class="p">{</span>
-    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-        <span class="nx">c</span><span class="p">.</span><span class="nx">done</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+</div>
+<div class="section" id="id5">
+<h3>全体的な構成(デッドライン付の場合)<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">timerCtx</span></code> という構造体が <code class="docutils literal notranslate"><span class="pre">cancelCtx</span></code> を内包している</p></li>
+<li><p>加えて時間に関する状態 <code class="docutils literal notranslate"><span class="pre">timer</span> <span class="pre">*time.Timer</span></code> と <code class="docutils literal notranslate"><span class="pre">deadline</span> <span class="pre">time.Time</span></code> を持っている</p></li>
+</ul>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">timerCtx</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">cancelCtx</span>
+    <span class="nx">timer</span> <span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Timer</span> <span class="c1">// Under cancelCtx.mu.</span>
+
+    <span class="nx">deadline</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+<span class="p">}</span>
+
+<span class="c1">// Deadline() は timeCtx の deadline へのゲッター</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">timerCtx</span><span class="p">)</span> <span class="nx">Deadline</span><span class="p">()</span> <span class="p">(</span><span class="nx">deadline</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">ok</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">deadline</span><span class="p">,</span> <span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">timerCtx</span><span class="p">)</span> <span class="nx">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">contextName</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">cancelCtx</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.WithDeadline(&quot;</span> <span class="o">+</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">deadline</span><span class="p">.</span><span class="nx">String</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot; [&quot;</span> <span class="o">+</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nx">Until</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">deadline</span><span class="p">).</span><span class="nx">String</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;])&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// timeCtx の cancel 自体は cancelCtx で保持している cancel メソッドへのラッパーとなっている</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">timerCtx</span><span class="p">)</span> <span class="nx">cancel</span><span class="p">(</span><span class="nx">removeFromParent</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">cancelCtx</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">removeFromParent</span> <span class="p">{</span>
+        <span class="c1">// Remove this timerCtx from its parent cancelCtx&#39;s children.</span>
+        <span class="nx">removeChild</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">cancelCtx</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span>
     <span class="p">}</span>
-    <span class="nx">d</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">done</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="c1">// time.AfterFunc によるキャンセル処理と重複しないように、すでに設定されていれば無効化する</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">timer</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">timer</span><span class="p">.</span><span class="nx">Stop</span><span class="p">()</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">timer</span> <span class="p">=</span> <span class="kc">nil</span>
+    <span class="p">}</span>
     <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nx">d</span>
 <span class="p">}</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="time">
+<h3>[補足] timeパッケージ<a class="headerlink" href="#time" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">context</span></code> パッケージで用いられている <code class="docutils literal notranslate"><span class="pre">time</span></code> パッケージのいくつかの関数を補足しておく</p></li>
+</ul>
+<div class="section" id="func-t-time-before-u-time-bool">
+<h4><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">(t</span> <span class="pre">Time)</span> <span class="pre">Before(u</span> <span class="pre">Time)</span> <span class="pre">bool</span></code><a class="headerlink" href="#func-t-time-before-u-time-bool" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>時刻を比較。サンプルコードが分かりやすいのでそのまま転記</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">year2000</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">UTC</span><span class="p">)</span>
+<span class="nx">year3000</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Date</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">UTC</span><span class="p">)</span>
+
+<span class="nx">isYear2000BeforeYear3000</span> <span class="o">:=</span> <span class="nx">year2000</span><span class="p">.</span><span class="nx">Before</span><span class="p">(</span><span class="nx">year3000</span><span class="p">)</span> <span class="c1">// True</span>
+<span class="nx">isYear3000BeforeYear2000</span> <span class="o">:=</span> <span class="nx">year3000</span><span class="p">.</span><span class="nx">Before</span><span class="p">(</span><span class="nx">year2000</span><span class="p">)</span> <span class="c1">// False</span>
+
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;year2000.Before(year3000) = %v\n&quot;</span><span class="p">,</span> <span class="nx">isYear2000BeforeYear3000</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;year3000.Before(year2000) = %v\n&quot;</span><span class="p">,</span> <span class="nx">isYear3000BeforeYear2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="func-until-t-time-duration">
+<h4><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">Until(t</span> <span class="pre">Time)</span> <span class="pre">Duration</span></code><a class="headerlink" href="#func-until-t-time-duration" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>現在時刻から t までの期間を返却する。<code class="docutils literal notranslate"><span class="pre">t.Sub(time.Now())</span></code> と同じ。現在よりも前の時刻と比較する場合は負の結果が返ってくる。</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;time&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// playground 上はいつも &quot;2009-11-10 23:00:00 UTC&quot;</span>
+    <span class="nx">year20091111</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Date</span><span class="p">(</span><span class="mi">2009</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">UTC</span><span class="p">)</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;t.until(year20091111) = %v\n&quot;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Until</span><span class="p">(</span><span class="nx">year20091111</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="c1">// t.until(year20091111) = 24h0m0s</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/Xvpadl3dm81">https://play.golang.org/p/Xvpadl3dm81</a></p>
+</div>
+</div>
+<div class="section" id="func-afterfunc-d-duration-f-func-timer">
+<h3><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">AfterFunc(d</span> <span class="pre">Duration,</span> <span class="pre">f</span> <span class="pre">func())</span> <span class="pre">*Timer</span></code><a class="headerlink" href="#func-afterfunc-d-duration-f-func-timer" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">d</span></code> の時間経過後に <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">func()</span></code> を実行する</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;os&quot;</span>
+    <span class="s">&quot;time&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">time</span><span class="p">.</span><span class="nx">AfterFunc</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Timeout&quot;</span><span class="p">)</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nx">Exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">})</span>
+
+    <span class="k">select</span> <span class="p">{}</span>
+<span class="p">}</span>
+<span class="c1">// Timeout ※ 3秒経過後に</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/SgbuZyi3qk2">https://play.golang.org/p/SgbuZyi3qk2</a></p>
+</div>
+<div class="section" id="func-withdeadline-parent-context-d-time-time-context-cancelfunc">
+<h3><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithDeadline(parent</span> <span class="pre">Context,</span> <span class="pre">d</span> <span class="pre">time.Time)</span> <span class="pre">(Context,</span> <span class="pre">CancelFunc)</span></code><a class="headerlink" href="#func-withdeadline-parent-context-d-time-time-context-cancelfunc" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">WithCancel</span></code> に <code class="docutils literal notranslate"><span class="pre">d</span></code> を組み合わせたラッパー</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WithDeadline</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">d</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">)</span> <span class="p">(</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">CancelFunc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">cur</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">Deadline</span><span class="p">();</span> <span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">Before</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// The current deadline is already sooner than the new one.</span>
+        <span class="k">return</span> <span class="nx">WithCancel</span><span class="p">(</span><span class="nx">parent</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">timerCtx</span><span class="p">{</span>
+        <span class="nx">cancelCtx</span><span class="p">:</span> <span class="nx">newCancelCtx</span><span class="p">(</span><span class="nx">parent</span><span class="p">),</span>
+        <span class="c1">// input の期限を保持</span>
+        <span class="nx">deadline</span><span class="p">:</span>  <span class="nx">d</span><span class="p">,</span>
+
+        <span class="c1">// timer *time.Timer は time.AfterFunc でセットされる</span>
+    <span class="p">}</span>
+    <span class="c1">// グラフの構築</span>
+    <span class="nx">propagateCancel</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span>
+
+    <span class="c1">// すでに期限到来の場合はキャンセルする</span>
+    <span class="nx">dur</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Until</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">dur</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="nx">DeadlineExceeded</span><span class="p">)</span> <span class="c1">// deadline has already passed</span>
+        <span class="k">return</span> <span class="nx">c</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">c</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="nx">Canceled</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">c</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+
+    <span class="c1">// time.AfterFunc を使用して dur 時間経過後にキャンセルを実行</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">timer</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">AfterFunc</span><span class="p">(</span><span class="nx">dur</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="nx">DeadlineExceeded</span><span class="p">)</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">c</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">c</span><span class="p">.</span><span class="nx">cancel</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="nx">Canceled</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="func-withtimeout-parent-context-timeout-time-duration-context-cancelfunc">
+<h3><code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">WithTimeout(parent</span> <span class="pre">Context,</span> <span class="pre">timeout</span> <span class="pre">time.Duration)</span> <span class="pre">(Context,</span> <span class="pre">CancelFunc)</span></code><a class="headerlink" href="#func-withtimeout-parent-context-timeout-time-duration-context-cancelfunc" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>こちらも <code class="docutils literal notranslate"><span class="pre">WithDeadline</span></code> のラッパー。期限を指定された場合は、現在時刻に期限を追加した時刻として <code class="docutils literal notranslate"><span class="pre">WithDeadline</span></code> を呼び出すようになっている</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WithTimeout</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">timeout</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span> <span class="p">(</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">CancelFunc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">WithDeadline</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">Add</span><span class="p">(</span><span class="nx">timeout</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="withvalue">
+<h3>WithValueの場合<a class="headerlink" href="#withvalue" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>キャンセル処理ではなく、値を引き回すためのコンテキスト</p></li>
+<li><p>元のコンテキストに key, value をラップしたコンテキストを返すだけ</p></li>
+</ul>
+<div class="section" id="id6">
+<h4>どんな感じで使われているか？<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>構造体の key, value を持つコンテキストということが実装からもわかる</p>
+<p><a class="reference external" href="https://github.com/google/gapid/blob/master/core/data/id/id_remap.go#L25-L48">https://github.com/google/gapid/blob/master/core/data/id/id_remap.go#L25-L48</a></p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Remapper is an interface which allows remapping between ID to int64.</span>
+<span class="c1">// One such remapper can be stored in the current Context.</span>
+<span class="c1">// This is used to handle resource when converting to/from proto.</span>
+<span class="c1">// It needs to live here to break go package dependency cycles.</span>
+<span class="kd">type</span> <span class="nx">Remapper</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">RemapIndex</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">index</span> <span class="kt">int64</span><span class="p">)</span> <span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="nx">RemapID</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">id</span> <span class="nx">ID</span><span class="p">)</span> <span class="p">(</span><span class="kt">int64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">remapperKeyTy</span> <span class="kt">string</span>
+
+<span class="kd">const</span> <span class="nx">remapperKey</span> <span class="p">=</span> <span class="nx">remapperKeyTy</span><span class="p">(</span><span class="s">&quot;remapper&quot;</span><span class="p">)</span>
+
+<span class="c1">// GetRemapper returns the Remapper attached to the given context.</span>
+<span class="kd">func</span> <span class="nx">GetRemapper</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="nx">Remapper</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">val</span> <span class="o">:=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="nx">remapperKey</span><span class="p">);</span> <span class="nx">val</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">val</span><span class="p">.(</span><span class="nx">Remapper</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;remapper missing from context&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// PutRemapper amends a Context by attaching a Remapper reference to it.</span>
+<span class="kd">func</span> <span class="nx">PutRemapper</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">d</span> <span class="nx">Remapper</span><span class="p">)</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">val</span> <span class="o">:=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="nx">remapperKey</span><span class="p">);</span> <span class="nx">val</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;Context already holds remapper&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nx">WithValue</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">remapperKey</span><span class="p">,</span> <span class="nx">d</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">valueCtx</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Context</span>
+    <span class="c1">// (構造体の) key, val をフィールドとして保持</span>
+    <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">WithValue</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span> <span class="kd">interface</span><span class="p">{})</span> <span class="nx">Context</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;nil key&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 比較可能な型かどうかは以下を参照</span>
+    <span class="c1">// https://golang.org/ref/spec#Comparison_operators</span>
+    <span class="k">if</span> <span class="p">!</span><span class="nx">reflectlite</span><span class="p">.</span><span class="nx">TypeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">).</span><span class="nx">Comparable</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;key is not comparable&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">valueCtx</span><span class="p">{</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
