@@ -20,6 +20,8 @@ Go quiz を解くメモです。クイズを解いて、Goへの理解を深め�
         println(as[0].N, as[1].N)
     }
 
+https://play.golang.org/p/0cmj1-WuS3r
+
 1 問目から間違えました。初見では ``100 200`` だと思ったけど違いました。これは slice をループでイテレーションすると、その一番目はindexで、二番目は、indexで示される要素の **コピー** を示します。Tour of Go にも書いてあります。
 
 * https://tour.golang.org/moretypes/16
@@ -60,6 +62,8 @@ Go quiz を解くメモです。クイズを解いて、Goへの理解を深め�
         }
         println(n)
     }
+
+https://play.golang.org/p/v6PKHsYg-0K
 
 間違えました。中括弧内での ``n := n`` として中括弧内のローカル変数に対して ``+100`` しているため、外側の ``n`` には影響がない例です。
 
@@ -157,6 +161,8 @@ Go quiz を解くメモです。クイズを解いて、Goへの理解を深め�
         println(len(ns))
     }
 
+https://play.golang.org/p/esNjLnWu28w
+
 ``1`` と思いましたが、間違えました。
 
 .. code-block:: go
@@ -174,3 +180,5 @@ Go quiz を解くメモです。クイズを解いて、Goへの理解を深め�
     }
 
 ``30`` かと思いましたが、違いました。
+
+https://play.golang.org/p/OfCKt_j3j32
