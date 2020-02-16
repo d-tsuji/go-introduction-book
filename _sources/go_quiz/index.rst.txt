@@ -163,7 +163,7 @@ https://play.golang.org/p/v6PKHsYg-0K
 
 https://play.golang.org/p/esNjLnWu28w
 
-``1`` と思いましたが、間違えました。
+``1`` と思いましたが、間違えました。答えは ``0`` です。``append`` を使うときは注意しないといけないポイントで関数内で ``append`` したスライスは背後にある配列は別のアドレスを指しています。更新したスライスを利用するためには ``return`` するか、ポインターで渡す必要があります。
 
 .. code-block:: go
     :caption: #10
@@ -179,6 +179,41 @@ https://play.golang.org/p/esNjLnWu28w
         println(c[0] + c[1])
     }
 
-``30`` かと思いましたが、違いました。
-
 https://play.golang.org/p/OfCKt_j3j32
+
+``30`` かと思いましたが、違いました。`Arrays, slices (and strings): The mechanics of 'append' <https://blog.golang.org/slices>`_ の投稿を見るとわかるようになると思いますが、変数 ``b`` を ``a`` を ``append`` して生成したときは ``a`` と ``b`` の背後にある配列は別の配列を持っていて、スライスから指し示すポインタは別です。以下のように配列へのポインタを表示すると分かりやすいです。
+
+.. code-block:: go
+
+    package main
+
+    import "fmt"
+
+    func main() {
+        a := []int{10, 20, 30}
+        fmt.Printf("[a] len: %d, cap: %d\n", len(a), cap(a))
+        fmt.Printf("[a] address of 0th element: %v, value: %v\n", &a[0], a[0])
+        b := append(a, 40, 50)
+        fmt.Printf("[b] len: %d, cap: %d\n", len(b), cap(b))
+        a[0] = 100
+        fmt.Printf("[b] address of 0th element: %v, value: %v\n", &b[0], b[0])
+        c := append(b, 60, 70)
+        fmt.Printf("[c] len: %d, cap: %d\n", len(c), cap(c))
+        fmt.Printf("[c] address of 0th element: %v, value: %v\n", &c[0], c[0])
+        b[1] = 200
+        fmt.Println(c[0] + c[1])
+    }
+
+https://play.golang.org/p/QzapOH5Qv8U
+
+ここまで書いて、``append`` は環境依存することに気づきました。実際にローカルのPC( ``go version go1.13.1 windows/amd64`` )で試してみると以下のような結果を得ます。``append`` したときの ``cap`` の大きさが Go Playground と異なり ``c`` 変数のスライスが指し示すポインタが ``b`` と異なるようになっています。
+
+.. code-block:: go
+
+    [a] len: 3, cap: 3
+    [a] address of 0th element: 0xc0000123a0, value: 10
+    [b] len: 5, cap: 6
+    [b] address of 0th element: 0xc00000c330, value: 10
+    [c] len: 7, cap: 12
+    [c] address of 0th element: 0xc0000140c0, value: 10
+    30
